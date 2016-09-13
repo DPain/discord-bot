@@ -1,1 +1,1 @@
-# DBot
+# DiscordBot
