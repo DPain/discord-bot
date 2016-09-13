@@ -1,0 +1,11 @@
+!userdata
+users:
+  '111111111111111111':
+    group: [!Group 'TRUSTED_USER']
+    username: Hello
+  '222222222222222222':
+    group: [!Group 'GUEST']
+    username: World
+  '333333333333333333':
+    group: [!Group 'OWNER']
+    username: Awesome
