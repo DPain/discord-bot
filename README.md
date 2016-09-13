@@ -15,7 +15,7 @@ The program requires the JDA Discord library and several other libraries which i
 
 ## Contribution guidelines ##
 ### Advices ###
-	* At the moment, as the bot needs a substancial amount of new features, I will most likely not be accepting any pull requests.
+At the moment, as the bot needs a substancial amount of new features, I will most likely not be accepting any pull requests.
 
 ### Acknowledges ###
 	* Many thanks to Austin Keener and other contributors creating the JDA library.
