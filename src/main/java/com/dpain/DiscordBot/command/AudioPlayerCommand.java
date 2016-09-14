@@ -4,7 +4,7 @@ import java.net.URL;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import com.dpain.DiscordBot.command.audioplayer.AudioPlayer;
+import com.dpain.DiscordBot.command.audioplayer.AudioPlayerManager;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.AudioNotFoundException;
 import com.dpain.DiscordBot.exception.ChannelNotFoundException;
@@ -15,7 +15,7 @@ import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
 public class AudioPlayerCommand extends Command {
-	private AudioPlayer audioPlayer;
+	private AudioPlayerManager audioPlayer;
 	
 	public AudioPlayerCommand() {
 		super("AudioPlayerCommand", Group.TRUSTED_USER);
@@ -51,7 +51,7 @@ public class AudioPlayerCommand extends Command {
 		                    //Separates the name of the channel so that we can search for it
 		                    String chanName = message.substring(6);
 		                    
-		                    audioPlayer = new AudioPlayer(castedEvent.getGuild());
+		                    audioPlayer = new AudioPlayerManager(castedEvent.getGuild());
 		                    
 		                    try {
 		                    	audioPlayer.join(chanName);
