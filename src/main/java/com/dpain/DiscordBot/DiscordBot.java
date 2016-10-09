@@ -3,7 +3,7 @@ package com.dpain.DiscordBot;
 import javax.security.auth.login.LoginException;
 
 import com.dpain.DiscordBot.enums.Property;
-import com.dpain.DiscordBot.listener.CommandListener;
+import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.listener.ConsoleInputReader;
 import com.dpain.DiscordBot.listener.InviteListener;
 import com.dpain.DiscordBot.listener.UserEventListener;
@@ -17,19 +17,20 @@ import net.dv8tion.jda.JDABuilder;
 public class DiscordBot {
 	private JDA jda;
 	
-	CommandListener commandListener;
+	PluginListener pluginListener;
 	
 	public DiscordBot() {
 		
 		try {
-			commandListener = new CommandListener();
+			pluginListener = new PluginListener(jda);
 			 
 			//Chain listeners if adding more
-			jda = new JDABuilder().setBotToken(PropertiesManager.load().getValue(Property.BOT_TOKEN)).addListener(new InviteListener()).addListener(commandListener).addListener(new UserEventListener()).buildBlocking();
+			jda = new JDABuilder().setBotToken(PropertiesManager.load().getValue(Property.BOT_TOKEN)).addListener(new InviteListener()).addListener(pluginListener).addListener(new UserEventListener()).buildBlocking();
 			jda.getAccountManager().setGame("Bot Activated!");
 			
 			UserManager.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
 			UserManager.load();
+			UserEventListener.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
 			
 			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("DiscordBot", "Running!"));
 		} catch (LoginException e) {
@@ -42,6 +43,6 @@ public class DiscordBot {
 	}
 	
 	public void readConsole() {
-		(new Thread(new ConsoleInputReader(jda, commandListener, jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID))))).start();
+		(new Thread(new ConsoleInputReader(jda, pluginListener, jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID))))).start();
 	}
 }

@@ -1,4 +1,4 @@
-package com.dpain.DiscordBot.command.mcsplash;
+package com.dpain.DiscordBot.plugin.mcsplash;
 
 import java.io.File;
 import java.io.FileNotFoundException;

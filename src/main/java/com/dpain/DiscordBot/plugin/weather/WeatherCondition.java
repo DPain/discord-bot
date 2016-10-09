@@ -1,4 +1,4 @@
-package com.dpain.DiscordBot.command.weather;
+package com.dpain.DiscordBot.plugin.weather;
 
 import java.util.HashMap;
 

@@ -1,4 +1,4 @@
-package com.dpain.DiscordBot.command.audioplayer;
+package com.dpain.DiscordBot.plugin.audioplayer;
 
 import java.io.File;
 import java.io.IOException;

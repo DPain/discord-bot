@@ -1,23 +1,23 @@
-package com.dpain.DiscordBot.command;
+package com.dpain.DiscordBot.plugin;
 
 import java.util.Random;
 
-import com.dpain.DiscordBot.command.moderator.Cleaner;
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.plugin.moderator.Cleaner;
 
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
-public class ModeratorCommand extends Command {
+public class ModeratorPlugin extends Plugin {
 
-	public ModeratorCommand() {
-		super("ModeratorCommand", Group.MODERATOR);
+	public ModeratorPlugin() {
+		super("ModeratorPlugin", Group.MODERATOR);
 		
-		super.helpString = "**Moderator Command Usage:**\n"
+		super.helpString = "**Moderator Plugin Usage:**\n"
 				+ "-nick *\"name\"* : Changes the nickname of the bot.\n"
 				+ "-randomnick : Randomly changes the nickname of the bot.\n"
 				+ "-clear *\"channelName\"* : Clears all the messages in the text channel\n";
-		EssentialsCommand.appendHelpString(super.helpString);
+		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class ModeratorCommand extends Command {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessCommand(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
 					
 					if(message.startsWith("-")) {
 		                if (message.startsWith("-nick ")) {

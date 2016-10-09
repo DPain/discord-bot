@@ -1,17 +1,17 @@
-package com.dpain.DiscordBot.command;
+package com.dpain.DiscordBot.plugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import com.dpain.DiscordBot.command.anime.AnimeTorrentFinder;
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
-public class ProfanityGuardCommand extends Command {
+public class ProfanityGuardPlugin extends Plugin {
 	private boolean activated = false;
 	private HashMap<String, File> emoteMap;
 	
@@ -19,13 +19,13 @@ public class ProfanityGuardCommand extends Command {
 	 * @TODO In future, implement strike out system and save into a file
 	 */
 	
-	public ProfanityGuardCommand() {
-		super("ProfanityGuardCommand", Group.MODERATOR);
+	public ProfanityGuardPlugin() {
+		super("ProfanityGuardPlugin", Group.MODERATOR);
 		
-		super.helpString = "**Profanity Guard Command Usage:** \n" +
+		super.helpString = "**Profanity Guard Plugin Usage:** \n" +
 				"-profguard *\"enable/disable\"* : Enables or disables Profanity Guard\n" +
 				"-profguard *\"offenders\"* : PMs the list of offenders to the one who issued the command\n";
-		EssentialsCommand.appendHelpString(super.helpString);
+		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class ProfanityGuardCommand extends Command {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessCommand(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
 					
 					if(message.startsWith("-")) {
 		                

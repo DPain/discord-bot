@@ -1,4 +1,4 @@
-package com.dpain.DiscordBot.command;
+package com.dpain.DiscordBot.plugin;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
@@ -7,12 +7,12 @@ import com.dpain.DiscordBot.system.UserManager;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.Event;
 
-public abstract class Command {
+public abstract class Plugin {
 	private final String name;
 	private Group group;
 	protected String helpString;
 	
-	public Command(String name, Group group) {
+	public Plugin(String name, Group group) {
 		this.name = name;
 		this.group = group;
 		System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "Initialized!"));
@@ -28,7 +28,7 @@ public abstract class Command {
 		return name;
 	}
 	
-	protected boolean canAccessCommand(User user) {
+	protected boolean canAccessPlugin(User user) {
 		return UserManager.load().getUserGroup(user).getHierarchy() <= group.getHierarchy();
 	}
 }

@@ -1,26 +1,26 @@
-package com.dpain.DiscordBot.command;
+package com.dpain.DiscordBot.plugin;
 
 import java.net.URL;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import com.dpain.DiscordBot.command.audioplayer.AudioPlayer;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.AudioNotFoundException;
 import com.dpain.DiscordBot.exception.ChannelNotFoundException;
 import com.dpain.DiscordBot.exception.NoInstanceException;
+import com.dpain.DiscordBot.plugin.audioplayer.AudioPlayer;
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
-public class AudioPlayerCommand extends Command {
+public class AudioPlayerPlugin extends Plugin {
 	private AudioPlayer audioPlayer;
 	
-	public AudioPlayerCommand() {
-		super("AudioPlayerCommand", Group.TRUSTED_USER);
+	public AudioPlayerPlugin() {
+		super("AudioPlayerPlugin", Group.TRUSTED_USER);
 		
-		super.helpString = "**Audio Player Command Usage:** \n"
+		super.helpString = "**Audio Player Plugin Usage:** \n"
 				+ "-join *\"channelName\"* : Joins a voice channel.\n"
 				+ "-leave : Leaves a voice channel.\n"
 				+ "-play *\"fileName\"* : Plays an audio file the bot has.\n"
@@ -31,7 +31,7 @@ public class AudioPlayerCommand extends Command {
 				+ "-resume : Resumes the audio.\n"
 				+ "-pause : Pauses the audio.\n"
 				+ "-remove : Removes the audio.\n";
-		EssentialsCommand.appendHelpString(super.helpString);
+		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class AudioPlayerCommand extends Command {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessCommand(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(castedEvent.getJDA().getSelfInfo().getId())) {
+				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(castedEvent.getJDA().getSelfInfo().getId())) {
 					
 					if(message.startsWith("-")) {
 		                

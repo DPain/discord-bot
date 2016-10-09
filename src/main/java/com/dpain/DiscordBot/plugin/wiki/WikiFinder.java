@@ -1,4 +1,4 @@
-package com.dpain.DiscordBot.command.wiki;
+package com.dpain.DiscordBot.plugin.wiki;
 
 import java.io.IOException;
 

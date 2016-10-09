@@ -1,23 +1,23 @@
-package com.dpain.DiscordBot.command;
+package com.dpain.DiscordBot.plugin;
 
 import java.io.IOException;
 import java.util.LinkedList;
 
-import com.dpain.DiscordBot.command.anime.AnimeTorrentFinder;
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
-public class AnimeCommand extends Command {
+public class AnimePlugin extends Plugin {
 	private AnimeTorrentFinder animeTorrentFinder;
 	
-	public AnimeCommand() {
-		super("AnimeCommand", Group.TRUSTED_USER);
+	public AnimePlugin() {
+		super("AnimePlugin", Group.TRUSTED_USER);
 		animeTorrentFinder = new AnimeTorrentFinder();
 		
-		super.helpString = "**Anime Command Usage:** \n-anime search *\"name\"* : Gets a list of torrrent from Tokyo toshokan.\n-anime today/week : Gets the anime schedule\n";
-		EssentialsCommand.appendHelpString(super.helpString);
+		super.helpString = "**Anime Plugin Usage:** \n-anime search *\"name\"* : Gets a list of torrrent from Tokyo toshokan.\n-anime today/week : Gets the anime schedule\n";
+		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class AnimeCommand extends Command {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessCommand(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
 					
 					if(message.startsWith("-")) {
 		                

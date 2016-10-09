@@ -1,20 +1,20 @@
-package com.dpain.DiscordBot.command;
+package com.dpain.DiscordBot.plugin;
 
 import java.io.IOException;
 import java.net.URLDecoder;
 
-import com.dpain.DiscordBot.command.wiki.WikiFinder;
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.plugin.wiki.WikiFinder;
 
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
-public class WikipediaCommand extends Command {
+public class WikipediaPlugin extends Plugin {
 	
-	public WikipediaCommand() {
-		super("WikipediaCommand", Group.USER);
-		super.helpString = "**Wikipedia Command Usage:** \n-wiki *\"searchParam\"* : Searches the a topic in Wikipedia.\n";
-		EssentialsCommand.appendHelpString(super.helpString);
+	public WikipediaPlugin() {
+		super("WikipediaPlugin", Group.USER);
+		super.helpString = "**Wikipedia Plugin Usage:** \n-wiki *\"searchParam\"* : Searches the a topic in Wikipedia.\n";
+		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class WikipediaCommand extends Command {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessCommand(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
 					
 					if(message.startsWith("-")) {
 		                

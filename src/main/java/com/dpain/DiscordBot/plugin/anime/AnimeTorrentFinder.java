@@ -1,4 +1,4 @@
-package com.dpain.DiscordBot.command.anime;
+package com.dpain.DiscordBot.plugin.anime;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

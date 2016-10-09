@@ -14,11 +14,11 @@ import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 public class ConsoleInputReader implements Runnable {
 	private String name;
 	private JDA jda;
-	private CommandListener listener;
+	private PluginListener listener;
 	private Guild processingGuild;
 	private Scanner in;
 	
-	public ConsoleInputReader(JDA jda, CommandListener listener, Guild guild) {
+	public ConsoleInputReader(JDA jda, PluginListener listener, Guild guild) {
 		this.name = "ConsoleInputReader";
 		this.jda = jda;
 		this.listener = listener;
@@ -61,7 +61,7 @@ public class ConsoleInputReader implements Runnable {
 		//Might have to fix
 		outerWhile:
 		while(true) {
-			System.out.println("Discord Bot Command: ");
+			System.out.println("Discord Bot Plugin: ");
 			String commandLine = in.nextLine();
 			if(!processConsoleCommand(commandLine)) {
 				break outerWhile;

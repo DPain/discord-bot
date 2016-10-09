@@ -1,4 +1,4 @@
-package com.dpain.DiscordBot.command.moderator;
+package com.dpain.DiscordBot.plugin.moderator;
 
 import java.util.List;
 

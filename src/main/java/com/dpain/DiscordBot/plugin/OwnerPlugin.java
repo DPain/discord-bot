@@ -1,4 +1,4 @@
-package com.dpain.DiscordBot.command;
+package com.dpain.DiscordBot.plugin;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.system.UserManager;
@@ -6,18 +6,18 @@ import com.dpain.DiscordBot.system.UserManager;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
-public class OwnerCommand extends Command {
+public class OwnerPlugin extends Plugin {
 
-	public OwnerCommand() {
-		super("OwnerCommand", Group.OWNER);
+	public OwnerPlugin() {
+		super("OwnerPlugin", Group.OWNER);
 		
-		super.helpString = "**Owner Command Usage:** \n"
+		super.helpString = "**Owner Plugin Usage:** \n"
 				+ "-username *\"name\"* : Changes the username of the bot.\n"
 				+ "-update : Manually updates the userdata file.\n"
 				+ "-group *\"userId\" \"group\"* : Changes the user's group.\n"
 				+ "-rebuild : Resets the userdata file to default.\n"
 				+ "-exit : Shutsdown the bot.\n";
-		EssentialsCommand.appendHelpString(super.helpString);
+		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class OwnerCommand extends Command {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessCommand(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
 					
 					if(message.startsWith("-")) {
 		                if (message.startsWith("-username ")) {

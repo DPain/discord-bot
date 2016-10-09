@@ -1,18 +1,18 @@
-package com.dpain.DiscordBot.command;
+package com.dpain.DiscordBot.plugin;
 
-import com.dpain.DiscordBot.command.weather.WeatherDataSet;
-import com.dpain.DiscordBot.command.weather.WeatherFinder;
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.plugin.weather.WeatherDataSet;
+import com.dpain.DiscordBot.plugin.weather.WeatherFinder;
 
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
-public class WeatherCommand extends Command {
+public class WeatherPlugin extends Plugin {
 
-	public WeatherCommand() {
-		super("WeatherCommand", Group.USER);
-		super.helpString = "**Weather Command Usage:** \n-weather : Gets the weather at the University of Delaware.\n";
-		EssentialsCommand.appendHelpString(super.helpString);
+	public WeatherPlugin() {
+		super("WeatherPlugin", Group.USER);
+		super.helpString = "**Weather Plugin Usage:** \n-weather : Gets the weather at the University of Delaware.\n";
+		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class WeatherCommand extends Command {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessCommand(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
 					
 					if(message.startsWith("-")) {
 		                
