@@ -4,7 +4,7 @@
 
 	<groupId>com.dpain</groupId>
 	<artifactId>DiscordBot</artifactId>
-	<version>0.0.9</version>
+	<version>0.1.0</version>
 	<packaging>jar</packaging>
 
 	<name>DiscordBot</name>
@@ -25,7 +25,7 @@
 		<dependency>
 		    <groupId>net.dv8tion</groupId>
 		    <artifactId>JDA</artifactId>
-		    <version>2.1.1_300</version>
+		    <version>2.2.1_373</version>
 		</dependency>
 		<dependency>
 			<!-- jsoup HTML parser library @ http://jsoup.org/ -->
