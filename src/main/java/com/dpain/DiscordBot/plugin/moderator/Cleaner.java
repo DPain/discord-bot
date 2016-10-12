@@ -29,7 +29,7 @@ public class Cleaner implements Runnable {
 			for(Message item: messages)	 {
 
 				if(i >= count) {
-					System.out.println(ConsolePrefixGenerator.getFormattedPrintln("PlaylistHandler", "Deleted " + (count - 1) + " messages."));
+					System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Cleaner", "Deleted " + (count - 1) + " messages."));
 					isRunning = false;
 					return;
 				}
@@ -40,7 +40,7 @@ public class Cleaner implements Runnable {
 	        if(messages.isEmpty())
 	            messages = messageHistory.retrieve();
 	        if(messages == null) {
-	        	System.out.println(ConsolePrefixGenerator.getFormattedPrintln("PlaylistHandler", "No more messages left."));
+	        	System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Cleaner", "No more messages left."));
 	        	isRunning = false;
 	        	return;
 	        }

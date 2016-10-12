@@ -14,7 +14,6 @@ import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
 import net.dv8tion.jda.events.user.UserGameUpdateEvent;
-import net.dv8tion.jda.events.user.UserOnlineStatusUpdateEvent;
 import net.dv8tion.jda.hooks.EventListener;
 
 public class UserEventListener implements EventListener {
@@ -52,15 +51,14 @@ public class UserEventListener implements EventListener {
         	System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "User[" + castedEvent.getUser().getUsername() + ", " + castedEvent.getUser().getId() + "] is unbanned."));
         } else if(event instanceof UserGameUpdateEvent) {
         	UserGameUpdateEvent castedEvent = (UserGameUpdateEvent) event;
-			System.out.println("BUMP!");
         	if(castedEvent.getUser().getCurrentGame() != null) {
         		String temp = castedEvent.getUser().getCurrentGame().getUrl();
         		if(temp != null && Game.isValidStreamingUrl(temp)) {
     				if(isTrustedTwitchStreamer(castedEvent.getUser()) && !castedEvent.getUser().getId().equals(event.getJDA().getSelfInfo().getId())) {
     					alerter.notifyTwitchStream(castedEvent.getUser());
+						System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "User[" + castedEvent.getUser().getUsername() + ", " + castedEvent.getUser().getId() + "] is streaming in Twitch."));
     				}
     			}
-    			System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "User[" + castedEvent.getUser().getUsername() + ", " + castedEvent.getUser().getId() + "] is streaming in Twitch."));
         	}
 		}
     }
