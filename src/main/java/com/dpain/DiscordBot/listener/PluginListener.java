@@ -2,7 +2,6 @@ package com.dpain.DiscordBot.listener;
 
 import java.util.LinkedList;
 
-import com.dpain.DiscordBot.enums.Property;
 import com.dpain.DiscordBot.plugin.AnimePlugin;
 import com.dpain.DiscordBot.plugin.AudioPlayerPlugin;
 import com.dpain.DiscordBot.plugin.Plugin;
@@ -11,6 +10,7 @@ import com.dpain.DiscordBot.plugin.EssentialsPlugin;
 import com.dpain.DiscordBot.plugin.ModeratorPlugin;
 import com.dpain.DiscordBot.plugin.OwnerPlugin;
 import com.dpain.DiscordBot.plugin.ProfanityGuardPlugin;
+import com.dpain.DiscordBot.plugin.SchedulerPlugin;
 import com.dpain.DiscordBot.plugin.WeatherPlugin;
 import com.dpain.DiscordBot.plugin.WikipediaPlugin;
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
@@ -35,7 +35,8 @@ public class PluginListener implements EventListener {
 		plugins.add(new EssentialsPlugin());
 		plugins.add(new ModeratorPlugin());
 		plugins.add(new OwnerPlugin());
-		plugins.add(new ProfanityGuardPlugin());
+		//plugins.add(new ProfanityGuardPlugin());
+		plugins.add(new SchedulerPlugin());
 		plugins.add(new WeatherPlugin());
 		plugins.add(new WikipediaPlugin());
 		

@@ -16,7 +16,9 @@ public class AnimePlugin extends Plugin {
 		super("AnimePlugin", Group.TRUSTED_USER);
 		animeTorrentFinder = new AnimeTorrentFinder();
 		
-		super.helpString = "**Anime Plugin Usage:** \n-anime search *\"name\"* : Gets a list of torrrent from Tokyo toshokan.\n-anime today/week : Gets the anime schedule\n";
+		super.helpString = "**Anime Plugin Usage:** \n"
+				+ "-anime search *\"name\"* : Gets a list of torrrent from Tokyo toshokan.\n"
+				+ "-anime today/week : Gets the anime schedule\n";
 		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 

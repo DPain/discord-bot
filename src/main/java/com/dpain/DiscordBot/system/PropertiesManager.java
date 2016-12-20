@@ -58,14 +58,14 @@ public class PropertiesManager {
 		configFile.createNewFile();
 		
 		String line = "#Properties file created at: " + timePoint.toString() + "\n" +
-				Property.USERNAME.getKey() + "=\n" + 
-				Property.ACCEPT_INVITES.getKey() + "=true\n" + 
-				Property.BOT_ID.getKey() + "=\n" + 
-				Property.BOT_TOKEN.getKey() + "=\n" + 
-				Property.APP_ID.getKey() + "=\n" + 
-				Property.OWNER_USER_ID.getKey() + "=\n" + 
-				Property.GUILD_ID.getKey() + "=\n" + 
-				Property.WEATHER_API_KEY.getKey() + "=\n";
+						Property.USERNAME.getKey() + "=\n" + 
+						Property.ACCEPT_INVITES.getKey() + "=true\n" + 
+						Property.BOT_ID.getKey() + "=\n" + 
+						Property.BOT_TOKEN.getKey() + "=\n" + 
+						Property.APP_ID.getKey() + "=\n" + 
+						Property.OWNER_USER_ID.getKey() + "=\n" + 
+						Property.GUILD_ID.getKey() + "=\n" + 
+						Property.WEATHER_API_KEY.getKey() + "=\n";
 		
 		PrintStream printer = new PrintStream(configFile);
 		printer.print(line);
