@@ -95,19 +95,19 @@ public class EssentialsPlugin extends Plugin {
 		                	castedEvent.getChannel().sendMessage(EssentialsPlugin.helpString);
 		                }
 					} else {
-						// Processes the message too see if there are any emotes to display 
+						// Processes the message to see if there are any emotes to display 
 						
 						int kappaNum = getNumberOfUniqueKappa(message);
 						int peteZarollNum = getNumberOfUniquePeteZaroll(message);
 						
 						outerFor:
 						for(String key : emoteMap.keySet()) {
-							if(key.equals("Kappa")) {
+							if(key.equals("Kappa".toLowerCase())) {
 								if(kappaNum < 1) {
 									continue outerFor;
 								}
 							}
-							if(key.equals("PeteZaroll")) {
+							if(key.equals("PeteZaroll".toLowerCase())) {
 								if(peteZarollNum < 1) {
 									continue outerFor;
 								}
@@ -127,9 +127,10 @@ public class EssentialsPlugin extends Plugin {
 	
 	private int getNumberOfUniqueKappa(String str) {
 		int result = 0;
+		str = str.toLowerCase();
 		for(int i = 0; i < str.length(); i++) {
 			String temp = str.substring(i);
-			if((0 == temp.indexOf("Kappa")) && (0 != temp.indexOf("KappaCool")) && (0 != temp.indexOf("KappaClaus")) && (0 != temp.indexOf("KappaHD")) && (0 != temp.indexOf("KappaPride")) && (0 != temp.indexOf("KappaRoss")) && (0 != temp.indexOf("KappaWealth")) && (0 != temp.indexOf("Blackappa"))) {
+			if((0 == temp.indexOf("Kappa".toLowerCase())) && (0 != temp.indexOf("KappaCool".toLowerCase())) && (0 != temp.indexOf("KappaClaus".toLowerCase())) && (0 != temp.indexOf("KappaHD".toLowerCase())) && (0 != temp.indexOf("KappaPride".toLowerCase())) && (0 != temp.indexOf("KappaRoss".toLowerCase())) && (0 != temp.indexOf("KappaWealth".toLowerCase())) && (0 != temp.indexOf("Blackappa".toLowerCase()))) {
 				result++;
 			}
 		}
@@ -138,9 +139,10 @@ public class EssentialsPlugin extends Plugin {
 	
 	private int getNumberOfUniquePeteZaroll(String str) {
 		int result = 0;
+		str = str.toLowerCase();
 		for(int i = 0; i < str.length(); i++) {
 			String temp = str.substring(i);
-			if((0 == temp.indexOf("PeteZaroll")) && (0 != temp.indexOf("PeteZarollTie"))) {
+			if((0 == temp.indexOf("PeteZaroll".toLowerCase())) && (0 != temp.indexOf("PeteZarollTie".toLowerCase()))) {
 				result++;
 			}
 		}
