@@ -30,7 +30,7 @@ public class DiscordBot {
 			pluginListener = new PluginListener(jda);
 			 
 			//Chain listeners if adding more
-			jda = new JDABuilder().setBotToken(PropertiesManager.load().getValue(Property.BOT_TOKEN)).addListener(new InviteListener()).addListener(pluginListener).addListener(new UserEventListener()).buildBlocking();
+			jda = new JDABuilder().setBulkDeleteSplittingEnabled(false).setBotToken(PropertiesManager.load().getValue(Property.BOT_TOKEN)).addListener(new InviteListener()).addListener(pluginListener).addListener(new UserEventListener()).buildBlocking();
 			jda.getAccountManager().setGame("Bot Activated!");
 			
 			UserManager.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));

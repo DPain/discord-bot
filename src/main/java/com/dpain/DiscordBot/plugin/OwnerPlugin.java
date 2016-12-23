@@ -27,7 +27,7 @@ public class OwnerPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
 					
 					if(message.startsWith("-")) {
 		                if (message.startsWith("-username ")) {
@@ -40,6 +40,13 @@ public class OwnerPlugin extends Plugin {
 		                	/**
 		                	 * @TODO Implement user change group feature. Also fix userdata.yml constant read issue.
 		                	 */
+		            	} else if(message.equals("-guild info")) {
+		            		castedEvent.getChannel().sendMessage("**Guild Info:**"
+		            				+ "\nName: " + castedEvent.getGuild().getName()
+		            				+ "\nID: " + castedEvent.getGuild().getId()
+		            				+ "\nOwner Nickname: " + castedEvent.getGuild().getNicknameForUser(castedEvent.getJDA().getUserById(castedEvent.getGuild().getOwnerId()))
+		            				+ "\nOwner ID: " + castedEvent.getJDA().getUserById(castedEvent.getGuild().getOwnerId()).getId());
+		                	
 		                } else if(message.equals("-rebuild")) {
 		                	UserManager.load().rebuild(castedEvent.getGuild());
 		                } else if(message.equals("-update")) {

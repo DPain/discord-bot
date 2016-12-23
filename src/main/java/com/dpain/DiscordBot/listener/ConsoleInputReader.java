@@ -44,9 +44,11 @@ public class ConsoleInputReader implements Runnable {
 								"");
 		} else {
 			MessageImpl messageImpl = new MessageImpl("", (JDAImpl) jda);
+			messageImpl.setAuthor(jda.getUserById(jda.getSelfInfo().getId()));
 			messageImpl.setContent(commandLine);
+			messageImpl.setChannelId(processingGuild.getPublicChannel().getId());
 			
-			GuildMessageReceivedEvent event = new GuildMessageReceivedEvent(jda, jda.getResponseTotal(), (Message) messageImpl, processingGuild.getPublicChannel());
+			GuildMessageReceivedEvent event = new GuildMessageReceivedEvent(jda, jda.getResponseTotal(), messageImpl, processingGuild.getPublicChannel());
 			
 			listener.onEvent(event);
 		}

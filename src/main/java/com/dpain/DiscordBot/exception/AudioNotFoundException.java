@@ -10,12 +10,12 @@ public class AudioNotFoundException extends Exception {
 	private String audioName;
 	
 	public AudioNotFoundException() {
-		super("Could not load the track!");
+		super("Could not load the tracks!");
 		audioName = "";
 	}
 	
 	public AudioNotFoundException(String audioName) {
-		super("Could not load the audio: " + audioName);
+		super("Could not load the track: " + audioName);
 		this.audioName = audioName;
 	}
 

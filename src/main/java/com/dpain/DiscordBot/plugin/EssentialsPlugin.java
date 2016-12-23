@@ -61,7 +61,7 @@ public class EssentialsPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
 					
 					if(message.startsWith("-")) {
 		                
@@ -95,26 +95,28 @@ public class EssentialsPlugin extends Plugin {
 		                	castedEvent.getChannel().sendMessage(EssentialsPlugin.helpString);
 		                }
 					} else {
-						// Processes the message to see if there are any emotes to display 
-						
-						int kappaNum = getNumberOfUniqueKappa(message);
-						int peteZarollNum = getNumberOfUniquePeteZaroll(message);
-						
-						outerFor:
-						for(String key : emoteMap.keySet()) {
-							if(key.equals("Kappa".toLowerCase())) {
-								if(kappaNum < 1) {
-									continue outerFor;
+						if(!castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+							// Processes the message to see if there are any emotes to display 
+							
+							int kappaNum = getNumberOfUniqueKappa(message);
+							int peteZarollNum = getNumberOfUniquePeteZaroll(message);
+							
+							outerFor:
+							for(String key : emoteMap.keySet()) {
+								if(key.equals("Kappa".toLowerCase())) {
+									if(kappaNum < 1) {
+										continue outerFor;
+									}
 								}
-							}
-							if(key.equals("PeteZaroll".toLowerCase())) {
-								if(peteZarollNum < 1) {
-									continue outerFor;
+								if(key.equals("PeteZaroll".toLowerCase())) {
+									if(peteZarollNum < 1) {
+										continue outerFor;
+									}
 								}
-							}
-							if(message.toLowerCase().contains(key)) {
-								System.out.println("Existing Key: " + key);
-								castedEvent.getChannel().sendFile(emoteMap.get(key), null);
+								if(message.toLowerCase().contains(key)) {
+									System.out.println("Existing Key: " + key);
+									castedEvent.getChannel().sendFile(emoteMap.get(key), null);
+								}
 							}
 						}
 					}

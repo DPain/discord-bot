@@ -28,7 +28,7 @@ public class SchedulerPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if(canAccessPlugin(castedEvent.getAuthor()) && !castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
 					
 					if(message.startsWith("-")) {
 		                if(message.startsWith("-remind ")) {
@@ -37,7 +37,7 @@ public class SchedulerPlugin extends Plugin {
 		                		int indexOfFirstSpace = param.indexOf(" ");
 		                		double hours = Double.parseDouble(param.substring(0, indexOfFirstSpace));
 		                		String description = param.substring(indexOfFirstSpace + 1);
-	                			scheduler.addReminder(new Reminder(castedEvent.getChannel(), param.substring(indexOfFirstSpace + 1)), hours);
+	                			scheduler.addReminder(new Reminder(castedEvent.getAuthor().getAsMention(), castedEvent.getChannel(), param.substring(indexOfFirstSpace + 1)), hours);
 	                			
 	                			castedEvent.getChannel().sendMessage("Reminder set " + hours + " hours later for: " + description);
 							} catch(Exception e) {
@@ -49,7 +49,7 @@ public class SchedulerPlugin extends Plugin {
 		                		int indexOfFirstSpace = param.indexOf(" ");
 		                		double hours = Double.parseDouble(param.substring(0, indexOfFirstSpace));
 		                		String description = param.substring(indexOfFirstSpace + 1);
-	                			scheduler.addReminder(new Reminder(castedEvent.getChannel(), param.substring(indexOfFirstSpace + 1)), hours);
+	                			scheduler.addReminder(new Reminder(castedEvent.getAuthor().getAsMention(), castedEvent.getChannel(), param.substring(indexOfFirstSpace + 1)), hours);
 	                			
 	                			castedEvent.getChannel().sendMessage("" + hours + " 시간 뒤 알림이 설정되었습니다: " + description);
 							} catch (Exception e) {

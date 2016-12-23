@@ -2,46 +2,56 @@ package com.dpain.DiscordBot.plugin.audioplayer;
 
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
-
 public class PlaylistRunner implements Runnable {
-	private boolean isRunning = false;
+	private AudioPlayerManager audioPlayerManager;
+	private boolean threadShouldRun;
 	
-	private AudioPlayer audioPlayer;
-	
-	public PlaylistRunner(AudioPlayer audioPlayer) {
-		this.audioPlayer = audioPlayer;
-		
-		isRunning = true;
+	public PlaylistRunner(AudioPlayerManager audioPlayerManager) {
+		this.audioPlayerManager = audioPlayerManager;
+		threadShouldRun = true;
 		
 		System.out.println(ConsolePrefixGenerator.getFormattedPrintln("PlaylistRunner", "PlaylistRunner is initialized!"));
 	}
 	
 	@Override
 	public void run() {
-		while(isRunning) {
-			
-			/**
-	    	 * @TODO Verify that the playlist feature works all the time.
-	    	 */
-			System.out.println(audioPlayer.getCurrentPlayer().isStopped() && !audioPlayer.getCurrentPlayer().isPaused());
-			if(audioPlayer.getCurrentPlayer().isStopped() && !audioPlayer.getCurrentPlayer().isPaused()) {
-				if(!audioPlayer.getPlaylist().isEmpty()) {
-					audioPlayer.getPlaylist().remove();
+		
+		while(threadShouldRun) {
+			if(!audioPlayerManager.getPlaylist().isEmpty() && audioPlayerManager.getPlayer() != null) {
+				/**
+				 * @TODO Fix this issue where a delay must be given
+				 */
+				try {
+					//Thread.sleep(10);
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				if(audioPlayerManager.getPlayer().isStopped() && !audioPlayerManager.getPlayer().isPaused()) {
+					/**
+			    	 * @TODO Verify that the playlist feature works all the time.
+			    	 */
+					audioPlayerManager.getPlaylist().remove();
+					
+					/**
+					//Playlist is empty.
+					if(audioPlayerManager.getPlaylist().isEmpty()) {
+						System.out.println(ConsolePrefixGenerator.getFormattedPrintln("PlaylistRunner", "Removing PlaylistRunner because playlist is empty!"));
+						audioPlayerManager.clearPlaylistThread();
+						return;
+					}
+					*/
 					
 					System.out.println(ConsolePrefixGenerator.getFormattedPrintln("PlaylistRunner", "Moving to the next track!"));
-					audioPlayer.playFirstAudio();
-				} else {
-					isRunning = false;
-					System.out.println(ConsolePrefixGenerator.getFormattedPrintln("PlaylistRunner", "Removing PlaylistRunner because playlist is empty!"));
-					audioPlayer.clearPlaylistThread();
-					return;
+					audioPlayerManager.playFirstTrack();
 				}
 			}
-			
 		}
 	}
-
-	public boolean isRunning() {
-		return isRunning;
+	
+	public void destroy() {
+		threadShouldRun = false;
 	}
+
 }

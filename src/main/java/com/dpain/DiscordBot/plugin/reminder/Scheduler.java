@@ -2,6 +2,7 @@ package com.dpain.DiscordBot.plugin.reminder;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Timer;
 
 import com.dpain.DiscordBot.enums.Timezone;
@@ -60,9 +61,11 @@ public class Scheduler {
 	public static String getTimeFromNow(int seconds, Timezone timezone) {
 		LocalDateTime time = LocalDateTime.now();
 		time = time.plusSeconds(seconds);
-	    ZonedDateTime zdt = ZonedDateTime.of(time, timezone.getZoneId());
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
+		String formattedDateTime = time.format(formatter);
 		
-	    String result = zdt.toString();
+	    String result = formattedDateTime + " " + timezone.getZoneId();
 		return result;
 	}
 }

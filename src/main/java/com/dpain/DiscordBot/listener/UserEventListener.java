@@ -33,7 +33,7 @@ public class UserEventListener implements EventListener {
         	
         	UserManager.load().addNewUser(castedEvent.getUser());
         	
-        	castedEvent.getGuild().getPublicChannel().sendMessage("Hi, " + castedEvent.getUser().getUsername() + "!\nWelcome to the VGTC Discord Server!");
+        	castedEvent.getGuild().getPublicChannel().sendMessage("Hi, " + castedEvent.getUser().getUsername() + "!\nWelcome to the Discord Server!");
         	System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "User[" + castedEvent.getUser().getUsername() + ", " + castedEvent.getUser().getId() + "] joined the guild."));
         } else if(event instanceof GuildMemberBanEvent) {
         	GuildMemberBanEvent castedEvent = (GuildMemberBanEvent) event;

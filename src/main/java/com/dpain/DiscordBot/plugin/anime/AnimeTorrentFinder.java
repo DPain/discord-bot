@@ -19,26 +19,19 @@ public class AnimeTorrentFinder {
 		entryLimit = 10;
 	}
 	
-	//WIP
 	public String getFullSchedule() {
+		//@todo WIP
 		return "";
 	}
 	
 	public String getCurrentSchedule() {
+		//@todo WIP
 		return "";
 	}
 	
-	public String searchTorrentOld(String name) {
-		String result = "http://tokyo-tosho.net/search.php?terms=";
-		try {
-			result += URLEncoder.encode(name, "UTF-8") + "&type=0&size_min=&size_max=&username=";
-		} catch (UnsupportedEncodingException e) {
-			System.out.println(e.getMessage());
-		}
-		return result;
-	}
-	
 	public LinkedList<String> searchTorrent(String name) throws IOException {
+		//@todo tokyo-toshokan is down. Change to nyaa.se
+		
 		LinkedList<String> torrentList = new LinkedList<String>();
 		
 		String parseLink = "http://tokyo-tosho.net/search.php?terms=";
