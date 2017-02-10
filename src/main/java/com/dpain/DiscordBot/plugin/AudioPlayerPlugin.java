@@ -8,14 +8,14 @@ import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.AudioNotFoundException;
 import com.dpain.DiscordBot.exception.ChannelNotFoundException;
 import com.dpain.DiscordBot.exception.NoInstanceException;
-import com.dpain.DiscordBot.plugin.audioplayer.AudioPlayer;
+import com.dpain.DiscordBot.plugin.audioplayer.AudioPlayerManager;
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
 public class AudioPlayerPlugin extends Plugin {
-	private AudioPlayer audioPlayer;
+	private AudioPlayerManager audioPlayer;
 	
 	public AudioPlayerPlugin() {
 		super("AudioPlayerPlugin", Group.TRUSTED_USER);
@@ -51,7 +51,7 @@ public class AudioPlayerPlugin extends Plugin {
 		                    //Separates the name of the channel so that we can search for it
 		                    String chanName = message.substring(6);
 		                    
-		                    audioPlayer = new AudioPlayer(castedEvent.getGuild());
+		                    audioPlayer = AudioPlayerManager.loadAudioPlayerManager(castedEvent.getGuild());
 		                    
 		                    try {
 		                    	audioPlayer.join(chanName);

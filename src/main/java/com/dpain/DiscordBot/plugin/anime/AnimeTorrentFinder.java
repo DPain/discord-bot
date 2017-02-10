@@ -20,17 +20,17 @@ public class AnimeTorrentFinder {
 	}
 	
 	public String getFullSchedule() {
-		//@todo WIP
+		//TODO WIP
 		return "";
 	}
 	
 	public String getCurrentSchedule() {
-		//@todo WIP
+		//TODO WIP
 		return "";
 	}
 	
 	public LinkedList<String> searchTorrent(String name) throws IOException {
-		//@todo tokyo-toshokan is down. Change to nyaa.se
+		//TODO tokyo-toshokan is down. Change to nyaa.se
 		
 		LinkedList<String> torrentList = new LinkedList<String>();
 		
