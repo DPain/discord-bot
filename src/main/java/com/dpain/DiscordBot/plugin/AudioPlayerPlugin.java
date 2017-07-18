@@ -38,7 +38,6 @@ public class AudioPlayerPlugin extends Plugin {
 	public void handleEvent(Event event) {
 		if(event instanceof GuildMessageReceivedEvent) {
 			try {
-				
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        

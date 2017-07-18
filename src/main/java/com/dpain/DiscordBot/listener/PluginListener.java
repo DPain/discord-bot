@@ -2,11 +2,13 @@ package com.dpain.DiscordBot.listener;
 
 import java.util.LinkedList;
 
+import com.dpain.DiscordBot.enums.Property;
 import com.dpain.DiscordBot.plugin.AnimePlugin;
 import com.dpain.DiscordBot.plugin.AudioPlayerPlugin;
 import com.dpain.DiscordBot.plugin.Plugin;
 import com.dpain.DiscordBot.plugin.CustomCommandPlugin;
 import com.dpain.DiscordBot.plugin.EssentialsPlugin;
+import com.dpain.DiscordBot.plugin.GameRolePlugin;
 import com.dpain.DiscordBot.plugin.ModeratorPlugin;
 import com.dpain.DiscordBot.plugin.OwnerPlugin;
 import com.dpain.DiscordBot.plugin.ProfanityGuardPlugin;
@@ -14,6 +16,7 @@ import com.dpain.DiscordBot.plugin.SchedulerPlugin;
 import com.dpain.DiscordBot.plugin.WeatherPlugin;
 import com.dpain.DiscordBot.plugin.WikipediaPlugin;
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
+import com.dpain.DiscordBot.system.PropertiesManager;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.events.Event;
@@ -39,6 +42,9 @@ public class PluginListener implements EventListener {
 		plugins.add(new SchedulerPlugin());
 		plugins.add(new WeatherPlugin());
 		plugins.add(new WikipediaPlugin());
+		if(PropertiesManager.load().getValue(Property.GAME_ROLE_FEATURE).toUpperCase().equals("TRUE")) {
+			plugins.add(new GameRolePlugin());
+		}
 		
 		System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "Listening started!"));
 	}

@@ -65,7 +65,8 @@ public class PropertiesManager {
 						Property.APP_ID.getKey() + "=\n" + 
 						Property.OWNER_USER_ID.getKey() + "=\n" + 
 						Property.GUILD_ID.getKey() + "=\n" + 
-						Property.WEATHER_API_KEY.getKey() + "=\n";
+						Property.WEATHER_API_KEY.getKey() + "=\n" +
+						Property.GAME_ROLE_FEATURE.getKey() + "=true\n";
 		
 		PrintStream printer = new PrintStream(configFile);
 		printer.print(line);

@@ -9,7 +9,8 @@ public enum Property {
 	APP_ID("app-id"),
 	OWNER_USER_ID("owner-user-id"),
 	GUILD_ID("guild-id"),
-	WEATHER_API_KEY("weather-api-key");
+	WEATHER_API_KEY("weather-api-key"),
+	GAME_ROLE_FEATURE("game-role-feature");
 	
 	private String key;
 	Property(String key) {

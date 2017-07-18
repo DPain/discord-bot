@@ -55,7 +55,7 @@ public class UserEventListener implements EventListener {
         		String temp = castedEvent.getUser().getCurrentGame().getUrl();
         		if(temp != null && Game.isValidStreamingUrl(temp)) {
     				if(isTrustedTwitchStreamer(castedEvent.getUser()) && !castedEvent.getUser().getId().equals(event.getJDA().getSelfInfo().getId())) {
-    					alerter.notifyTwitchStream(castedEvent.getUser());
+    					//alerter.notifyTwitchStream(castedEvent.getUser());
 						System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "User[" + castedEvent.getUser().getUsername() + ", " + castedEvent.getUser().getId() + "] is streaming in Twitch."));
     				}
     			}
