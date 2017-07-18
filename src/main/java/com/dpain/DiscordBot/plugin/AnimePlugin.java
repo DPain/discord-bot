@@ -33,12 +33,13 @@ public class AnimePlugin extends Plugin {
 					if(message.startsWith("-")) {
 		                
 		                if(message.equals("-anime")) {
-		                	//Incorrect usage of anime
+		                	//Incorrect usage of anime.
 		                	castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*");
 		                	
 		                } else if(message.startsWith("-anime ")) {
 		                	String param = message.substring(7);
 		                	if(param.toLowerCase().startsWith("search ")) {
+		                		// TODO: Fix feature.
 		                		String searchParam = param.substring(7);
 		                		try {
 		                			LinkedList<String> torrentInfo = animeTorrentFinder.searchTorrent(searchParam);
