@@ -38,7 +38,7 @@ public class GameRolePlugin extends Plugin {
 							LinkedList<String> output = new LinkedList<String>();
 							for (Role role : roles) {
 								// The conditions to be considered a GameRole.
-								if(role.getPermissions().isEmpty() && role.getName().equals(role.getName().toUpperCase())) {
+								if(role.getPermissions().equals(castedEvent.getGuild().getPublicRole().getPermissions()) && role.getName().equals(role.getName().toUpperCase())) {
 									output.add(role.getName());
 								}
 							}
@@ -52,7 +52,7 @@ public class GameRolePlugin extends Plugin {
 									// Checks if Role does not already exist.
 									if (!castedEvent.getGuild().getRolesByName(gameName).isEmpty()) {
 										// GameRoles must not have any permission to prevent exploitations.
-										if (castedEvent.getGuild().getRolesByName(gameName).get(0).getPermissions().isEmpty()) {
+										if (castedEvent.getGuild().getRolesByName(gameName).get(0).getPermissions().equals(castedEvent.getGuild().getPublicRole().getPermissions())) {
 											gameRoleManager = castedEvent.getGuild().getRolesByName(gameName).get(0).getManager();
 											castedEvent.getGuild().getManager().addRoleToUser(castedEvent.getAuthor(), gameRoleManager.getRole());
 

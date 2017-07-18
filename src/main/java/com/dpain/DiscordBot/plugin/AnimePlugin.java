@@ -39,6 +39,7 @@ public class AnimePlugin extends Plugin {
 		                } else if(message.startsWith("-anime ")) {
 		                	String param = message.substring(7);
 		                	if(param.toLowerCase().startsWith("search ")) {
+		                		// TODO: Fix feature.
 		                		String searchParam = param.substring(7);
 		                		try {
 		                			LinkedList<String> torrentInfo = animeTorrentFinder.searchTorrent(searchParam);
