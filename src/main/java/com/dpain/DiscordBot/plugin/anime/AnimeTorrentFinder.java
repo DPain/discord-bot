@@ -34,7 +34,7 @@ public class AnimeTorrentFinder {
 		
 		LinkedList<String> torrentList = new LinkedList<String>();
 		
-		String parseLink = "http://tokyo-tosho.net/search.php?terms=";
+		String parseLink = "https://www.tokyotosho.info/search.php?terms=";
 		try {
 			parseLink += URLEncoder.encode(name, "UTF-8") + "&type=0&size_min=&size_max=&username=";
 		} catch (UnsupportedEncodingException e) {
