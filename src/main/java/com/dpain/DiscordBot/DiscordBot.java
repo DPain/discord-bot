@@ -16,6 +16,7 @@ import com.dpain.DiscordBot.system.UserManager;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDABuilder;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.utils.AvatarUtil;
 import net.dv8tion.jda.utils.AvatarUtil.Avatar;
 
@@ -36,6 +37,11 @@ public class DiscordBot {
 			UserManager.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
 			UserManager.load();
 			UserEventListener.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
+			
+			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("DiscordBot", "Registered Guilds:"));
+			for(Guild guild : jda.getGuilds()) {
+				System.out.println(ConsolePrefixGenerator.getFormattedPrintln("DiscordBot", "Name: " + guild.getName() + " id: " + guild.getId()));
+			}
 			
 			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("DiscordBot", "Running!"));
 			

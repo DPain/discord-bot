@@ -2,9 +2,11 @@ package com.dpain.DiscordBot.plugin.anime;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,9 +31,13 @@ public class AnimeTorrentFinder {
 		return "";
 	}
 	
+	/**
+	 * Search torrent files from tokyo-toshokan.info. Works as of 7/26/2017.
+	 * @param name Search parameter.
+	 * @return LinkedList<String> List of strings which are sent by the bot each time.
+	 * @throws IOException
+	 */
 	public LinkedList<String> searchTorrent(String name) throws IOException {
-		//TODO tokyo-toshokan is down. Change to nyaa.se
-		
 		LinkedList<String> torrentList = new LinkedList<String>();
 		
 		String parseLink = "https://www.tokyotosho.info/search.php?terms=";
@@ -41,7 +47,10 @@ public class AnimeTorrentFinder {
 			System.out.println(e.getMessage());
 		}
 		
-		Document doc = Jsoup.connect(parseLink).get();
+		// Necessary due to tokyo-toshokan's Cloudfare implementation.
+		Connection connection = Jsoup.connect(parseLink).userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
+		
+		Document doc = connection.get();
 		
 		String charLimitBound = "";
 		Elements info = doc.select("td.desc-top");
