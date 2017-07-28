@@ -65,7 +65,7 @@ public class DiscordBot {
 	private void changeAvatar() {
 		Icon icon = null;
 		try {
-			icon = Icon.from(new File("profile.png"));
+			icon = Icon.from(new File("File Path"));
 		} catch (IOException e) {
 			System.out.println("The image file does not exist!");
 		}
