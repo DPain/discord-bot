@@ -4,8 +4,8 @@ import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.plugin.weather.WeatherDataSet;
 import com.dpain.DiscordBot.plugin.weather.WeatherFinder;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class WeatherPlugin extends Plugin {
 
@@ -22,7 +22,7 @@ public class WeatherPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("-")) {
 		                

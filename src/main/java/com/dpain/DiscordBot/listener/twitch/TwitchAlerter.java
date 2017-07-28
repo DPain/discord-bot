@@ -1,7 +1,7 @@
 package com.dpain.DiscordBot.listener.twitch;
 
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 
 public class TwitchAlerter {
 	private Guild guild;
@@ -10,7 +10,7 @@ public class TwitchAlerter {
 		this.guild = guild;
 	}
 	
-	public void notifyTwitchStream(User user) {
-		guild.getPublicChannel().sendMessage(user.getUsername() + " started streaming in Twitch!");
+	public void notifyTwitchStream(Member member) {
+		guild.getPublicChannel().sendMessage(member.getNickname() + " started streaming in Twitch!");
 	}
 }

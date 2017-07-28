@@ -2,10 +2,10 @@ package com.dpain.DiscordBot.plugin;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
-import com.dpain.DiscordBot.system.UserManager;
+import com.dpain.DiscordBot.system.MemberManager;
 
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.Event;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.events.Event;
 
 public abstract class Plugin {
 	private final String name;
@@ -28,7 +28,7 @@ public abstract class Plugin {
 		return name;
 	}
 	
-	protected boolean canAccessPlugin(User user) {
-		return UserManager.load().getUserGroup(user).getHierarchy() <= group.getHierarchy();
+	protected boolean canAccessPlugin(Member member) {
+		return MemberManager.load().getMemberGroup(member).getHierarchy() <= group.getHierarchy();
 	}
 }

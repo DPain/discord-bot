@@ -18,16 +18,16 @@
 	</properties>
 
 	<dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.2</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 		    <groupId>net.dv8tion</groupId>
 		    <artifactId>JDA</artifactId>
 		    <version>3.2.0_238</version>
-		    <exclusions>
-		    	<exclusion>
-		    		<groupId>junit</groupId>
-		    		<artifactId>junit</artifactId>
-		    	</exclusion>
-		    </exclusions>
 		</dependency>
 		<dependency>
 			<!-- jsoup HTML parser library @ http://jsoup.org/ -->
@@ -41,11 +41,18 @@
 		    <artifactId>snakeyaml</artifactId>
 		    <version>1.17</version>
 		</dependency>
+		<dependency>
+		    <groupId>com.sedmelluq</groupId>
+		    <artifactId>lavaplayer</artifactId>
+		    <version>1.2.42</version>
+	  	</dependency>
 	</dependencies>
 	
 	<repositories>
-		<repository> <!-- This repo fixes issues with transitive dependencies -->
+		<!-- This repo fixes issues with transitive dependencies -->
+		<repository>
 			<id>jcenter</id>
+			<name>bintray</name>
 			<url>http://jcenter.bintray.com</url>
 		</repository>
 	</repositories>

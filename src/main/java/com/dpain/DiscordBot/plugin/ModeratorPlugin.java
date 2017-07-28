@@ -5,8 +5,8 @@ import java.util.Random;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.plugin.moderator.Cleaner;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class ModeratorPlugin extends Plugin {
 
@@ -27,17 +27,14 @@ public class ModeratorPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("-")) {
 		                if (message.startsWith("-nick ")) {
 		            		String param = message.substring(6);
 		            		
-		            		castedEvent.getGuild().getManager().setNickname(castedEvent.getJDA().getSelfInfo(), param);
-		            		castedEvent.getJDA().getAccountManager().update();
-		            		
+		            		castedEvent.getGuild().getController().setNickname(castedEvent.getMember(), param).complete();
 		            		castedEvent.getChannel().sendMessage("**Nickname changed to:** " + param);
-		            		
 		            	} else if (message.equals("-randomnick")) {
 		            		String[] names = {"Malfurion",
 		            				"Rexxar",
@@ -55,15 +52,12 @@ public class ModeratorPlugin extends Plugin {
 		            		String tempName;
 		            		while(true) {
 		            			tempName = names[ran.nextInt(names.length)] + " Bot";
-		            			if(castedEvent.getGuild().getNicknameForUser(castedEvent.getJDA().getSelfInfo()) == null || !castedEvent.getGuild().getNicknameForUser(castedEvent.getJDA().getSelfInfo()).equals(tempName)) {
+		            			if(castedEvent.getGuild().getSelfMember().getNickname() == null || !castedEvent.getGuild().getSelfMember().getNickname().equals(tempName)) {
 		            				break;
 		            			}
-
 		            		}
 		            		
-		            		castedEvent.getGuild().getManager().setNickname(castedEvent.getJDA().getSelfInfo(), tempName);
-		            		castedEvent.getJDA().getAccountManager().update();
-
+		            		castedEvent.getGuild().getController().setNickname(castedEvent.getGuild().getSelfMember(), tempName).complete();
 		            		castedEvent.getChannel().sendMessage("**Nickname changed to:** " + tempName);
 		            		
 		            	} else if (message.startsWith("-clear ")) {

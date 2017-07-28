@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
-import net.dv8tion.jda.MessageHistory;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageHistory;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 public class Cleaner implements Runnable {
 	private static boolean isRunning = false;
@@ -23,7 +23,7 @@ public class Cleaner implements Runnable {
 	public void run() {
 		isRunning = true;
 		
-		List<Message> messages = messageHistory.retrieve();
+		List<Message> messages = messageHistory.getRetrievedHistory();
 		int i = 0;
 		while(messages != null && i < count) {
 			for(Message item: messages)	 {
@@ -34,11 +34,11 @@ public class Cleaner implements Runnable {
 					return;
 				}
 				
-				item.deleteMessage();
+				item.delete();
 				i++;
 	        }
 	        if(messages.isEmpty())
-	            messages = messageHistory.retrieve();
+	            messages = messageHistory.getRetrievedHistory();
 	        if(messages == null) {
 	        	System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Cleaner", "No more messages left."));
 	        	isRunning = false;

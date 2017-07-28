@@ -4,7 +4,7 @@ import java.util.TimerTask;
 
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 public class Reminder extends TimerTask {
 	private String who;

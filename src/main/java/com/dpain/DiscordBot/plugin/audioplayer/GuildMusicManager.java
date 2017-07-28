@@ -15,17 +15,43 @@ import com.dpain.DiscordBot.exception.ChannelNotFoundException;
 import com.dpain.DiscordBot.exception.NoInstanceException;
 import com.dpain.DiscordBot.exception.PlaylistNotFoundException;
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 
-import net.dv8tion.jda.audio.player.FilePlayer;
-import net.dv8tion.jda.audio.player.Player;
-import net.dv8tion.jda.audio.player.URLPlayer;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 
-public class AudioPlayerManager {
+public class GuildMusicManager  {
+	/**
+	 * Audio player for the guild.
+	 */
+	public final AudioPlayer player;
+	
+	/**
+	 * Track scheduler for the player.
+	 */
+	public final TrackScheduler scheduler;
+	
+	/**
+	 * Creates a player and a track scheduler.
+	 * @param manager Audio player manager to use for creating the player.
+	 */
+	public GuildMusicManager(AudioPlayerManager manager) {
+		player = manager.createPlayer();
+		scheduler = new TrackScheduler(player);
+		player.addListener(scheduler);
+	}
+	
+	/**
+	 * @return Wrapper around AudioPlayer to use it as an AudioSendHandler.
+	 */
+	public AudioPlayerSendHandler getSendHandler() {
+		return new AudioPlayerSendHandler(player);
+	}
+	
+	/**
 	private static AudioPlayerManager ref;
 	
-	private Player player;
 	private Queue<Track> playlist = null;
 	private float volume;
 	private Guild guild;
@@ -55,6 +81,8 @@ public class AudioPlayerManager {
         	guild.getAudioManager().openAudioConnection(channel);
         }
 	}
+	
+	
 	
 	public void leave() {
 		guild.getAudioManager().closeAudioConnection();
@@ -270,4 +298,5 @@ public class AudioPlayerManager {
 	public Track getCurrentTrack() {
 		return playlist.peek();
 	}
+	*/
 }
