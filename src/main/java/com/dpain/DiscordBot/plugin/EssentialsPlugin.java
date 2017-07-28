@@ -6,8 +6,8 @@ import java.util.HashMap;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.plugin.mcsplash.MinecraftSplashReader;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class EssentialsPlugin extends Plugin {
 	private HashMap<String, File> emoteMap;
@@ -61,7 +61,7 @@ public class EssentialsPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("-")) {
 		                
@@ -95,7 +95,7 @@ public class EssentialsPlugin extends Plugin {
 		                	castedEvent.getChannel().sendMessage(EssentialsPlugin.helpString);
 		                }
 					} else {
-						if(!castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) {
+						if(!castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
 							// Processes the message to see if there are any emotes to display 
 							
 							int kappaNum = getNumberOfUniqueKappa(message);

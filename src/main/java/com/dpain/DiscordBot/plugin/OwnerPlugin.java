@@ -1,10 +1,10 @@
 package com.dpain.DiscordBot.plugin;
 
 import com.dpain.DiscordBot.enums.Group;
-import com.dpain.DiscordBot.system.UserManager;
+import com.dpain.DiscordBot.system.MemberManager;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class OwnerPlugin extends Plugin {
 
@@ -27,15 +27,13 @@ public class OwnerPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("-")) {
 		                if (message.startsWith("-username ")) {
 		            		String param = message.substring(10);
-		            		castedEvent.getJDA().getAccountManager().setUsername(param);
-		            		castedEvent.getJDA().getAccountManager().update();
+		            		castedEvent.getJDA().getSelfUser().getManager().setName(param);
 		            		castedEvent.getChannel().sendMessage("**Nickname changed to:** " + param);
-		            		
 		            	} else if(message.startsWith("-group ")) {
 		                	/**
 		                	 * @TODO Implement user change group feature. Also fix userdata.yml constant read issue.
@@ -44,17 +42,17 @@ public class OwnerPlugin extends Plugin {
 		            		castedEvent.getChannel().sendMessage("**Guild Info:**"
 		            				+ "\nName: " + castedEvent.getGuild().getName()
 		            				+ "\nID: " + castedEvent.getGuild().getId()
-		            				+ "\nOwner Nickname: " + castedEvent.getGuild().getNicknameForUser(castedEvent.getJDA().getUserById(castedEvent.getGuild().getOwnerId()))
-		            				+ "\nOwner ID: " + castedEvent.getJDA().getUserById(castedEvent.getGuild().getOwnerId()).getId());
+		            				+ "\nOwner Nickname: " + castedEvent.getGuild().getOwner().getNickname()
+		            				+ "\nOwner ID: " + castedEvent.getGuild().getOwner().getUser().getId());
 		                	
 		                } else if(message.equals("-rebuild")) {
-		                	UserManager.load().rebuild(castedEvent.getGuild());
+		                	MemberManager.load().rebuild(castedEvent.getGuild());
 		                } else if(message.equals("-update")) {
-		                	UserManager.load().update(castedEvent.getGuild());
+		                	MemberManager.load().update(castedEvent.getGuild());
 		                } else if(message.equals("-reload")) {
-		                	UserManager.load().reload();
+		                	MemberManager.load().reload();
 		                } else if(message.equals("-exit")) {
-		                	UserManager.load().saveConfig();
+		                	MemberManager.load().saveConfig();
 		                	castedEvent.getJDA().shutdown();
 		                	System.exit(0);
 		                }

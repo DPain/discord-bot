@@ -5,8 +5,8 @@ import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.plugin.reminder.Reminder;
 import com.dpain.DiscordBot.plugin.reminder.Scheduler;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class SchedulerPlugin extends Plugin {
 	private Scheduler scheduler;
@@ -28,7 +28,7 @@ public class SchedulerPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("-")) {
 		                if(message.startsWith("-remind ")) {

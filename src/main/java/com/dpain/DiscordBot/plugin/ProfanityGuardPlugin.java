@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class ProfanityGuardPlugin extends Plugin {
 	private boolean activated = false;
@@ -35,7 +35,7 @@ public class ProfanityGuardPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("-")) {
 		                
@@ -52,8 +52,7 @@ public class ProfanityGuardPlugin extends Plugin {
 		                		activated = false;
 		                		castedEvent.getChannel().sendMessage("*Profanity Guard is DISABLED!*");
 		                	} else if(param.equals("offenders")) {
-		                		
-		                		castedEvent.getAuthor().getPrivateChannel().sendMessage("WIP");
+		                		castedEvent.getAuthor().openPrivateChannel().complete().sendMessage("WIP");
 		                	} else {
 		                		//Incorrect usage of profguard
 			                	castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*");

@@ -4,24 +4,19 @@ import java.util.Scanner;
 
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.MessageImpl;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Guild;
 
 public class ConsoleInputReader implements Runnable {
 	private String name;
 	private JDA jda;
-	private PluginListener listener;
 	private Guild processingGuild;
 	private Scanner in;
 	
 	public ConsoleInputReader(JDA jda, PluginListener listener, Guild guild) {
 		this.name = "ConsoleInputReader";
 		this.jda = jda;
-		this.listener = listener;
 		
 		processingGuild = guild;
 		in = new Scanner(System.in);
@@ -40,17 +35,11 @@ public class ConsoleInputReader implements Runnable {
 		} else if(commandLine.equals("-help")) {
 			System.out.println("Commands:\n" + 
 								"-exit = Terminates the bot\n" + 
-								"-changeguild [guild id] = Changes the guild the bot will forward the commands\n" + 
-								"");
+								"-changeguild [guild id] = Changes the guild the bot will forward the commands\n");
 		} else {
-			MessageImpl messageImpl = new MessageImpl("", (JDAImpl) jda);
-			messageImpl.setAuthor(jda.getUserById(jda.getSelfInfo().getId()));
-			messageImpl.setContent(commandLine);
-			messageImpl.setChannelId(processingGuild.getPublicChannel().getId());
-			
-			GuildMessageReceivedEvent event = new GuildMessageReceivedEvent(jda, jda.getResponseTotal(), messageImpl, processingGuild.getPublicChannel());
-			
-			listener.onEvent(event);
+			MessageBuilder messageBuilder = new MessageBuilder();
+			messageBuilder.append(commandLine);
+			processingGuild.getPublicChannel().sendMessage(messageBuilder.build());
 		}
 		return true;
 	}

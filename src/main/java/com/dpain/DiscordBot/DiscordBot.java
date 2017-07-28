@@ -1,24 +1,26 @@
 package com.dpain.DiscordBot;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import javax.security.auth.login.LoginException;
 
 import com.dpain.DiscordBot.enums.Property;
-import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.listener.ConsoleInputReader;
-import com.dpain.DiscordBot.listener.InviteListener;
+import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 import com.dpain.DiscordBot.system.PropertiesManager;
-import com.dpain.DiscordBot.system.UserManager;
+import com.dpain.DiscordBot.system.MemberManager;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.JDABuilder;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.utils.AvatarUtil;
-import net.dv8tion.jda.utils.AvatarUtil.Avatar;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Icon;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class DiscordBot {
 	private JDA jda;
@@ -31,11 +33,11 @@ public class DiscordBot {
 			pluginListener = new PluginListener(jda);
 			 
 			//Chain listeners if adding more
-			jda = new JDABuilder().setBulkDeleteSplittingEnabled(false).setBotToken(PropertiesManager.load().getValue(Property.BOT_TOKEN)).addListener(new InviteListener()).addListener(pluginListener).addListener(new UserEventListener()).buildBlocking();
-			jda.getAccountManager().setGame("Bot Activated!");
+			jda = new JDABuilder(AccountType.BOT).setBulkDeleteSplittingEnabled(false).setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN)).addEventListener(pluginListener).addEventListener(new UserEventListener()).buildBlocking();
+			jda.getPresence().setGame(Game.of("Bot Activated!"));
 			
-			UserManager.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
-			UserManager.load();
+			MemberManager.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
+			MemberManager.load();
 			UserEventListener.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
 			
 			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("DiscordBot", "Registered Guilds:"));
@@ -52,6 +54,8 @@ public class DiscordBot {
 			System.out.println("The config was not populated. Please enter an email and password.");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} catch (RateLimitedException e) {
+			System.out.println("There were too many requests. Please try again later.");
 		}
 	}
 	
@@ -60,14 +64,12 @@ public class DiscordBot {
 	}
 	
 	private void changeAvatar() {
-		Avatar avatar;
+		Icon icon = null;
 		try {
-			avatar = AvatarUtil.getAvatar(new File("File Path"));
-			jda.getAccountManager().setAvatar(avatar);
-			jda.getAccountManager().update();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			icon = Icon.from(new File("File Path"));
+		} catch (IOException e) {
+			System.out.println("The image file does not exist!");
 		}
+		jda.getSelfUser().getManager().setAvatar(icon).complete();
 	}
 }
