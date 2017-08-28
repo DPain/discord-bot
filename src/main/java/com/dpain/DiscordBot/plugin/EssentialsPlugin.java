@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.plugin.mcsplash.MinecraftSplashReader;
+import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -64,10 +65,16 @@ public class EssentialsPlugin extends Plugin {
 				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("-")) {
-		                
 		                if(message.equals("-splash")) {
+		                	System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
+                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nTriggered the easter egg.",
+                							castedEvent.getMember().getEffectiveName(),
+                							castedEvent.getAuthor().getName(),
+                							castedEvent.getChannel().getName(),
+                							castedEvent.getChannel().getGuild().getName())));
+		                	
 		        			//Easter Egg
-		        			castedEvent.getChannel().sendMessage(mcSplash.getRandomSplash());
+		        			castedEvent.getChannel().sendMessage(mcSplash.getRandomSplash()).queue();
 		        			
 		                } else if(message.equals("-emotes")) {
 		                	/**
@@ -89,10 +96,10 @@ public class EssentialsPlugin extends Plugin {
 			                		}
 			                	}
 		                	} else {
-		                		castedEvent.getChannel().sendMessage("**Twitch Emotes:** \n*" + twitchEmoteList + "*");
+		                		castedEvent.getChannel().sendMessage("**Twitch Emotes:** \n*" + twitchEmoteList + "*").queue();
 		                	}
 		                } else if(message.equals("-help")) {
-		                	castedEvent.getChannel().sendMessage(EssentialsPlugin.helpString);
+		                	castedEvent.getChannel().sendMessage(EssentialsPlugin.helpString).queue();
 		                }
 					} else {
 						if(!castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
@@ -114,8 +121,14 @@ public class EssentialsPlugin extends Plugin {
 									}
 								}
 								if(message.toLowerCase().contains(key)) {
-									System.out.println("Existing Key: " + key);
-									castedEvent.getChannel().sendFile(emoteMap.get(key), null).complete();
+									System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
+		                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nTriggered emote: %s",
+		                							castedEvent.getMember().getEffectiveName(),
+		                							castedEvent.getAuthor().getName(),
+		                							castedEvent.getChannel().getName(),
+		                							castedEvent.getChannel().getGuild().getName(),
+		                							key)));
+									castedEvent.getChannel().sendFile(emoteMap.get(key), null).queue();
 								}
 							}
 						}

@@ -5,9 +5,10 @@ import java.util.TimerTask;
 import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 
 public class Reminder extends TimerTask {
-	private String who;
+	private User who;
 	private TextChannel channel;
 	private String description;
 	
@@ -16,7 +17,7 @@ public class Reminder extends TimerTask {
 	 * @param channel
 	 * @param description
 	 */
-	public Reminder(String who, TextChannel channel, String description) {
+	public Reminder(User who, TextChannel channel, String description) {
 		this.who = who;
 		this.channel = channel;
 		this.description = description;
@@ -24,9 +25,15 @@ public class Reminder extends TimerTask {
 	
 	@Override
 	public void run() {
-		channel.sendMessage(who + " Reminder: " + description);
-		System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Reminder", "Reminded " + who + " at channel: " + channel.getName()
-		+ "\nDescription: " + description));
+		channel.sendMessage(String.format("%s Reminder: %s",
+				channel.getGuild().getMember(who).getEffectiveName(),
+				description)).queue();
+		System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Reminder",
+				String.format("Reminded member: %s (username: %s) at channel: %s in guild: %s\nDescription: %s",
+						channel.getGuild().getMember(who).getEffectiveName(),
+						who.getName(),
+						channel.getName(),
+						channel.getGuild().getName(),
+						description)));
 	}
-	
 }

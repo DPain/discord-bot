@@ -31,31 +31,29 @@ public class AnimePlugin extends Plugin {
 				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("-")) {
-		                
 		                if(message.equals("-anime")) {
-		                	//Incorrect usage of anime.
-		                	castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*");
+		                	//Incorrect usage of anime plugin.
+		                	castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*").queue();
 		                	
 		                } else if(message.startsWith("-anime ")) {
 		                	String param = message.substring(7);
 		                	if(param.toLowerCase().startsWith("search ")) {
-		                		// TODO: Fix feature.
 		                		String searchParam = param.substring(7);
 		                		try {
 		                			LinkedList<String> torrentInfo = animeTorrentFinder.searchTorrent(searchParam);
 		                			for(String msg : torrentInfo) {
-		                				castedEvent.getChannel().sendMessage(msg);
+		                				castedEvent.getChannel().sendMessage(msg).queue();
 		                			}
 								} catch (IOException e) {
-									castedEvent.getChannel().sendMessage("There were no torrent results for: " + searchParam);
+									castedEvent.getChannel().sendMessage("There were no torrent results for: " + searchParam).queue();
 								}
 		                	} else if(param.equals("today")) {
 		                		animeTorrentFinder.getCurrentSchedule();
-		                		castedEvent.getChannel().sendMessage("WIP");
+		                		castedEvent.getChannel().sendMessage("WIP").queue();
 		                		
 		                	} else if(param.equals("week")) {
 		                		animeTorrentFinder.getFullSchedule();
-		                		castedEvent.getChannel().sendMessage("WIP");
+		                		castedEvent.getChannel().sendMessage("WIP").queue();
 		                		
 		                	}	        			
 		                }
