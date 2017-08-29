@@ -1,27 +1,30 @@
 package com.dpain.DiscordBot.listener;
 
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
+import com.dpain.DiscordBot.Main;
+import com.dpain.DiscordBot.helper.LogHelper;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 
 public class ConsoleInputReader implements Runnable {
-	private String name;
+	private final static Logger logger = Logger.getLogger(ConsoleInputReader.class.getName());
+	
 	private JDA jda;
 	private Guild processingGuild;
 	private Scanner in;
 	
 	public ConsoleInputReader(JDA jda, PluginListener listener, Guild guild) {
-		this.name = "ConsoleInputReader";
 		this.jda = jda;
 		
 		processingGuild = guild;
 		in = new Scanner(System.in);
 		
-		System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "Starts reading input from console!"));
+		logger.log(Level.INFO, "Starts reading input from console!");
 	}
 	
 	private boolean processConsoleCommand(String commandLine) {
@@ -52,7 +55,7 @@ public class ConsoleInputReader implements Runnable {
 		//Might have to fix
 		outerWhile:
 		while(true) {
-			System.out.println("Discord Bot Plugin: ");
+			logger.log(Level.INFO, "Discord Bot Plugin: ");
 			String commandLine = in.nextLine();
 			if(!processConsoleCommand(commandLine)) {
 				break outerWhile;

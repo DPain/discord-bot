@@ -10,7 +10,8 @@ public enum Property {
 	GUILD_ID("guild-id"),
 	WEATHER_API_KEY("weather-api-key"),
 	GAME_ROLE_FEATURE("game-role-feature"),
-	USE_TWITCH_ALERTER("use-twitch-alerter");
+	USE_TWITCH_ALERTER("use-twitch-alerter"),
+	GREET_GUILD_MEMBER("greet-guild-member");
 	
 	private String key;
 	Property(String key) {

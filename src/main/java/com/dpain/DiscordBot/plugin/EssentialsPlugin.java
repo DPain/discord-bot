@@ -2,15 +2,20 @@
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.plugin.mcsplash.MinecraftSplashReader;
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class EssentialsPlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(EssentialsPlugin.class.getName());
+
 	private HashMap<String, File> emoteMap;
 	private MinecraftSplashReader mcSplash;
 	private String twitchEmoteList;
@@ -63,19 +68,11 @@ public class EssentialsPlugin extends Plugin {
 				String message = castedEvent.getMessage().getContent();
 		        
 				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
-					
 					if(message.startsWith("-")) {
 		                if(message.equals("-splash")) {
-		                	System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nTriggered the easter egg.",
-                							castedEvent.getMember().getEffectiveName(),
-                							castedEvent.getAuthor().getName(),
-                							castedEvent.getChannel().getName(),
-                							castedEvent.getChannel().getGuild().getName())));
-		                	
 		        			//Easter Egg
 		        			castedEvent.getChannel().sendMessage(mcSplash.getRandomSplash()).queue();
-		        			
+		        			logger.log(Level.INFO, LogHelper.elog(castedEvent, "User triggered the easter egg."));
 		                } else if(message.equals("-emotes")) {
 		                	/**
 		                	 * @TODO Refine message format to not have commands to be splitted
@@ -95,11 +92,14 @@ public class EssentialsPlugin extends Plugin {
 			                			castedEvent.getChannel().sendMessage("*" + temp + "*\n (" + (i + 1) + "/" + (numRecurssion + 1) + ")");
 			                		}
 			                	}
+		                		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                	} else {
 		                		castedEvent.getChannel().sendMessage("**Twitch Emotes:** \n*" + twitchEmoteList + "*").queue();
+		                		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                	}
 		                } else if(message.equals("-help")) {
 		                	castedEvent.getChannel().sendMessage(EssentialsPlugin.helpString).queue();
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                }
 					} else {
 						if(!castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
@@ -121,14 +121,8 @@ public class EssentialsPlugin extends Plugin {
 									}
 								}
 								if(message.toLowerCase().contains(key)) {
-									System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-		                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nTriggered emote: %s",
-		                							castedEvent.getMember().getEffectiveName(),
-		                							castedEvent.getAuthor().getName(),
-		                							castedEvent.getChannel().getName(),
-		                							castedEvent.getChannel().getGuild().getName(),
-		                							key)));
 									castedEvent.getChannel().sendFile(emoteMap.get(key), null).queue();
+									logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Triggered emote: %s", key)));
 								}
 							}
 						}

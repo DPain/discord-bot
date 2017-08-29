@@ -14,7 +14,7 @@ import com.dpain.DiscordBot.exception.AudioNotFoundException;
 import com.dpain.DiscordBot.exception.ChannelNotFoundException;
 import com.dpain.DiscordBot.exception.NoInstanceException;
 import com.dpain.DiscordBot.exception.PlaylistNotFoundException;
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
+import com.dpain.DiscordBot.helper.LogHelper;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 

@@ -3,14 +3,16 @@ package com.dpain.DiscordBot;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginException;
 
 import com.dpain.DiscordBot.enums.Property;
+import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.listener.ConsoleInputReader;
 import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.listener.UserEventListener;
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 import com.dpain.DiscordBot.system.PropertiesManager;
 import com.dpain.DiscordBot.system.MemberManager;
 
@@ -23,6 +25,7 @@ import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class DiscordBot {
+	private final static Logger logger = Logger.getLogger(DiscordBot.class.getName());
 	private JDA jda;
 	
 	PluginListener pluginListener;
@@ -40,14 +43,12 @@ public class DiscordBot {
 			MemberManager.load();
 			UserEventListener.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
 			
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("DiscordBot", "Registered Guilds:"));
+			logger.log(Level.INFO, "Registered Guilds:");
 			for(Guild guild : jda.getGuilds()) {
-				System.out.println(ConsolePrefixGenerator.getFormattedPrintln("DiscordBot", "Name: " + guild.getName() + " id: " + guild.getId()));
+				logger.log(Level.INFO,
+						String.format("Name: %s id: %s: ", guild.getName(), guild.getId()));
 			}
-			
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("DiscordBot", "Running!"));
-			
-			
+			logger.log(Level.INFO, "Running!");
 		} catch (LoginException e) {
 			System.out.println("The provided Login information is incorrect. Please provide valid details.");
 		} catch (InterruptedException e) {
@@ -67,7 +68,7 @@ public class DiscordBot {
 		try {
 			icon = Icon.from(new File("File Path"));
 		} catch (IOException e) {
-			System.out.println("The image file does not exist!");
+			logger.log(Level.SEVERE, "The image file does not exist!");
 		}
 		jda.getSelfUser().getManager().setAvatar(icon).complete();
 	}

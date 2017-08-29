@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
@@ -15,12 +17,16 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Property;
+import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Member;
 
 public class MemberManager {
+	private final static Logger logger = Logger.getLogger(MemberManager.class.getName());
+	
 	private static MemberManager ref;
 	private static Guild guild;
 	private Map<String, Entry> memberMap = new HashMap<String, Entry>();
@@ -32,7 +38,7 @@ public class MemberManager {
 		try {
 			readMembersFile();
 		} catch (IOException e) {
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "Did not have permission to create the " + USERS_FILENAME + " file!"));
+			logger.log(Level.SEVERE, "Did not have permission to create the " + USERS_FILENAME + " file!");
 		}
 	}
 	
@@ -62,7 +68,7 @@ public class MemberManager {
 			info.group.add(group);
 			saveConfig();
 		} else {
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "There is no such member with the member id: " + member.getUser().getId()));
+			logger.log(Level.SEVERE, "There is no such member with the member id: " + member.getUser().getId());
 		}
 	}
 	
@@ -74,7 +80,7 @@ public class MemberManager {
 			memberMap.put(member.getUser().getId(), info);
 			saveConfig();
 		} else {
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "There is already a member with the member id: " + member.getUser().getId()));
+			logger.log(Level.SEVERE, "There is already a member with the member id: " + member.getUser().getId());
 		}
 	}
 	
@@ -86,7 +92,7 @@ public class MemberManager {
 			memberMap.put(member.getUser().getId(), info);
 			saveConfig();
 		} else {
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "There is already a member with the member id: " + member.getUser().getId()));
+			logger.log(Level.SEVERE, "There is already a member with the member id: " + member.getUser().getId());
 		}
 	}
 	
@@ -95,7 +101,7 @@ public class MemberManager {
 			memberMap.remove(member.getUser().getId());
 			saveConfig();
 		} else {
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "There was no member with the member id: " + member.getUser().getId()));
+			logger.log(Level.SEVERE, "There was no member with the member id: " + member.getUser().getId());
 		}
 	}
 	
@@ -110,7 +116,7 @@ public class MemberManager {
 			memberMap = container.members;
 		} catch (FileNotFoundException | NullPointerException e) {
 			saveConfig();
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "Generated a new memberdata file!"));
+			logger.log(Level.INFO, "Generated a new memberdata file!");
 			rebuild(guild);
 		}
 		
@@ -129,7 +135,7 @@ public class MemberManager {
 			yaml.dump(container, new FileWriter(USERS_FILENAME));
 			
 		} catch (IOException e) {
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "Failed to read the config file!"));
+			logger.log(Level.SEVERE, "Failed to read the config file!");
 		}
 	}
 	
@@ -145,7 +151,7 @@ public class MemberManager {
 				addNewMember(member);
 			}
 		}
-		System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "Rebuit " + USERS_FILENAME + " file!"));
+		logger.log(Level.INFO, "Rebuit " + USERS_FILENAME + " file!");
 		saveConfig();
 	}
 	
@@ -161,7 +167,7 @@ public class MemberManager {
 				memberMap.get(member.getUser().getId()).membername = member.getUser().getName();
 			}
 		}
-		System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "Updated " + USERS_FILENAME + " file!"));
+		logger.log(Level.INFO, "Updated " + USERS_FILENAME + " file!");
 		saveConfig();
 	}
 	
@@ -169,7 +175,7 @@ public class MemberManager {
 		try {
 			readMembersFile();
 		} catch (IOException e) {
-			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("MemberManager", "Did not have permission to create the " + USERS_FILENAME + " file!"));
+			logger.log(Level.SEVERE, "Did not have permission to create the " + USERS_FILENAME + " file!");
 		}
 	}
 }

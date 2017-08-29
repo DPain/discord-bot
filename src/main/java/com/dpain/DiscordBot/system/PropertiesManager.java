@@ -66,7 +66,8 @@ public class PropertiesManager {
 						Property.GUILD_ID.getKey() + "=\n" +
 						Property.WEATHER_API_KEY.getKey() + "=\n" +
 						Property.GAME_ROLE_FEATURE.getKey() + "=true\n" +
-						Property.USE_TWITCH_ALERTER.getKey() + "=false\n";
+						Property.USE_TWITCH_ALERTER.getKey() + "=false\n" + 
+						Property.GREET_GUILD_MEMBER.getKey() + "=false\n";
 		
 		PrintStream printer = new PrintStream(configFile);
 		printer.print(line);

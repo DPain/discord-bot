@@ -1,14 +1,19 @@
 package com.dpain.DiscordBot.plugin.moderator;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
+import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
 import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 public class Cleaner implements Runnable {
+	private final static Logger logger = Logger.getLogger(Cleaner.class.getName());
+	
 	private static boolean isRunning = false;
 	
 	private MessageHistory messageHistory;
@@ -29,7 +34,7 @@ public class Cleaner implements Runnable {
 			for(Message item: messages)	 {
 
 				if(i >= count) {
-					System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Cleaner", "Deleted " + (count - 1) + " messages."));
+					logger.log(Level.INFO, String.format("Deleted %d messages.", count - 1));
 					isRunning = false;
 					return;
 				}
@@ -40,11 +45,10 @@ public class Cleaner implements Runnable {
 	        if(messages.isEmpty())
 	            messages = messageHistory.getRetrievedHistory();
 	        if(messages == null) {
-	        	System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Cleaner", "No more messages left."));
+	        	logger.log(Level.INFO, "No more messages left.");
 	        	isRunning = false;
 	        	return;
 	        }
-	        
 		}
 	}
 	

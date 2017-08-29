@@ -2,15 +2,18 @@ package com.dpain.DiscordBot.plugin;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.wiki.WikiFinder;
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class WikipediaPlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(WikipediaPlugin.class.getName());
 	
 	public WikipediaPlugin() {
 		super("WikipediaPlugin", Group.USER);
@@ -39,13 +42,7 @@ public class WikipediaPlugin extends Plugin {
 							} catch (IOException e) {
 								castedEvent.getChannel().sendMessage("There were no Wiki results for: " + searchParam).queue();
 							}
-		    				System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-                					String.format("Searching from Wikipedia! member: %s (username: %s) at channel: %s in guild: %s\nSearch Parameter: %s",
-                							castedEvent.getMember().getEffectiveName(),
-                							castedEvent.getAuthor().getName(),
-                							castedEvent.getChannel().getName(),
-                							castedEvent.getChannel().getGuild().getName(),
-                							searchParam)));
+		    				logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		            	}
 					}
 				}

@@ -1,11 +1,15 @@
 package com.dpain.DiscordBot.plugin;
 
+import java.util.logging.Logger;
+
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.listener.UserEventListener;
 
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CustomCommandPlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(CustomCommandPlugin.class.getName());
 
 	public CustomCommandPlugin() {
 		super("CustomCommandPlugin", Group.TRUSTED_USER);

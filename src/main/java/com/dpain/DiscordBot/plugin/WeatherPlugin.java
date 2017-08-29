@@ -1,6 +1,10 @@
 package com.dpain.DiscordBot.plugin;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.weather.WeatherDataSet;
 import com.dpain.DiscordBot.plugin.weather.WeatherFinder;
 
@@ -8,6 +12,7 @@ import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class WeatherPlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(WeatherPlugin.class.getName());
 
 	public WeatherPlugin() {
 		super("WeatherPlugin", Group.USER);
@@ -23,9 +28,7 @@ public class WeatherPlugin extends Plugin {
 				String message = castedEvent.getMessage().getContent();
 		        
 				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
-					
 					if(message.startsWith("-")) {
-		                
 		                if(message.equals("-weather")) {
 		                	//Gets the weather data of Newark, DE
 		                	
@@ -53,8 +56,8 @@ public class WeatherPlugin extends Plugin {
 		                		
 		                		msg += weatherDataSet.getDataSet().get(i).getCommonDataToString();
 		                	}
-		                	
-		                	castedEvent.getChannel().sendMessage(msg);
+		                	castedEvent.getChannel().sendMessage(msg).queue();
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                }
 					}
 				}

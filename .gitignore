@@ -8,3 +8,6 @@
 .project
 users.yml
 bot.properties
+*.log
+*.jar
+*.lck

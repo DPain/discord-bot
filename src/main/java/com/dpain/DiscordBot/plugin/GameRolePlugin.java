@@ -3,10 +3,13 @@ package com.dpain.DiscordBot.plugin;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.NoPermissionException;
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
+import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.listener.UserEventListener;
 
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.Event;
@@ -14,9 +17,10 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.RoleManager;
 
 public class GameRolePlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(GameRolePlugin.class.getName());
 
 	public GameRolePlugin() {
-		super("GameRolePlugin", Group.TRUSTED_USER);
+		super("GameRolePlugin", Group.GUEST);
 		super.helpString = "**GameRole Plugin Usage:** \n"
 		+ "-gameRole add *\"name\"* : Add yourself to the GameRole.\n"
 		+ "-gameRole remove *\"name\"* : Remove yourself from the GameRole.\n";
@@ -44,12 +48,7 @@ public class GameRolePlugin extends Plugin {
 								}
 							}
 							castedEvent.getChannel().sendMessage("Game Roles: " + Arrays.toString(output.toArray())).queue();
-							System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nRequested the list of GameRoles.",
-                							castedEvent.getMember().getEffectiveName(),
-                							castedEvent.getAuthor().getName(),
-                							castedEvent.getChannel().getName(),
-                							castedEvent.getChannel().getGuild().getName())));
+							logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 						} else if (message.startsWith("-gameRole ")) {
 							String param = message.substring(10);
 							if (param.startsWith("add ")) {
@@ -62,32 +61,15 @@ public class GameRolePlugin extends Plugin {
 										if (castedEvent.getGuild().getRolesByName(gameName, true).get(0).getPermissions().equals(castedEvent.getGuild().getPublicRole().getPermissions())) {
 											gameRoleManager = castedEvent.getGuild().getRolesByName(gameName, true).get(0).getManager();
 											castedEvent.getGuild().getController().addRolesToMember(castedEvent.getMember(), gameRoleManager.getRole()).queue();
+											logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 										} else {
 											castedEvent.getChannel().sendMessage("You're not allowed to choose a role that is not a game!").queue();
-											System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-				                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nAttempted to add himself to non-GameRole role: %s.",
-				                							castedEvent.getMember().getEffectiveName(),
-				                							castedEvent.getAuthor().getName(),
-				                							castedEvent.getChannel().getName(),
-				                							castedEvent.getChannel().getGuild().getName(),
-				                							gameName)));
+											logger.log(Level.SEVERE, LogHelper.elog(castedEvent, String.format("Attempted to add himself to non-GameRole role: %s", message)));
 											throw new NoPermissionException();
 										}
-										System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-			                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nAdded himself to GameRole: %s.",
-			                							castedEvent.getMember().getEffectiveName(),
-			                							castedEvent.getAuthor().getName(),
-			                							castedEvent.getChannel().getName(),
-			                							castedEvent.getChannel().getGuild().getName(),
-			                							gameName)));
 									}
 								} else {
-									System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-		                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nUsed an empty game name.",
-		                							castedEvent.getMember().getEffectiveName(),
-		                							castedEvent.getAuthor().getName(),
-		                							castedEvent.getChannel().getName(),
-		                							castedEvent.getChannel().getGuild().getName())));
+									logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
 								}
 							} else if (param.startsWith("remove ")) {
 								String gameName = param.substring(7).toUpperCase();
@@ -100,31 +82,14 @@ public class GameRolePlugin extends Plugin {
 										if (castedEvent.getGuild().getRolesByName(gameName, true).get(0).getPermissions().equals(castedEvent.getGuild().getPublicRole().getPermissions())) {
 											gameRoleManager = castedEvent.getGuild().getRolesByName(gameName, true).get(0).getManager();
 											castedEvent.getGuild().getController().removeRolesFromMember(castedEvent.getMember(), gameRoleManager.getRole()).queue();
+											logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 										} else {
-											System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-				                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nAttempted to remove himself to non-GameRole role: %s.",
-				                							castedEvent.getMember().getEffectiveName(),
-				                							castedEvent.getAuthor().getName(),
-				                							castedEvent.getChannel().getName(),
-				                							castedEvent.getChannel().getGuild().getName(),
-				                							gameName)));
+											logger.log(Level.SEVERE, LogHelper.elog(castedEvent, String.format("Attempted to remove himself to non-GameRole role: %s", message)));
 											throw new NoPermissionException();
 										}
 									}
-									System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-		                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nRemoved himself to GameRole: %s.",
-		                							castedEvent.getMember().getEffectiveName(),
-		                							castedEvent.getAuthor().getName(),
-		                							castedEvent.getChannel().getName(),
-		                							castedEvent.getChannel().getGuild().getName(),
-		                							gameName)));
 								} else {
-									System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(),
-		                					String.format("Member: %s (username: %s) at channel: %s in guild: %s\nUsed an empty game name.",
-		                							castedEvent.getMember().getEffectiveName(),
-		                							castedEvent.getAuthor().getName(),
-		                							castedEvent.getChannel().getName(),
-		                							castedEvent.getChannel().getGuild().getName())));
+									logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
 								}
 							} else {
 								castedEvent.getChannel().sendMessage(helpString).queue();

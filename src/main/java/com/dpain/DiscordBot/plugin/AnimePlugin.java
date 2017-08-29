@@ -2,14 +2,20 @@ package com.dpain.DiscordBot.plugin;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class AnimePlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(AnimePlugin.class.getName());
+	
 	private AnimeTorrentFinder animeTorrentFinder;
 	
 	public AnimePlugin() {
@@ -34,7 +40,7 @@ public class AnimePlugin extends Plugin {
 		                if(message.equals("-anime")) {
 		                	//Incorrect usage of anime plugin.
 		                	castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*").queue();
-		                	
+		                	logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
 		                } else if(message.startsWith("-anime ")) {
 		                	String param = message.substring(7);
 		                	if(param.toLowerCase().startsWith("search ")) {
@@ -50,16 +56,14 @@ public class AnimePlugin extends Plugin {
 		                	} else if(param.equals("today")) {
 		                		animeTorrentFinder.getCurrentSchedule();
 		                		castedEvent.getChannel().sendMessage("WIP").queue();
-		                		
 		                	} else if(param.equals("week")) {
 		                		animeTorrentFinder.getFullSchedule();
 		                		castedEvent.getChannel().sendMessage("WIP").queue();
-		                		
-		                	}	        			
+		                	}
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                }
 					}
 				}
-				
 			} catch(Exception e) {
 				e.printStackTrace();
 			}

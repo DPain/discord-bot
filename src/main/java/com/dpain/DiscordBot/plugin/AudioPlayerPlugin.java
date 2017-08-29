@@ -3,6 +3,8 @@ package com.dpain.DiscordBot.plugin;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -10,8 +12,9 @@ import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.AudioNotFoundException;
 import com.dpain.DiscordBot.exception.ChannelNotFoundException;
 import com.dpain.DiscordBot.exception.NoInstanceException;
+import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.plugin.audioplayer.GuildMusicManager;
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -28,6 +31,8 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 public class AudioPlayerPlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(AudioPlayerPlugin.class.getName());
+	
 	private final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 	private final Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
 	
@@ -59,9 +64,7 @@ public class AudioPlayerPlugin extends Plugin {
 				String message = castedEvent.getMessage().getContent();
 		        
 				if(canAccessPlugin(castedEvent.getMember()) && !castedEvent.getAuthor().getId().equals(castedEvent.getJDA().getSelfUser().getId())) {
-					
 					if(message.startsWith("-")) {
-		                
 						//Start an audio connection with a VoiceChannel
 		                if (message.startsWith("-join ")) {
 		                    //Separates the name of the channel so that we can search for it
@@ -71,60 +74,64 @@ public class AudioPlayerPlugin extends Plugin {
 		                    VoiceChannel channel = castedEvent.getGuild().getVoiceChannels().stream().filter(
 		                            vChan -> vChan.getName().equalsIgnoreCase(chanName)).findFirst().orElse(null);  //If there isn't a matching name, return null.
 		                    if (channel == null) {
+		                    	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Channel does not exist Command: %s", message)));
 		                    	throw new ChannelNotFoundException();
 		                    } else {
 		                    	castedEvent.getGuild().getAudioManager().openAudioConnection(channel);
+		                    	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                    }
-		                    
 		                } else if (message.equals("-leave")) {
 		                	// Disconnect the audio connection with the VoiceChannel.
 		                	castedEvent.getGuild().getAudioManager().closeAudioConnection();
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                } else if (message.equals("-play")) {
 		                	// Incorrect usage of play
 		                	castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*");
+		                	logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
 		                } else if (message.startsWith("-play ")) {
 		                	// Plays a local audio file.
-		                	System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(), "Received a command: -play"));
-		                	
 		                	String trackName = message.substring(6);
-		                	
 		                	// Implement
+		                	
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                } else if (message.startsWith("-playlist ")) {
 		                	// Plays a playlist
-		                	System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(), "Received a command: -playlist"));
 		                	
 		                	String playlistName = message.substring(10);
 		                	// Implement
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                } else if (message.startsWith("-playurl ")) {
 		                	//Plays audio with the URLPlayer
-		                	System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(), "Received a command: -playurl"));
 		                	
 		                	String urlString = message.substring(9);
 		                    loadAndPlay(castedEvent.getChannel(), urlString);
+		                    logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                } else if(message.equals("-volume")) {
-		                	System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(), "Received a command: -volume"));
-		                	
-		                	// Implement
-		                	//castedEvent.getChannel().sendMessage("**Current volume:** *" + audioPlayer.getVolume() + "*");
+		                	castedEvent.getChannel().sendMessage(String.format("**Current volume:** *%d*",
+		                			getVolume(castedEvent.getChannel()))).queue();
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		        		} else if(message.startsWith("-volume ")) {
-		        			System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(), "Received a command: -volume i"));
-		        			
 		                	String input = message.substring(8);
 		                	try {
-		                		float temp = Float.parseFloat(input) / 100;
-		                		// Implement
-		                		//castedEvent.getChannel().sendMessage("Setting the volume to " + audioPlayer.getVolume());
+		                		int temp = Integer.parseInt(input);
+		                		setVolume(castedEvent.getChannel(), temp);
+		                		
+		                		castedEvent.getChannel().sendMessage(String.format("Setting the volume to %d",
+		                				getVolume(castedEvent.getChannel()))).queue();
+		                		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                	} catch(NumberFormatException e) {
-		                		castedEvent.getChannel().sendMessage("You must input an int value between 0-100. (inclusive)");
+		                		castedEvent.getChannel().sendMessage("You must input an int value between 0-100. (inclusive)").queue();
+		                		logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
 		                	}
 		        		} else if(message.equals("-resume")) {
-		        			System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(), "Received a command: -resume"));
+		        			System.out.println("");
+		        			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		        		} else if(message.equals("-pause")) {
-		        			System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(), "Received a command: -pause"));
+		        			System.out.println("");
+		        			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		        		} else if(message.equals("-skip")) {
-		        			System.out.println(ConsolePrefixGenerator.getFormattedPrintln(this.getName(), "Received a command: -skip"));
-		        			
 		        			skipTrack(castedEvent.getChannel());
+		        			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		        		}
 					}
 				}
@@ -146,6 +153,16 @@ public class AudioPlayerPlugin extends Plugin {
 	    guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
 
 	    return musicManager;
+	}
+	
+	private void setVolume(final TextChannel channel, int volume) {
+		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+		musicManager.player.setVolume(volume);
+	}
+	
+	private int getVolume(final TextChannel channel) {
+		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+		return musicManager.player.getVolume();
 	}
 	
 	private void loadAndPlay(final TextChannel channel, final String trackUrl) {

@@ -1,15 +1,20 @@
 package com.dpain.DiscordBot.plugin;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Timezone;
+import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.reminder.Reminder;
 import com.dpain.DiscordBot.plugin.reminder.Scheduler;
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class SchedulerPlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(SchedulerPlugin.class.getName());
+	
 	private Scheduler scheduler;
 	
 	public SchedulerPlugin() {
@@ -30,7 +35,6 @@ public class SchedulerPlugin extends Plugin {
 				String message = castedEvent.getMessage().getContent();
 		        
 				if(canAccessPlugin(castedEvent.getMember()) && !castedEvent.getAuthor().getId().equals(castedEvent.getJDA().getSelfUser().getId())) {
-					
 					if(message.startsWith("-")) {
 		                if(message.startsWith("-remind ")) {
 		                	String param = message.substring(8);
@@ -41,15 +45,10 @@ public class SchedulerPlugin extends Plugin {
 	                			scheduler.addReminder(new Reminder(castedEvent.getAuthor(), castedEvent.getChannel(), param.substring(indexOfFirstSpace + 1)), hours);
 	                			
 	                			castedEvent.getChannel().sendMessage(String.format("Reminder set %d hours later for: %s", hours, description)).queue();
-	                			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Reminder",
-	                					String.format("Reminder set! member: %s (username: %s) at channel: %s in guild: %s\nDescription: %s",
-	                							castedEvent.getMember().getEffectiveName(),
-	                							castedEvent.getAuthor().getName(),
-	                							castedEvent.getChannel().getName(),
-	                							castedEvent.getChannel().getGuild().getName(),
-	                							description)));
-							} catch(Exception e) {
+	                			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+							} catch(NumberFormatException e) {
 								castedEvent.getChannel().sendMessage("Please input a correct time in hours!").queue();
+								logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
 							}
 		                } else if(message.startsWith("-알림 ")) {
 		                	String param = message.substring(4);
@@ -60,38 +59,42 @@ public class SchedulerPlugin extends Plugin {
 	                			scheduler.addReminder(new Reminder(castedEvent.getAuthor(), castedEvent.getChannel(), param.substring(indexOfFirstSpace + 1)), hours);
 	                			
 	                			castedEvent.getChannel().sendMessage(String.format("%d 시간 뒤 알림이 설정되었습니다: %s", hours, description)).queue();
-	                			System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Reminder",
-	                					String.format("Reminder set! member: %s (username: %s) at channel: %s in guild: %s\nDescription: %s",
-	                							castedEvent.getMember().getEffectiveName(),
-	                							castedEvent.getAuthor().getName(),
-	                							castedEvent.getChannel().getName(),
-	                							castedEvent.getChannel().getGuild().getName(),
-	                							description)));
-							} catch (Exception e) {
+	                			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+							} catch (NumberFormatException e) {
 								castedEvent.getChannel().sendMessage("명령어를 제대로 쓰시기 바랍니다!").queue();
+								logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
 							}  	
 		                } else if(message.startsWith("-time ")) {
 		                	String param = message.substring(6);
-		                	double hours = Double.parseDouble(param.substring(0));
-		                	
-		                	String result = "";
-                			for(Timezone zone : Timezone.class.getEnumConstants()) {
-                				result += ("\n" + (Scheduler.getTimeFromNow(Scheduler.hoursToSeconds(hours), zone)));
-                			}
-                			castedEvent.getChannel().sendMessage("Time for each timezone:" + result).queue();
+		                	try {
+		                		double hours = Double.parseDouble(param.substring(0));
+		                		String result = "";
+	                			for(Timezone zone : Timezone.class.getEnumConstants()) {
+	                				result += ("\n" + (Scheduler.getTimeFromNow(Scheduler.hoursToSeconds(hours), zone)));
+	                			}
+	                			castedEvent.getChannel().sendMessage("Time for each timezone: " + result).queue();
+	                			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+		                	} catch(NumberFormatException e) {
+		                		castedEvent.getChannel().sendMessage("Please input a correct time in hours!").queue();
+		                		logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
+		                	}
 		                } else if(message.startsWith("-시간 ")) {
 		                	String param = message.substring(4);
-		                	double hours = Double.parseDouble(param.substring(0));
-		                	
-		                	String result = "";
-                			for(Timezone zone : Timezone.class.getEnumConstants()) {
-                				result += ("\n" + (Scheduler.getTimeFromNow(Scheduler.hoursToSeconds(hours), zone)));
-                			}
-                			castedEvent.getChannel().sendMessage("타임존별 시간:" + result).queue();
+		                	try {
+		                		double hours = Double.parseDouble(param.substring(0));
+		                		String result = "";
+	                			for(Timezone zone : Timezone.class.getEnumConstants()) {
+	                				result += ("\n" + (Scheduler.getTimeFromNow(Scheduler.hoursToSeconds(hours), zone)));
+	                			}
+	                			castedEvent.getChannel().sendMessage("타임존별 시간: " + result).queue();
+	                			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+		                	} catch(NumberFormatException e) {
+		                		castedEvent.getChannel().sendMessage("명령어를 제대로 쓰시기 바랍니다!").queue();
+		                		logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
+		                	}
 		                }
 					}
 				}
-				
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
