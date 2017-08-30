@@ -23,7 +23,7 @@ public class WikiFinder {
 		
 		String result = "";
 		Document doc = Jsoup.connect(parseLink).get();
-		Element info = doc.select("div#mw-content-text").first();
+		Element info = doc.select("div.mw-parser-output").first();
 		Elements children = info.children();
 		Elements sup = children.select("sup.reference");
 		sup.remove();
@@ -31,7 +31,7 @@ public class WikiFinder {
 		
 		outerFor:
 		for(Element e : children) {
-			if(e.tagName().equals("p")) {
+			if(e.tagName().equals("p") || e.tagName().equals("ul")) {
 				if(e.html().length() <= 0 ) {
 					break outerFor;
 				} else {
@@ -40,15 +40,11 @@ public class WikiFinder {
 			}
 		}
 		
-		result = paragraphs.select("p").text();
+		result = paragraphs.text();
 		if(result.length() > charLimit) {
 			result = result.substring(0, charLimit) + " ...";
 		}
 		
 		return result;
 	}
-	
-	/**
-	 * TODO Fix "may refer to:" issue!
-	 */
 }

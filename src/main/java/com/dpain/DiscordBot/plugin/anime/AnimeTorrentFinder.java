@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -12,7 +14,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.plugin.WikipediaPlugin;
+
 public class AnimeTorrentFinder {
+	private final static Logger logger = Logger.getLogger(AnimeTorrentFinder.class.getName());
+	
 	//Max message length is 2000
 	public static int charLimit = 2000;
 	public int entryLimit;
@@ -44,7 +51,7 @@ public class AnimeTorrentFinder {
 		try {
 			parseLink += URLEncoder.encode(name, "UTF-8") + "&type=0&size_min=&size_max=&username=";
 		} catch (UnsupportedEncodingException e) {
-			System.out.println(e.getMessage());
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 		
 		// Necessary due to tokyo-toshokan's Cloudfare implementation.

@@ -1,12 +1,18 @@
 package com.dpain.DiscordBot.plugin;
 
-import com.dpain.DiscordBot.enums.Group;
-import com.dpain.DiscordBot.system.UserManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.listener.UserEventListener;
+import com.dpain.DiscordBot.system.MemberManager;
+
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class OwnerPlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(OwnerPlugin.class.getName());
 
 	public OwnerPlugin() {
 		super("OwnerPlugin", Group.OWNER);
@@ -27,34 +33,42 @@ public class OwnerPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("-")) {
 		                if (message.startsWith("-username ")) {
 		            		String param = message.substring(10);
-		            		castedEvent.getJDA().getAccountManager().setUsername(param);
-		            		castedEvent.getJDA().getAccountManager().update();
+		            		castedEvent.getJDA().getSelfUser().getManager().setName(param);
 		            		castedEvent.getChannel().sendMessage("**Nickname changed to:** " + param);
 		            		
+		            		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		            	} else if(message.startsWith("-group ")) {
 		                	/**
 		                	 * @TODO Implement user change group feature. Also fix userdata.yml constant read issue.
 		                	 */
+		            		
+		            		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		            	} else if(message.equals("-guild info")) {
 		            		castedEvent.getChannel().sendMessage("**Guild Info:**"
 		            				+ "\nName: " + castedEvent.getGuild().getName()
 		            				+ "\nID: " + castedEvent.getGuild().getId()
-		            				+ "\nOwner Nickname: " + castedEvent.getGuild().getNicknameForUser(castedEvent.getJDA().getUserById(castedEvent.getGuild().getOwnerId()))
-		            				+ "\nOwner ID: " + castedEvent.getJDA().getUserById(castedEvent.getGuild().getOwnerId()).getId());
+		            				+ "\nOwner Nickname: " + castedEvent.getGuild().getOwner().getNickname()
+		            				+ "\nOwner ID: " + castedEvent.getGuild().getOwner().getUser().getId()).queue();
 		                	
+		            		
+		            		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                } else if(message.equals("-rebuild")) {
-		                	UserManager.load().rebuild(castedEvent.getGuild());
+		                	MemberManager.load().rebuild(castedEvent.getGuild());
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                } else if(message.equals("-update")) {
-		                	UserManager.load().update(castedEvent.getGuild());
+		                	MemberManager.load().update(castedEvent.getGuild());
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                } else if(message.equals("-reload")) {
-		                	UserManager.load().reload();
+		                	MemberManager.load().reload();
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                } else if(message.equals("-exit")) {
-		                	UserManager.load().saveConfig();
+		                	MemberManager.load().saveConfig();
+		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                	castedEvent.getJDA().shutdown();
 		                	System.exit(0);
 		                }

@@ -1,0 +1,13 @@
+/target/
+/bin/
+/rsc/
+/.settings/
+/audio/
+*.txt
+.classpath
+.project
+users.yml
+bot.properties
+*.log
+*.jar
+*.lck

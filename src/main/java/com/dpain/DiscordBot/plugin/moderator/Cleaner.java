@@ -1,14 +1,19 @@
 package com.dpain.DiscordBot.plugin.moderator;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
+import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
-import net.dv8tion.jda.MessageHistory;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageHistory;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 public class Cleaner implements Runnable {
+	private final static Logger logger = Logger.getLogger(Cleaner.class.getName());
+	
 	private static boolean isRunning = false;
 	
 	private MessageHistory messageHistory;
@@ -23,28 +28,27 @@ public class Cleaner implements Runnable {
 	public void run() {
 		isRunning = true;
 		
-		List<Message> messages = messageHistory.retrieve();
+		List<Message> messages = messageHistory.getRetrievedHistory();
 		int i = 0;
 		while(messages != null && i < count) {
 			for(Message item: messages)	 {
 
 				if(i >= count) {
-					System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Cleaner", "Deleted " + (count - 1) + " messages."));
+					logger.log(Level.INFO, String.format("Deleted %d messages.", count - 1));
 					isRunning = false;
 					return;
 				}
 				
-				item.deleteMessage();
+				item.delete();
 				i++;
 	        }
 	        if(messages.isEmpty())
-	            messages = messageHistory.retrieve();
+	            messages = messageHistory.getRetrievedHistory();
 	        if(messages == null) {
-	        	System.out.println(ConsolePrefixGenerator.getFormattedPrintln("Cleaner", "No more messages left."));
+	        	logger.log(Level.INFO, "No more messages left.");
 	        	isRunning = false;
 	        	return;
 	        }
-	        
 		}
 	}
 	

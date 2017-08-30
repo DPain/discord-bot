@@ -1,32 +1,30 @@
 package com.dpain.DiscordBot.listener;
 
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
+import com.dpain.DiscordBot.Main;
+import com.dpain.DiscordBot.helper.LogHelper;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.MessageImpl;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Guild;
 
 public class ConsoleInputReader implements Runnable {
-	private String name;
+	private final static Logger logger = Logger.getLogger(ConsoleInputReader.class.getName());
+	
 	private JDA jda;
-	private PluginListener listener;
 	private Guild processingGuild;
 	private Scanner in;
 	
 	public ConsoleInputReader(JDA jda, PluginListener listener, Guild guild) {
-		this.name = "ConsoleInputReader";
 		this.jda = jda;
-		this.listener = listener;
 		
 		processingGuild = guild;
 		in = new Scanner(System.in);
 		
-		System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "Starts reading input from console!"));
+		logger.log(Level.INFO, "Starts reading input from console!");
 	}
 	
 	private boolean processConsoleCommand(String commandLine) {
@@ -40,17 +38,11 @@ public class ConsoleInputReader implements Runnable {
 		} else if(commandLine.equals("-help")) {
 			System.out.println("Commands:\n" + 
 								"-exit = Terminates the bot\n" + 
-								"-changeguild [guild id] = Changes the guild the bot will forward the commands\n" + 
-								"");
+								"-changeguild [guild id] = Changes the guild the bot will forward the commands\n");
 		} else {
-			MessageImpl messageImpl = new MessageImpl("", (JDAImpl) jda);
-			messageImpl.setAuthor(jda.getUserById(jda.getSelfInfo().getId()));
-			messageImpl.setContent(commandLine);
-			messageImpl.setChannelId(processingGuild.getPublicChannel().getId());
-			
-			GuildMessageReceivedEvent event = new GuildMessageReceivedEvent(jda, jda.getResponseTotal(), messageImpl, processingGuild.getPublicChannel());
-			
-			listener.onEvent(event);
+			MessageBuilder messageBuilder = new MessageBuilder();
+			messageBuilder.append(commandLine);
+			processingGuild.getPublicChannel().sendMessage(messageBuilder.build());
 		}
 		return true;
 	}
@@ -63,7 +55,7 @@ public class ConsoleInputReader implements Runnable {
 		//Might have to fix
 		outerWhile:
 		while(true) {
-			System.out.println("Discord Bot Plugin: ");
+			logger.log(Level.INFO, "Discord Bot Plugin: ");
 			String commandLine = in.nextLine();
 			if(!processConsoleCommand(commandLine)) {
 				break outerWhile;

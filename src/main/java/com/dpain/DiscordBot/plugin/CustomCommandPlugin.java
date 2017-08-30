@@ -1,11 +1,15 @@
 package com.dpain.DiscordBot.plugin;
 
-import com.dpain.DiscordBot.enums.Group;
+import java.util.logging.Logger;
 
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.listener.UserEventListener;
+
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CustomCommandPlugin extends Plugin {
+	private final static Logger logger = Logger.getLogger(CustomCommandPlugin.class.getName());
 
 	public CustomCommandPlugin() {
 		super("CustomCommandPlugin", Group.TRUSTED_USER);
@@ -23,7 +27,7 @@ public class CustomCommandPlugin extends Plugin {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
 				String message = castedEvent.getMessage().getContent();
 		        
-				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfInfo().getId())) || canAccessPlugin(castedEvent.getAuthor())) {
+				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
 					if(message.startsWith("!")) {
 		                /*

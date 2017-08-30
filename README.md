@@ -9,9 +9,10 @@ This is a DiscordBot mainly aimed to function only for the Video Game Tournament
 The program requires the JDA Discord library and several other libraries which is included in the contained in the pom.xml file and uses Java 1.8.
 ### Dependencies: ###
 	* Java 1.8
-	* JDA 2.2.1_373
-	* jsoup 1.9.1
+	* JDA 3.2.0_238
+	* jsoup 1.10.3
 	* snakeyaml 1.17
+	* lavaplayer 1.2.42
 
 ## Contribution guidelines ##
 ### Advices ###

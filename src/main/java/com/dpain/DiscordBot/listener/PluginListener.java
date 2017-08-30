@@ -1,8 +1,11 @@
 package com.dpain.DiscordBot.listener;
 
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Property;
+import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.AnimePlugin;
 import com.dpain.DiscordBot.plugin.AudioPlayerPlugin;
 import com.dpain.DiscordBot.plugin.Plugin;
@@ -15,20 +18,18 @@ import com.dpain.DiscordBot.plugin.ProfanityGuardPlugin;
 import com.dpain.DiscordBot.plugin.SchedulerPlugin;
 import com.dpain.DiscordBot.plugin.WeatherPlugin;
 import com.dpain.DiscordBot.plugin.WikipediaPlugin;
-import com.dpain.DiscordBot.system.ConsolePrefixGenerator;
 import com.dpain.DiscordBot.system.PropertiesManager;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.hooks.EventListener;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.hooks.EventListener;
 
 public class PluginListener implements EventListener {
-	private String name;
+	private final static Logger logger = Logger.getLogger(PluginListener.class.getName());
+	
 	private LinkedList<Plugin> plugins;
 	
 	public PluginListener(JDA jda) {
-		name = "PluginListener";
-		
 		//Maybe use one hashmap and have each plugins to add into the hashmap. 
 		plugins = new LinkedList<Plugin>();
 		
@@ -46,7 +47,7 @@ public class PluginListener implements EventListener {
 			plugins.add(new GameRolePlugin());
 		}
 		
-		System.out.println(ConsolePrefixGenerator.getFormattedPrintln(name, "Listening started!"));
+		logger.log(Level.INFO, "Listening started!");
 	}
 	
 	public void onEvent(Event event) {
