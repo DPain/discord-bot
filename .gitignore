@@ -1,8 +1,8 @@
 /target/
 /bin/
-/rsc/
+/rsc/*
 /.settings/
-/audio/
+/audio/*
 *.txt
 .classpath
 .project
@@ -12,4 +12,4 @@ bot.properties
 *.jar
 *.lck
 *.sh
-*.batssssssssssssss
+*.bat

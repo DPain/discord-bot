@@ -27,7 +27,7 @@ public class EssentialsPlugin extends Plugin {
 	}
 	
 	public EssentialsPlugin() {
-		super("EssentialsPlugin", Group.TRUSTED_USER);
+		super("EssentialsPlugin", Group.USER);
 		
 		emoteMap = new HashMap<String, File>();
 		instantiateEmoteMap();
@@ -50,9 +50,10 @@ public class EssentialsPlugin extends Plugin {
 		//Puts all the emotes that are in the ./rsc/img directory into the HashMap
 	    for (int i = 0; i < listOfFiles.length; i++) {
 	      if (listOfFiles[i].isFile()) {
-	    	  String fileName = listOfFiles[i].getName().substring(0,listOfFiles[i].getName().indexOf("."));
+	    	  String fileName = listOfFiles[i].getName().substring(0,listOfFiles[i].getName().lastIndexOf("."));
+	    	  String extension = listOfFiles[i].getName().substring(listOfFiles[i].getName().lastIndexOf("."));
 	    	  String key = fileName.replace("(C)", ":");
-	    	  emoteMap.put(key.toLowerCase(), new File("./rsc/img/" + fileName + ".png"));
+	    	  emoteMap.put(key.toLowerCase(), new File("./rsc/img/" + fileName + extension));
 	    	  temp += key + ", ";
 	      }
 	    }
@@ -75,7 +76,7 @@ public class EssentialsPlugin extends Plugin {
 		        			logger.log(Level.INFO, LogHelper.elog(castedEvent, "User triggered the easter egg."));
 		                } else if(message.equals("-emotes")) {
 		                	/**
-		                	 * @TODO Refine message format to not have commands to be splitted
+		                	 * @TODO Refine message format to not have commands to be split.
 		                	 */
 		                	if(twitchEmoteList.length() > 1800) {
 		                		int numRecurssion = twitchEmoteList.length() / 1800;
@@ -101,30 +102,16 @@ public class EssentialsPlugin extends Plugin {
 		                	castedEvent.getChannel().sendMessage(EssentialsPlugin.helpString).queue();
 		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                }
-					} else {
-						if(!castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
-							// Processes the message to see if there are any emotes to display 
-							
-							int kappaNum = getNumberOfUniqueKappa(message);
-							int peteZarollNum = getNumberOfUniquePeteZaroll(message);
-							
-							outerFor:
-							for(String key : emoteMap.keySet()) {
-								if(key.equals("Kappa".toLowerCase())) {
-									if(kappaNum < 1) {
-										continue outerFor;
-									}
-								}
-								if(key.equals("PeteZaroll".toLowerCase())) {
-									if(peteZarollNum < 1) {
-										continue outerFor;
-									}
-								}
-								if(message.toLowerCase().contains(key)) {
-									castedEvent.getChannel().sendFile(emoteMap.get(key), null).queue();
-									logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Triggered emote: %s", key)));
-								}
-							}
+					}
+				}
+				// Also works for users who have lower permissions than this plugin's requirement.
+				if(!castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
+					// Checks if there are any emotes to display.
+					for(String key : emoteMap.keySet()) {
+						String effectiveMessage = message.toLowerCase();
+						if(shouldDisplayEmote(key, effectiveMessage)) {
+							castedEvent.getChannel().sendFile(emoteMap.get(key), null).queue();
+							logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Triggered emote: %s", key)));
 						}
 					}
 				}
@@ -134,27 +121,9 @@ public class EssentialsPlugin extends Plugin {
 		}
 	}
 	
-	private int getNumberOfUniqueKappa(String str) {
-		int result = 0;
-		str = str.toLowerCase();
-		for(int i = 0; i < str.length(); i++) {
-			String temp = str.substring(i);
-			if((0 == temp.indexOf("Kappa".toLowerCase())) && (0 != temp.indexOf("KappaCool".toLowerCase())) && (0 != temp.indexOf("KappaClaus".toLowerCase())) && (0 != temp.indexOf("KappaHD".toLowerCase())) && (0 != temp.indexOf("KappaPride".toLowerCase())) && (0 != temp.indexOf("KappaRoss".toLowerCase())) && (0 != temp.indexOf("KappaWealth".toLowerCase())) && (0 != temp.indexOf("Blackappa".toLowerCase()))) {
-				result++;
-			}
-		}
-		return result;
-	}
-	
-	private int getNumberOfUniquePeteZaroll(String str) {
-		int result = 0;
-		str = str.toLowerCase();
-		for(int i = 0; i < str.length(); i++) {
-			String temp = str.substring(i);
-			if((0 == temp.indexOf("PeteZaroll".toLowerCase())) && (0 != temp.indexOf("PeteZarollTie".toLowerCase()))) {
-				result++;
-			}
-		}
-		return result;
+	private boolean shouldDisplayEmote(String key, String msg) {
+		int start = msg.indexOf(key);
+		int end = msg.indexOf(key) + key.length() - 1;
+		return ((start > 0 && msg.charAt(start - 1) == ' ') || start == 0) && msg.contains(key) && (end == msg.length() - 1 || (end < msg.length() - 1 && msg.charAt(end + 1) == ' '));
 	}
 }
