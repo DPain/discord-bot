@@ -32,7 +32,7 @@ public class MemberManager {
 	private Map<String, Entry> memberMap = new HashMap<String, Entry>();
 	
 	private final String USERS_FILENAME = "users.yml";	
-	private final Group DEFAULT_GROUP = Group.GUEST;
+	private final Group DEFAULT_GROUP = Group.TRUSTED_USER;
 	
 	private MemberManager() {		
 		try {
@@ -159,12 +159,28 @@ public class MemberManager {
 		// Adds back all the members into the memberMap
 		for(Member member : guild.getMembers()) {
 			if(!memberMap.containsKey(member.getUser().getId())) {
+				logger.log(Level.INFO, "User does not exist and will be added into the config file!");
 				addNewMember(member);
 			} else if(member.getUser().getId().equals(PropertiesManager.load().getValue(Property.OWNER_USER_ID)) && memberMap.get(member.getUser().getId()).group.get(0) != Group.OWNER) {
+				logger.log(Level.INFO, "This is the owner!");
 				changeMemberGroup(member, Group.OWNER);
 			}
 			if(!member.getUser().getName().equals(memberMap.get(member.getUser().getId()).membername)) {
 				memberMap.get(member.getUser().getId()).membername = member.getUser().getName();
+				logger.log(Level.INFO, String.format("Member: %s (username: %s - %s) changed his username to: %s",
+						member.getNickname(),
+						memberMap.get(member.getUser().getId()).membername,
+						member.getUser().getId(),
+						member.getUser().getName()));
+				
+			}
+			if(!member.getNickname().equals(memberMap.get(member.getUser().getId()).nickname)) {
+				memberMap.get(member.getUser().getId()).nickname = member.getNickname();
+				logger.log(Level.INFO, String.format("Member: %s (username: %s - %s) changed his nickname to: %s",
+						memberMap.get(member.getUser().getId()).nickname,
+						member.getUser().getName(),
+						member.getUser().getId(),
+						member.getNickname()));
 			}
 		}
 		logger.log(Level.INFO, "Updated " + USERS_FILENAME + " file!");
