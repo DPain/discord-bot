@@ -13,6 +13,7 @@ import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.plugin.moderator.Cleaner;
 
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -43,7 +44,7 @@ public class ModeratorPlugin extends Plugin {
 		                if (message.startsWith("-nick ")) {
 		            		String param = message.substring(6);
 		            		
-		            		castedEvent.getGuild().getController().setNickname(castedEvent.getMember(), param).queue();
+		            		castedEvent.getGuild().getController().setNickname(castedEvent.getGuild().getSelfMember(), param).queue();
 		            		castedEvent.getChannel().sendMessage("**Nickname changed to:** " + param).queue();
 		            		
 		            		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
