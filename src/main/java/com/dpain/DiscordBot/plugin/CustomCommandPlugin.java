@@ -25,7 +25,7 @@ public class CustomCommandPlugin extends Plugin {
 		if(event instanceof GuildMessageReceivedEvent) {
 			try {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-				String message = castedEvent.getMessage().getContent();
+				String message = castedEvent.getMessage().getContentRaw();
 		        
 				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					

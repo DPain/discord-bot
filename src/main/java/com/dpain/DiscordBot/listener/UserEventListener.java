@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
+import net.dv8tion.jda.core.events.user.update.UserUpdateGameEvent;
 
 public class UserEventListener implements net.dv8tion.jda.core.hooks.EventListener {
 	private final static Logger logger = Logger.getLogger(UserEventListener.class.getName());
@@ -36,7 +37,7 @@ public class UserEventListener implements net.dv8tion.jda.core.hooks.EventListen
         if(event instanceof GuildMemberJoinEvent) {
         	GuildMemberJoinEvent castedEvent = (GuildMemberJoinEvent) event;
         	
-        	MemberManager.load().addNewMember(castedEvent.getMember());
+        	MemberManager.load().addMember(castedEvent.getMember());
         	
         	if(PropertiesManager.load().getValue(Property.GREET_GUILD_MEMBER).equals("true")) {
         		castedEvent.getGuild().getDefaultChannel().sendMessage("Hi, " + castedEvent.getUser().getName() + "!\nWelcome to the Discord Server!").queue();
@@ -56,8 +57,8 @@ public class UserEventListener implements net.dv8tion.jda.core.hooks.EventListen
         	GuildUnbanEvent castedEvent = (GuildUnbanEvent) event;
         	
         	logger.log(Level.INFO, LogHelper.elog(castedEvent, "User is unbanned!"));
-        } else if(event instanceof UserGameUpdateEvent) {
-        	UserGameUpdateEvent castedEvent = (UserGameUpdateEvent) event;
+        } else if(event instanceof UserUpdateGameEvent) {
+        	UserUpdateGameEvent castedEvent = (UserUpdateGameEvent) event;
         	if(castedEvent.getGuild().getMember(castedEvent.getUser()).getGame() != null) {
         		String temp = castedEvent.getGuild().getMember(castedEvent.getUser()).getGame().getUrl();
         		if(temp != null && Game.isValidStreamingUrl(temp)) {

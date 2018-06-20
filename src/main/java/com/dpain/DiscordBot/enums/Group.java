@@ -3,6 +3,7 @@ package com.dpain.DiscordBot.enums;
 public enum Group {
 	// The lower, the more powerful
 	OWNER("Owner", 0),
+	BOT("Bot", 1),
 	PRESIDENT("President", 5),
 	OFFICER("Officer", 10),
 	MODERATOR("Moderator", 15),

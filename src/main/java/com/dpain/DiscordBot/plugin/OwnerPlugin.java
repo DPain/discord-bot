@@ -19,9 +19,11 @@ public class OwnerPlugin extends Plugin {
 		
 		super.helpString = "**Owner Plugin Usage:** \n"
 				+ "-username *\"name\"* : Changes the username of the bot.\n"
-				+ "-update : Manually updates the userdata file.\n"
 				+ "-group *\"userId\" \"group\"* : Changes the user's group.\n"
+				+ "-info : Displays the server info.\n"
 				+ "-rebuild : Resets the userdata file to default.\n"
+				+ "-update : Updates the userdata file.\n"
+				+ "-reload : Reads the userdata file again.\n"
 				+ "-exit : Shutsdown the bot.\n";
 		EssentialsPlugin.appendHelpString(super.helpString);
 	}
@@ -31,7 +33,7 @@ public class OwnerPlugin extends Plugin {
 		if(event instanceof GuildMessageReceivedEvent) {
 			try {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-				String message = castedEvent.getMessage().getContent();
+				String message = castedEvent.getMessage().getContentRaw();
 		        
 				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					
@@ -48,13 +50,12 @@ public class OwnerPlugin extends Plugin {
 		                	 */
 		            		
 		            		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-		            	} else if(message.equals("-guild info")) {
-		            		castedEvent.getChannel().sendMessage("**Guild Info:**"
+		            	} else if(message.equals("-info")) {
+		            		castedEvent.getChannel().sendMessage("**Server Info:**"
 		            				+ "\nName: " + castedEvent.getGuild().getName()
 		            				+ "\nID: " + castedEvent.getGuild().getId()
 		            				+ "\nOwner Nickname: " + castedEvent.getGuild().getOwner().getNickname()
 		            				+ "\nOwner ID: " + castedEvent.getGuild().getOwner().getUser().getId()).queue();
-		                	
 		            		
 		            		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
 		                } else if(message.equals("-rebuild")) {

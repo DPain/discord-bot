@@ -66,7 +66,7 @@ public class EssentialsPlugin extends Plugin {
 		if(event instanceof GuildMessageReceivedEvent) {
 			try {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-				String message = castedEvent.getMessage().getContent();
+				String message = castedEvent.getMessage().getContentRaw();
 		        
 				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					if(message.startsWith("-")) {
@@ -110,7 +110,7 @@ public class EssentialsPlugin extends Plugin {
 					for(String key : emoteMap.keySet()) {
 						String effectiveMessage = message.toLowerCase();
 						if(shouldDisplayEmote(key, effectiveMessage)) {
-							castedEvent.getChannel().sendFile(emoteMap.get(key), null).queue();
+							castedEvent.getChannel().sendFile(emoteMap.get(key), String.format("%s.png", key), null).queue();
 							logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Triggered emote: %s", key)));
 						}
 					}

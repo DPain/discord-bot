@@ -42,7 +42,7 @@ public class ConsoleInputReader implements Runnable {
 		} else {
 			MessageBuilder messageBuilder = new MessageBuilder();
 			messageBuilder.append(commandLine);
-			processingGuild.getPublicChannel().sendMessage(messageBuilder.build());
+			processingGuild.getDefaultChannel().sendMessage(messageBuilder.build());
 		}
 		return true;
 	}

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
+import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
@@ -32,7 +33,7 @@ public class MemberManager {
 	private Map<String, Entry> memberMap = new HashMap<String, Entry>();
 	
 	private final String USERS_FILENAME = "users.yml";	
-	private final Group DEFAULT_GROUP = Group.TRUSTED_USER;
+	private final Group DEFAULT_GROUP = Group.GUEST;
 	
 	private MemberManager() {		
 		try {
@@ -66,7 +67,6 @@ public class MemberManager {
 			Entry info = memberMap.get(member.getUser().getId());
 			info.group.clear();
 			info.group.add(group);
-			saveConfig();
 		} else {
 			logger.log(Level.SEVERE, "There is no such member with the member id: " + member.getUser().getId());
 		}
@@ -75,22 +75,22 @@ public class MemberManager {
 	public void addMember(Member member, Group group) {
 		if(!memberMap.containsKey(member.getUser().getId())) {
 			Entry info = new Entry();
-			info.membername = member.getUser().getName();
+			info.username = member.getUser().getName();
+			info.nickname = member.getNickname();
 			info.group.add(group);
 			memberMap.put(member.getUser().getId(), info);
-			saveConfig();
 		} else {
 			logger.log(Level.SEVERE, "There is already a member with the member id: " + member.getUser().getId());
 		}
 	}
 	
-	public void addNewMember(Member member) {
+	public void addMember(Member member) {
 		if(!memberMap.containsKey(member.getUser().getId())) {
 			Entry info = new Entry();
-			info.membername = member.getUser().getName();
+			info.username = member.getUser().getName();
+			info.nickname = member.getNickname();
 			info.group.add(DEFAULT_GROUP);
 			memberMap.put(member.getUser().getId(), info);
-			saveConfig();
 		} else {
 			logger.log(Level.SEVERE, "There is already a member with the member id: " + member.getUser().getId());
 		}
@@ -101,14 +101,14 @@ public class MemberManager {
 			memberMap.remove(member.getUser().getId());
 			saveConfig();
 		} else {
-			logger.log(Level.SEVERE, "There was no member with the member id: " + member.getUser().getId());
+			logger.log(Level.SEVERE, "There is no member with the member id: " + member.getUser().getId());
 		}
 	}
 	
 	private void readMembersFile() throws IOException {		
 		CustomClassLoaderConstructor constructor = new CustomClassLoaderConstructor(YamlPreferences.class.getClassLoader());
-		constructor.addTypeDescription(new TypeDescription(YamlPreferences.class,"!memberdata"));
-		constructor.addTypeDescription(new TypeDescription(Group.class,"!Group"));
+		constructor.addTypeDescription(new TypeDescription(YamlPreferences.class,"!userdata"));
+		constructor.addTypeDescription(new TypeDescription(Group.class,"!group"));
 		Yaml yaml = new Yaml(constructor);
         
 		try {
@@ -116,16 +116,19 @@ public class MemberManager {
 			memberMap = container.members;
 		} catch (FileNotFoundException | NullPointerException e) {
 			saveConfig();
-			logger.log(Level.INFO, "Generated a new memberdata file!");
+			logger.log(Level.INFO, "Generated a new userdata file!");
 			rebuild(guild);
+		} catch(YAMLException e) {
+			logger.log(Level.SEVERE, "Corrupted userdata file!");
+			logger.log(Level.SEVERE, e.getMessage());
+			System.exit(1);
 		}
-		
 	}
 	
 	public void saveConfig(){		
 		Representer representer = new Representer();
-		representer.addClassTag(YamlPreferences.class, new Tag("!memberdata"));
-		representer.addClassTag(Group.class, new Tag("!Group"));
+		representer.addClassTag(YamlPreferences.class, new Tag("!userdata"));
+		representer.addClassTag(Group.class, new Tag("!group"));
 		Yaml yaml = new Yaml(representer);
 		
 		try {
@@ -133,7 +136,6 @@ public class MemberManager {
 			container.members = memberMap;
 			
 			yaml.dump(container, new FileWriter(USERS_FILENAME));
-			
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Failed to read the config file!");
 		}
@@ -147,8 +149,10 @@ public class MemberManager {
 		for(Member member : guild.getMembers()) {
 			if(member.getUser().getId().equals(PropertiesManager.load().getValue(Property.OWNER_USER_ID))) {
 				addMember(member, Group.OWNER);
+			} else if(member.getUser().getId().equals(PropertiesManager.load().getValue(Property.BOT_ID))) {
+				addMember(member, Group.BOT);
 			} else {
-				addNewMember(member);
+				addMember(member);
 			}
 		}
 		logger.log(Level.INFO, "Rebuit " + USERS_FILENAME + " file!");
@@ -156,34 +160,43 @@ public class MemberManager {
 	}
 	
 	public void update(Guild guild){
-		// Adds back all the members into the memberMap
+		// Compares all the members from the server and updates the memberMap
 		for(Member member : guild.getMembers()) {
-			if(!memberMap.containsKey(member.getUser().getId())) {
-				logger.log(Level.INFO, "User does not exist and will be added into the config file!");
-				addNewMember(member);
-			} else if(member.getUser().getId().equals(PropertiesManager.load().getValue(Property.OWNER_USER_ID)) && memberMap.get(member.getUser().getId()).group.get(0) != Group.OWNER) {
+			if(member.getUser().getId().equals(PropertiesManager.load().getValue(Property.OWNER_USER_ID))) {
+				// Member is the owner
 				logger.log(Level.INFO, "This is the owner!");
-				changeMemberGroup(member, Group.OWNER);
-			}
-			if(!member.getUser().getName().equals(memberMap.get(member.getUser().getId()).membername)) {
-				memberMap.get(member.getUser().getId()).membername = member.getUser().getName();
-				logger.log(Level.INFO, String.format("Member: %s (username: %s - %s) changed his username to: %s",
-						member.getNickname(),
-						memberMap.get(member.getUser().getId()).membername,
-						member.getUser().getId(),
-						member.getUser().getName()));
-				
-			}
-			if(!member.getNickname().equals(memberMap.get(member.getUser().getId()).nickname)) {
+				if(!memberMap.containsKey(member.getUser().getId())) {
+					addMember(member, Group.OWNER);
+				}
 				memberMap.get(member.getUser().getId()).nickname = member.getNickname();
-				logger.log(Level.INFO, String.format("Member: %s (username: %s - %s) changed his nickname to: %s",
-						memberMap.get(member.getUser().getId()).nickname,
-						member.getUser().getName(),
-						member.getUser().getId(),
-						member.getNickname()));
+				changeMemberGroup(member, Group.OWNER);
+			} else if(!memberMap.containsKey(member.getUser().getId())) {
+				// Member is not in the userdata file
+				logger.log(Level.INFO, "User does not exist and will be added into the userdata file!");
+				addMember(member);
+			} else {
+				// Displays existing member data change from previous memberMap check.
+				if(!member.getUser().getName().equals(memberMap.get(member.getUser().getId()).username)) {
+					logger.log(Level.INFO, String.format("Member: %s (username: %s - %s) changed his username to: %s",
+							member.getNickname(),
+							memberMap.get(member.getUser().getId()).username,
+							member.getUser().getId(),
+							member.getUser().getName()));
+					memberMap.get(member.getUser().getId()).username = member.getUser().getName();
+				}
+				if(member.getNickname() != null && !member.getNickname().equals(memberMap.get(member.getUser().getId()).nickname)) {
+					logger.log(Level.INFO, String.format("Member: %s (username: %s - %s) changed his nickname to: %s",
+							memberMap.get(member.getUser().getId()).nickname,
+							member.getUser().getName(),
+							member.getUser().getId(),
+							member.getNickname()));
+					memberMap.get(member.getUser().getId()).nickname = member.getNickname();
+				}
 			}
 		}
 		logger.log(Level.INFO, "Updated " + USERS_FILENAME + " file!");
+		
+		// Saves the updated memberMap data to the userdata file
 		saveConfig();
 	}
 	

@@ -11,6 +11,6 @@ public class TwitchAlerter {
 	}
 	
 	public void notifyTwitchStream(Member member) {
-		guild.getPublicChannel().sendMessage(member.getEffectiveName() + " started streaming in Twitch!");
+		guild.getDefaultChannel().sendMessage(member.getEffectiveName() + " started streaming in Twitch!");
 	}
 }

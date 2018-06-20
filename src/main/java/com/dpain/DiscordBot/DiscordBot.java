@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
+import net.dv8tion.jda.core.entities.Game.GameType;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class DiscordBot {
@@ -37,7 +38,7 @@ public class DiscordBot {
 			 
 			//Chain listeners if adding more
 			jda = new JDABuilder(AccountType.BOT).setBulkDeleteSplittingEnabled(false).setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN)).addEventListener(pluginListener).addEventListener(new UserEventListener()).buildBlocking();
-			jda.getPresence().setGame(Game.of("Bot Activated!"));
+			jda.getPresence().setGame(Game.of(GameType.DEFAULT, "Bot Activated!"));
 			
 			MemberManager.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
 			MemberManager.load();
@@ -53,8 +54,6 @@ public class DiscordBot {
 			System.out.println("The provided Login information is incorrect. Please provide valid details.");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} catch (RateLimitedException e) {
-			System.out.println("There were too many requests. Please try again later.");
 		}
 		//changeAvatar();
 	}

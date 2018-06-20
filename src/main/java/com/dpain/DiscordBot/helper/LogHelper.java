@@ -12,6 +12,7 @@ import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
+import net.dv8tion.jda.core.events.user.update.GenericUserPresenceEvent;
 
 public class LogHelper {
 	private final static Logger logger = Logger.getLogger(PluginListener.class.getName());
@@ -23,9 +24,9 @@ public class LogHelper {
 	 * @return
 	 */
 	public static String elog(GuildMessageReceivedEvent event, String line) {
-		return String.format("Member: %s (username: %s - %s) in guild: %s\nDescription: %s",
-				event.getMember().getEffectiveName(),
+		return String.format("User: %s (nickname: %s - %s) in guild: %s\nDescription: %s",
 				event.getAuthor().getName(),
+				event.getMember().getNickname(),
 				event.getAuthor().getId(),
 				event.getGuild().getName(),
 				line);
@@ -74,12 +75,12 @@ public class LogHelper {
 	}
 
 	/**
-	 * Returns a string in a formatted fashion for UserGameUpdateEvent.
+	 * Returns a string in a formatted fashion for GenericUserPresenceEvent.
 	 * @param level Level enum.
 	 * @param event Event raised.
 	 * @param line Description.
 	 */
-	public static String elog(UserGameUpdateEvent event, String line) {
+	public static String elog(GenericUserPresenceEvent event, String line) {
 		return String.format("Member: %s (username: %s - %s) in guild: %s\nDescription: %s",
 						event.getGuild().getMemberById(event.getUser().getId()).getEffectiveName(),
 						event.getUser().getName(),

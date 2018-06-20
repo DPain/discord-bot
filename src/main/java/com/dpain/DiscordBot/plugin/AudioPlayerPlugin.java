@@ -65,7 +65,7 @@ public class AudioPlayerPlugin extends Plugin {
 		if(event instanceof GuildMessageReceivedEvent) {
 			try {
 				GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-				String message = castedEvent.getMessage().getContent();
+				String message = castedEvent.getMessage().getContentRaw();
 		        
 				if(canAccessPlugin(castedEvent.getMember()) && !castedEvent.getAuthor().getId().equals(castedEvent.getJDA().getSelfUser().getId())) {
 					if(message.startsWith("-")) {
