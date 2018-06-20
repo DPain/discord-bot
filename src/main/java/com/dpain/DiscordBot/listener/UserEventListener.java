@@ -39,7 +39,7 @@ public class UserEventListener implements net.dv8tion.jda.core.hooks.EventListen
         	MemberManager.load().addNewMember(castedEvent.getMember());
         	
         	if(PropertiesManager.load().getValue(Property.GREET_GUILD_MEMBER).equals("true")) {
-        		castedEvent.getGuild().getPublicChannel().sendMessage("Hi, " + castedEvent.getUser().getName() + "!\nWelcome to the Discord Server!").queue();
+        		castedEvent.getGuild().getDefaultChannel().sendMessage("Hi, " + castedEvent.getUser().getName() + "!\nWelcome to the Discord Server!").queue();
         	}
         	logger.log(Level.INFO, LogHelper.elog(castedEvent, "User joined!"));
         } else if(event instanceof GuildBanEvent) {

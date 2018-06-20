@@ -37,7 +37,11 @@ public class AudioPlayerPlugin extends Plugin {
 	private final Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
 	
 	public AudioPlayerPlugin() {
-		super("AudioPlayerPlugin", Group.TRUSTED_USER);
+		this(null);
+	}
+	
+	public AudioPlayerPlugin(TextChannel loggingChannel) {
+		super("AudioPlayerPlugin", Group.TRUSTED_USER, loggingChannel);
 		
 		super.helpString = "**Audio Player Plugin Usage:** \n"
 				+ "-join *\"channelName\"* : Joins a voice channel.\n"
@@ -74,42 +78,77 @@ public class AudioPlayerPlugin extends Plugin {
 		                    VoiceChannel channel = castedEvent.getGuild().getVoiceChannels().stream().filter(
 		                            vChan -> vChan.getName().equalsIgnoreCase(chanName)).findFirst().orElse(null);  //If there isn't a matching name, return null.
 		                    if (channel == null) {
-		                    	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Channel does not exist Command: %s", message)));
+		                    	String temp = LogHelper.elog(castedEvent, String.format("Channel does not exist Command: %s", message));
+			                	logger.log(Level.INFO, temp);
+			                	if(this.loggingChannel != null) {
+			                		this.loggingChannel.sendMessage(temp);
+			                	}
 		                    	throw new ChannelNotFoundException();
 		                    } else {
 		                    	castedEvent.getGuild().getAudioManager().openAudioConnection(channel);
-		                    	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+		                    	String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+			                	logger.log(Level.INFO, temp);
+			                	if(this.loggingChannel != null) {
+			                		this.loggingChannel.sendMessage(temp);
+			                	}
 		                    }
 		                } else if (message.equals("-leave")) {
 		                	// Disconnect the audio connection with the VoiceChannel.
 		                	castedEvent.getGuild().getAudioManager().closeAudioConnection();
-		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+		                	String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+		                	logger.log(Level.INFO, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		                } else if (message.equals("-play")) {
 		                	// Incorrect usage of play
 		                	castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*");
-		                	logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
+		                	String temp = LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
+		                	logger.log(Level.WARNING, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		                } else if (message.startsWith("-play ")) {
 		                	// Plays a local audio file.
 		                	String trackName = message.substring(6);
 		                	// Implement
 		                	
-		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+		                	String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+		                	logger.log(Level.INFO, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		                } else if (message.startsWith("-playlist ")) {
 		                	// Plays a playlist
 		                	
 		                	String playlistName = message.substring(10);
 		                	// Implement
-		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+
+		                	String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+		                	logger.log(Level.INFO, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		                } else if (message.startsWith("-playurl ")) {
 		                	//Plays audio with the URLPlayer
 		                	
 		                	String urlString = message.substring(9);
 		                    loadAndPlay(castedEvent.getChannel(), urlString);
-		                    logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+
+		                    String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+		                	logger.log(Level.INFO, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		                } else if(message.equals("-volume")) {
 		                	castedEvent.getChannel().sendMessage(String.format("**Current volume:** *%d*",
 		                			getVolume(castedEvent.getChannel()))).queue();
-		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+
+		                	String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+		                	logger.log(Level.INFO, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		        		} else if(message.startsWith("-volume ")) {
 		                	String input = message.substring(8);
 		                	try {
@@ -118,20 +157,45 @@ public class AudioPlayerPlugin extends Plugin {
 		                		
 		                		castedEvent.getChannel().sendMessage(String.format("Setting the volume to %d",
 		                				getVolume(castedEvent.getChannel()))).queue();
-		                		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+
+		                		String temp0 = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+			                	logger.log(Level.INFO, temp0);
+			                	if(this.loggingChannel != null) {
+			                		this.loggingChannel.sendMessage(temp0);
+			                	}
 		                	} catch(NumberFormatException e) {
 		                		castedEvent.getChannel().sendMessage("You must input an int value between 0-100. (inclusive)").queue();
-		                		logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
+		                		
+		                		String temp1 = LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
+			                	logger.log(Level.WARNING, temp1);
+			                	if(this.loggingChannel != null) {
+			                		this.loggingChannel.sendMessage(temp1);
+			                	}
 		                	}
 		        		} else if(message.equals("-resume")) {
 		        			System.out.println("");
-		        			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+
+		        			String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+		                	logger.log(Level.INFO, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		        		} else if(message.equals("-pause")) {
 		        			System.out.println("");
-		        			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+
+		        			String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+		                	logger.log(Level.INFO, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		        		} else if(message.equals("-skip")) {
 		        			skipTrack(castedEvent.getChannel());
-		        			logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+
+		        			String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+		                	logger.log(Level.INFO, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		        		}
 					}
 				}

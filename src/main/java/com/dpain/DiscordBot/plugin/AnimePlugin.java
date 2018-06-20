@@ -10,6 +10,7 @@ import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -19,7 +20,11 @@ public class AnimePlugin extends Plugin {
 	private AnimeTorrentFinder animeTorrentFinder;
 	
 	public AnimePlugin() {
-		super("AnimePlugin", Group.TRUSTED_USER);
+		this(null);
+	}
+	
+	public AnimePlugin(TextChannel loggingChannel) {
+		super("AnimePlugin", Group.TRUSTED_USER, loggingChannel);
 		animeTorrentFinder = new AnimeTorrentFinder();
 		
 		super.helpString = "**Anime Plugin Usage:** \n"
@@ -40,7 +45,12 @@ public class AnimePlugin extends Plugin {
 		                if(message.equals("-anime")) {
 		                	//Incorrect usage of anime plugin.
 		                	castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*").queue();
-		                	logger.log(Level.WARNING, LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
+		                	
+		                	String temp = LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
+		                	logger.log(Level.WARNING, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		                } else if(message.startsWith("-anime ")) {
 		                	String param = message.substring(7);
 		                	if(param.toLowerCase().startsWith("search ")) {
@@ -60,7 +70,12 @@ public class AnimePlugin extends Plugin {
 		                		animeTorrentFinder.getFullSchedule();
 		                		castedEvent.getChannel().sendMessage("WIP").queue();
 		                	}
-		                	logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+		                	
+		                	String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+		                	logger.log(Level.INFO, temp);
+		                	if(this.loggingChannel != null) {
+		                		this.loggingChannel.sendMessage(temp);
+		                	}
 		                }
 					}
 				}

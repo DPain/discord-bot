@@ -1,10 +1,14 @@
 package com.dpain.DiscordBot.plugin;
 
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.plugin.moderator.Cleaner;
@@ -20,6 +24,7 @@ public class ModeratorPlugin extends Plugin {
 		
 		super.helpString = "**Moderator Plugin Usage:**\n"
 				+ "-nick *\"name\"* : Changes the nickname of the bot.\n"
+				+ "-channel : Returns some info of the current Channel.\n"
 				+ "-randomnick : Randomly changes the nickname of the bot.\n"
 				+ "-clear *\"channelName\"* : Clears all the messages in the text channel\n";
 		EssentialsPlugin.appendHelpString(super.helpString);
@@ -42,9 +47,32 @@ public class ModeratorPlugin extends Plugin {
 		            		castedEvent.getChannel().sendMessage("**Nickname changed to:** " + param).queue();
 		            		
 		            		logger.log(Level.INFO, LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+		            	} else if (message.equals("-channel")) {
+		            		Map<String, String> channelInfo = new LinkedHashMap<String, String>();
+		            		channelInfo.put("ID", castedEvent.getChannel().getId());
+		            		channelInfo.put("Name", castedEvent.getChannel().getName());
+		            		channelInfo.put("Topic", castedEvent.getChannel().getTopic());
+		            		channelInfo.put("Channel Type", castedEvent.getChannel().getType().toString());
+		            		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
+		            		String formattedDateTime = castedEvent.getChannel().getCreationTime().format(formatter);
+		            		channelInfo.put("Created Date", formattedDateTime + " " + Timezone.EST.getZoneId());
+		            		channelInfo.put("NSFW", Boolean.toString(castedEvent.getChannel().isNSFW()));
+		            		if(castedEvent.getChannel().getParent() != null) {
+		            			channelInfo.put("Category", castedEvent.getChannel().getParent().getName());
+			            		channelInfo.put("Category ID", castedEvent.getChannel().getParent().getId());
+		            		}
+		            		channelInfo.put("# of Pinned Messages", Integer.toString(castedEvent.getChannel().getPinnedMessages().complete().size()));
+		            		
+		            		String formattedString = "";
+		            		for(String category : channelInfo.keySet()) {
+		            			formattedString += String.format("%s: %s\n", category, channelInfo.get(category));
+		            		}
+		            		formattedString = formattedString.trim();
+		            		
+		            		castedEvent.getChannel().sendMessage("**Channel Info:**\n" + formattedString).queue();
 		            	} else if (message.equals("-randomnick")) {
 		            		String[] names = {"Malfurion",
-		            				"Rexxar",
+		            				"OpenAI",
 		            				"Jaina",
 		            				"Uther",
 		            				"Anduin",
@@ -55,7 +83,8 @@ public class ModeratorPlugin extends Plugin {
 		            				"Medivh",
 		            				"Dildo",
 		            				"2B",
-		            				"Toba"};
+		            				"Toba",
+		            				"Kizuna Ai"};
 		            		
 		            		Random ran = new Random();
 		            		String tempName;

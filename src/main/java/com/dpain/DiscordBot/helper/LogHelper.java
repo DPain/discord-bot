@@ -1,5 +1,12 @@
 package com.dpain.DiscordBot.helper;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.dpain.DiscordBot.enums.Property;
+import com.dpain.DiscordBot.listener.PluginListener;
+import com.dpain.DiscordBot.system.PropertiesManager;
+
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
@@ -7,6 +14,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
 
 public class LogHelper {
+	private final static Logger logger = Logger.getLogger(PluginListener.class.getName());
 	
 	/**
 	 * Returns a string in a formatted fashion for GuildMessageReceivedEvent.
@@ -78,5 +86,15 @@ public class LogHelper {
 						event.getUser().getId(),
 						event.getGuild().getName(),
 						line);
+	}
+	
+	public static void logToChannel() {
+		if(PropertiesManager.load().getValue(Property.LOGGER_CHANNEL_ID) != "") {
+			try {
+				
+			} catch(Exception e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			}
+		}
 	}
 }
