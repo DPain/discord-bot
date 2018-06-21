@@ -1,11 +1,18 @@
 !userdata
-users:
+members:
   '111111111111111111':
-    group: [!Group 'TRUSTED_USER']
-    username: Hello
+    group: [!group 'TRUSTED_USER']
+    nickname: null
+    username: D_Pain
   '222222222222222222':
-    group: [!Group 'GUEST']
-    username: World
+    group: [!group 'GUEST']
+    nickname: ZHANITEST
+    username: D4
   '333333333333333333':
-    group: [!Group 'OWNER']
-    username: Awesome
+    group: [!group 'OWNER']
+    nickname: null
+    username: Kappa
+  '444444444444444444':
+    group: [!group 'BOT']
+    nickname: Dildo Bot
+    username: D_Pain Bot
