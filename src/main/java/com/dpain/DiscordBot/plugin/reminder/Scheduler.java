@@ -1,6 +1,5 @@
 package com.dpain.DiscordBot.plugin.reminder;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Timer;
@@ -8,6 +7,8 @@ import java.util.Timer;
 import com.dpain.DiscordBot.enums.Timezone;
 
 public class Scheduler {
+	public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
+	
 	private Timer timer;
 	
 	/**
@@ -58,14 +59,23 @@ public class Scheduler {
 		return result;
 	}
 	
-	public static String getTimeFromNow(int seconds, Timezone timezone) {
-		LocalDateTime time = LocalDateTime.now();
-		time = time.plusSeconds(seconds);
-
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
-		String formattedDateTime = time.format(formatter);
+	public static String getTimesFromNow(int seconds) {
+		String result = "";
 		
-	    String result = formattedDateTime + " " + timezone.getZoneId();
+		ZonedDateTime time = ZonedDateTime.now();
+		time.plusSeconds(seconds);
+
+		for(Timezone zone : Timezone.class.getEnumConstants()) {
+			result += String.format("\n%s %s", time.withZoneSameInstant(zone.getZoneId()).format(formatter), zone.getZoneId().toString());
+		}
+		return result;
+	}
+	
+	public static String getTimeFromNow(int seconds, Timezone timezone) {
+		ZonedDateTime time = ZonedDateTime.now();
+		time.plusSeconds(seconds);
+
+		String result = String.format("\n%s %s", time.withZoneSameInstant(timezone.getZoneId()).format(formatter), timezone.getZoneId().toString());
 		return result;
 	}
 }

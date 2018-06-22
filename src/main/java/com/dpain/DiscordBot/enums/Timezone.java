@@ -7,7 +7,9 @@ public enum Timezone {
 	PST(ZoneId.of("America/Los_Angeles")),
 	CST(ZoneId.of("America/Chicago")),
 	EST(ZoneId.of("America/New_York")),
-	KST(ZoneId.of("Asia/Seoul"));
+	KST(ZoneId.of("Asia/Seoul")),
+	UTC(ZoneId.of("UTC")),
+	ACT(ZoneId.of("Australia/Sydney"));
 	
 	private ZoneId id;
 	

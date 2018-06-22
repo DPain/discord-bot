@@ -34,9 +34,12 @@ public class DiscordBot {
 	public DiscordBot() {
 		
 		try {
+			// Initialized before PluginListener since a plugin might rely on some properties.
+			PropertiesManager.load();
+			
 			pluginListener = new PluginListener(jda);
 			 
-			//Chain listeners if adding more
+			// Chain listeners if adding more
 			jda = new JDABuilder(AccountType.BOT).setBulkDeleteSplittingEnabled(false).setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN)).addEventListener(pluginListener).addEventListener(new UserEventListener()).buildBlocking();
 			jda.getPresence().setGame(Game.of(GameType.DEFAULT, "Bot Activated!"));
 			

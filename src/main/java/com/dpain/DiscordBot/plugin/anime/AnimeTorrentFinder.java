@@ -14,8 +14,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.dpain.DiscordBot.enums.Property;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.WikipediaPlugin;
+import com.dpain.DiscordBot.system.PropertiesManager;
 
 public class AnimeTorrentFinder {
 	private final static Logger logger = Logger.getLogger(AnimeTorrentFinder.class.getName());
@@ -24,8 +26,17 @@ public class AnimeTorrentFinder {
 	public static int charLimit = 2000;
 	public int entryLimit;
 	
+	/**
+	 * Constructor
+	 */
 	public AnimeTorrentFinder() {
-		entryLimit = 10;
+		try {
+			entryLimit = Integer.parseInt(PropertiesManager.load().getValue(Property.TORRENT_ENTRY_LIMIT));
+		} catch(NumberFormatException e) {
+			logger.log(Level.SEVERE, String.format("Property: %s is not formatted correctly!", Property.TORRENT_ENTRY_LIMIT.getKey()));
+			System.exit(1);
+		}
+		
 	}
 	
 	public String getFullSchedule() {
@@ -39,7 +50,7 @@ public class AnimeTorrentFinder {
 	}
 	
 	/**
-	 * Search torrent files from tokyo-toshokan.info. Works as of 7/26/2017.
+	 * Search torrent files from tokyotosho.info. Works as of 6/22/2018.
 	 * @param name Search parameter.
 	 * @return LinkedList<String> List of strings which are sent by the bot each time.
 	 * @throws IOException
@@ -49,7 +60,7 @@ public class AnimeTorrentFinder {
 		
 		String parseLink = "https://www.tokyotosho.info/search.php?terms=";
 		try {
-			parseLink += URLEncoder.encode(name, "UTF-8") + "&type=0&size_min=&size_max=&username=";
+			parseLink += URLEncoder.encode(name, "UTF-8") + "&type=7&size_min=&size_max=&username=";
 		} catch (UnsupportedEncodingException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		}

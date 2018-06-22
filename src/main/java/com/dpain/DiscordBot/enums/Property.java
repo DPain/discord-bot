@@ -12,7 +12,8 @@ public enum Property {
 	GAME_ROLE_FEATURE("game-role-feature"),
 	USE_TWITCH_ALERTER("use-twitch-alerter"),
 	GREET_GUILD_MEMBER("greet-guild-member"),
-	LOGGER_CHANNEL_ID("logger-channel-id");
+	LOGGER_CHANNEL_ID("logger-channel-id"),
+	TORRENT_ENTRY_LIMIT("torrent-entry-limit");
 	
 	private String key;
 	Property(String key) {

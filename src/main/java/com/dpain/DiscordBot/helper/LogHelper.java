@@ -15,7 +15,7 @@ import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
 import net.dv8tion.jda.core.events.user.update.GenericUserPresenceEvent;
 
 public class LogHelper {
-	private final static Logger logger = Logger.getLogger(PluginListener.class.getName());
+	private final static Logger logger = Logger.getLogger(LogHelper.class.getName());
 	
 	/**
 	 * Returns a string in a formatted fashion for GuildMessageReceivedEvent.

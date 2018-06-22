@@ -7,69 +7,73 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Property;
+import com.dpain.DiscordBot.listener.PluginListener;
 
 public class PropertiesManager {
+	private final static Logger logger = Logger.getLogger(PluginListener.class.getName());
+
 	private static PropertiesManager ref;
-	
+
 	private Properties settings;
-	
+
 	private PropertiesManager() {
+		File configFile = new File("bot.properties");
 		try {
-			File configFile = new File("bot.properties");
-			
-			if(!configFile.exists()) {
+			if (!configFile.exists()) {
+				logger.log(Level.WARNING,
+						String.format("%s file does not exist! Creating a default file.", configFile.getName()));
 				setupPropertiesFile();
 			}
-			
+
 			settings = new Properties();
 			settings.load(new FileReader(configFile));
 		} catch (FileNotFoundException e) {
-			System.out.println("The bot.properties does not exist and could not be created!");
+			logger.log(Level.SEVERE, String.format("%s file does not exist and could not be created!", configFile.getName()));
+			System.exit(1);
 		} catch (IOException e) {
-			System.out.println("The bot.properties cannot be readed!");
+			logger.log(Level.SEVERE, String.format("%s file cannot be read!", configFile.getName()));
+			System.exit(1);
 		}
 	}
 
 	public static PropertiesManager loadPropertiesManager() {
-		if(ref == null) {
+		if (ref == null) {
 			ref = new PropertiesManager();
 		}
 		return ref;
 	}
-	
+
 	/**
 	 * Just a shorter version for loadPropertiesManager().
+	 * 
 	 * @return a singleton of PropertiesManager
 	 */
 	public static PropertiesManager load() {
 		return loadPropertiesManager();
 	}
-	
+
 	public String getValue(Property property) {
 		return settings.getProperty(property.getKey());
 	}
-	
+
 	private void setupPropertiesFile() throws IOException {
 		LocalDateTime timePoint = LocalDateTime.now();
-		
+
 		File configFile = new File("bot.properties");
 		configFile.createNewFile();
-		
-		String line = "#Properties file created at: " + timePoint.toString() + "\n" +
-						Property.USERNAME.getKey() + "=\n" +
-						Property.BOT_ID.getKey() + "=\n" +
-						Property.BOT_TOKEN.getKey() + "=\n" +
-						Property.APP_ID.getKey() + "=\n" +
-						Property.OWNER_USER_ID.getKey() + "=\n" +
-						Property.GUILD_ID.getKey() + "=\n" +
-						Property.WEATHER_API_KEY.getKey() + "=\n" +
-						Property.GAME_ROLE_FEATURE.getKey() + "=true\n" +
-						Property.USE_TWITCH_ALERTER.getKey() + "=false\n" +
-						Property.GREET_GUILD_MEMBER.getKey() + "=false\n" +
-						Property.LOGGER_CHANNEL_ID.getKey() + "=\n";
-		
+
+		String line = String.format(
+				"#Properties file created at: %s\n%s=\n%s=\n%s=\n%s=\n%s=\n%s=\n%s=\n%s=false\n%s=false\n%s=false\n%s=\n%s=5",
+				timePoint.toString(), Property.USERNAME.getKey(), Property.BOT_ID.getKey(), Property.BOT_TOKEN.getKey(),
+				Property.APP_ID.getKey(), Property.OWNER_USER_ID.getKey(), Property.GUILD_ID.getKey(),
+				Property.WEATHER_API_KEY.getKey(), Property.GAME_ROLE_FEATURE.getKey(),
+				Property.USE_TWITCH_ALERTER.getKey(), Property.GREET_GUILD_MEMBER.getKey(),
+				Property.LOGGER_CHANNEL_ID.getKey(), Property.TORRENT_ENTRY_LIMIT.getKey());
+
 		PrintStream printer = new PrintStream(configFile);
 		printer.print(line);
 		printer.close();

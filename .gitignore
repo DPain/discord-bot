@@ -7,9 +7,9 @@
 .classpath
 .project
 bot.properties
-*.log
 *.jar
 *.lck
 *.sh
 *.bat
 users.yml
+log*
