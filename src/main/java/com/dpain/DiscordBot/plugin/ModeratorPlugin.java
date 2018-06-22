@@ -10,10 +10,8 @@ import java.util.logging.Logger;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
-import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.plugin.moderator.Cleaner;
 
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 

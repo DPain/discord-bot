@@ -4,9 +4,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.dpain.DiscordBot.Main;
-import com.dpain.DiscordBot.helper.LogHelper;
-
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;

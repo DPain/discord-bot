@@ -16,7 +16,7 @@ public class WeatherPlugin extends Plugin {
 
 	public WeatherPlugin() {
 		super("WeatherPlugin", Group.USER);
-		super.helpString = "**Weather Plugin Usage:** \n-weather : Gets the weather at the University of Delaware.\n";
+		super.helpString = "**Weather Plugin Usage:** \n-weather *\"name\"* : Gets the weather at a location.\n";
 		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 
@@ -29,31 +29,17 @@ public class WeatherPlugin extends Plugin {
 		        
 				if((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) || canAccessPlugin(castedEvent.getMember())) {
 					if(message.startsWith("-")) {
-		                if(message.equals("-weather")) {
-		                	//Gets the weather data of Newark, DE
+		                if(message.startsWith("-weather ")) {
+		                	String param = message.substring(9);
 		                	
-		                	/**
-		                	 * @TODO Fix weather command
-		                	 */
+		                	// Gets the weather data every 3 hour.
 		                	
 		                	WeatherFinder weatherFinder = new WeatherFinder();
-		                	WeatherDataSet weatherDataSet = weatherFinder.getWeathersByCity("Newark");
+		                	WeatherDataSet weatherDataSet = weatherFinder.getWeathersByCity(param);
 		                	
-		                	String msg = "***" + weatherDataSet.getCity() + "'s*** **Weather Forecast:** \n";
+		                	String msg = "***" + weatherDataSet.getCity() + "'s*** **Weather Forecast:**";
 		                	
-		                	for(int i = 0; i < weatherDataSet.getDataSet().size(); i++) {
-		                		if(i == 0) {
-		                			msg += "\t*Today*";
-		                		} else if(i == 1) {
-		                			msg += "\t*Tomorrow*";
-		                		} else if(i == 2) {
-		                			msg += "\t*Two Days Later*";
-		                		} else if(i == 3) {
-		                			msg += "\t*Three Days Later*";
-		                		} else {
-		                			msg += "\t*Day " + i + "*";
-		                		}
-		                		
+		                	for(int i = 0; i < weatherDataSet.getDataSet().size() && i < 5; i++) {
 		                		msg += weatherDataSet.getDataSet().get(i).getCommonDataToString();
 		                	}
 		                	castedEvent.getChannel().sendMessage(msg).queue();

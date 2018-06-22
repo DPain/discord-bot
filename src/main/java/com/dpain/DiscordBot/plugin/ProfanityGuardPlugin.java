@@ -1,16 +1,12 @@
 package com.dpain.DiscordBot.plugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
-import com.dpain.DiscordBot.listener.UserEventListener;
-import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;

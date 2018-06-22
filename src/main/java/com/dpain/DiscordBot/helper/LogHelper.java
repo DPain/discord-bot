@@ -4,14 +4,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Property;
-import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.system.PropertiesManager;
 
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
 import net.dv8tion.jda.core.events.user.update.GenericUserPresenceEvent;
 
 public class LogHelper {
@@ -80,7 +78,7 @@ public class LogHelper {
 	 * @param event Event raised.
 	 * @param line Description.
 	 */
-	public static String elog(GenericUserPresenceEvent event, String line) {
+	public static String elog(GenericUserPresenceEvent<?> event, String line) {
 		return String.format("Member: %s (username: %s - %s) in guild: %s\nDescription: %s",
 						event.getGuild().getMemberById(event.getUser().getId()).getEffectiveName(),
 						event.getUser().getName(),

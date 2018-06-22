@@ -2,14 +2,12 @@ package com.dpain.DiscordBot;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginException;
 
 import com.dpain.DiscordBot.enums.Property;
-import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.listener.ConsoleInputReader;
 import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.listener.UserEventListener;
@@ -23,7 +21,6 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.Game.GameType;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class DiscordBot {
 	private final static Logger logger = Logger.getLogger(DiscordBot.class.getName());

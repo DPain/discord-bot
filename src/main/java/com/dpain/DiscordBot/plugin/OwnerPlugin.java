@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
-import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.system.MemberManager;
 
 import net.dv8tion.jda.core.events.Event;

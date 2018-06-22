@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
-import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.reminder.Reminder;
 import com.dpain.DiscordBot.plugin.reminder.Scheduler;
@@ -23,7 +22,7 @@ public class SchedulerPlugin extends Plugin {
 		
 		super.helpString = "**Scheduler Plugin Usage:** \n"
 				+ "-remind *\"hours later\"* *\"description\"* : Sets a reminder for x hours later.\n"
-				+ "-time*\"hours later\"* : Gets the time x hours later for PST,CST,EST,KST.\n";
+				+ "-time*\"hours later\"* : Gets the time x hours later for a set of Timezones.\n";
 		EssentialsPlugin.appendHelpString(super.helpString);
 	}
 

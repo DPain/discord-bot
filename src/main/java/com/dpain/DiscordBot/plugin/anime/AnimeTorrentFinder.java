@@ -2,7 +2,6 @@ package com.dpain.DiscordBot.plugin.anime;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -15,8 +14,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.dpain.DiscordBot.enums.Property;
-import com.dpain.DiscordBot.helper.LogHelper;
-import com.dpain.DiscordBot.plugin.WikipediaPlugin;
 import com.dpain.DiscordBot.system.PropertiesManager;
 
 public class AnimeTorrentFinder {

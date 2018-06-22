@@ -17,7 +17,6 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		Logger logger = Logger.getLogger("");
 		fileHandler.setFormatter(new SimpleFormatter());
 		logger.addHandler(fileHandler);
 		logger.setLevel(Level.CONFIG);

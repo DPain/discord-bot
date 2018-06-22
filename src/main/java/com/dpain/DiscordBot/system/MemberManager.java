@@ -18,11 +18,8 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Property;
-import com.dpain.DiscordBot.helper.LogHelper;
-import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Member;
 
 public class MemberManager {

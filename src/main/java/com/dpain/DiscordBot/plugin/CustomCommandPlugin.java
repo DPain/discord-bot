@@ -3,7 +3,6 @@ package com.dpain.DiscordBot.plugin;
 import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
-import com.dpain.DiscordBot.listener.UserEventListener;
 
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;

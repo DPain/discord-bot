@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
-import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.plugin.mcsplash.MinecraftSplashReader;
 
 import net.dv8tion.jda.core.events.Event;
@@ -33,12 +32,12 @@ public class EssentialsPlugin extends Plugin {
 		instantiateEmoteMap();
 		mcSplash = new MinecraftSplashReader("./rsc/splashes.txt");
 		
-		String temp = "**Essentials Plugin Usage:** \n"
+		super.helpString = "**Essentials Plugin Usage:** \n"
 				+ "-splash : Gets a random string.\n"
 				+ "-emotes : Returns the list of twitch emotes available.\n"
 				+ "-help : Displays the available commands.\n";
 		
-		appendHelpString(temp);
+		appendHelpString(super.helpString);
 	}
 	
 	private void instantiateEmoteMap() {

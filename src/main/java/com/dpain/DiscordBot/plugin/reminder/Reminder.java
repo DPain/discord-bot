@@ -4,9 +4,6 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.dpain.DiscordBot.helper.LogHelper;
-import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
-
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
