@@ -13,3 +13,4 @@ bot.properties
 *.bat
 users.yml
 log*
+*.html
