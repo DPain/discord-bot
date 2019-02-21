@@ -15,6 +15,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -44,7 +45,7 @@ public class AudioPlayerPlugin extends Plugin {
             + "-volume : Displays the current volume.\n"
             + "-volume *\"integer\"* : Sets the volume of the audio player (0-100).\n"
             + "-resume : Resumes the audio.\n" + "-pause : Pauses the audio.\n"
-            + "-skip : Skips the audio.\n";
+            + "-current : Displays the current song.\n" + "-skip : Skips the audio.\n";
     EssentialsPlugin.appendHelpString(super.helpString);
 
     AudioSourceManagers.registerRemoteSources(playerManager);
@@ -177,7 +178,9 @@ public class AudioPlayerPlugin extends Plugin {
                 }
               }
             } else if (message.equals("-resume")) {
-              System.out.println("");
+              getGuildAudioPlayer(castedEvent.getGuild()).getPlayer().setPaused(false);
+
+              castedEvent.getChannel().sendMessage("Resumed Song!").queue();
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.log(Level.INFO, temp);
@@ -185,7 +188,25 @@ public class AudioPlayerPlugin extends Plugin {
                 this.loggingChannel.sendMessage(temp);
               }
             } else if (message.equals("-pause")) {
-              System.out.println("");
+              getGuildAudioPlayer(castedEvent.getGuild()).getPlayer().setPaused(true);
+
+              castedEvent.getChannel().sendMessage("Paused Song!").queue();
+
+              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+              logger.log(Level.INFO, temp);
+              if (this.loggingChannel != null) {
+                this.loggingChannel.sendMessage(temp);
+              }
+            } else if (message.equals("-current")) {
+
+              AudioTrack track =
+                  getGuildAudioPlayer(castedEvent.getGuild()).getPlayer().getPlayingTrack();
+              if (track != null) {
+                castedEvent.getChannel().sendMessage(String.format("Current song: \"%s\" by %s",
+                    track.getInfo().title, track.getInfo().author)).queue();
+              } else {
+                castedEvent.getChannel().sendMessage("No song playing!").queue();
+              }
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.log(Level.INFO, temp);
