@@ -35,9 +35,13 @@ public class DiscordBot {
 			PropertiesManager.load();
 			
 			pluginListener = new PluginListener(jda);
-			 
-			// Chain listeners if adding more
-			jda = new JDABuilder(AccountType.BOT).setBulkDeleteSplittingEnabled(false).setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN)).addEventListener(pluginListener).addEventListener(new UserEventListener()).buildBlocking();
+			
+			JDABuilder builder = new JDABuilder(AccountType.BOT).setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN));
+			
+			builder.addEventListener(pluginListener);
+			builder.addEventListener(new UserEventListener());
+
+			jda = builder.build().awaitReady();
 			jda.getPresence().setGame(Game.of(GameType.DEFAULT, "Bot Activated!"));
 			
 			MemberManager.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
@@ -53,9 +57,11 @@ public class DiscordBot {
 		} catch (LoginException e) {
 			System.out.println("The provided Login information is incorrect. Please provide valid details.");
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		//changeAvatar();
+	      // TODO Auto-generated catch block
+	      e.printStackTrace();
+	    }
+    // changeAvatar();
+
 	}
 	
 	public void readConsole() {
