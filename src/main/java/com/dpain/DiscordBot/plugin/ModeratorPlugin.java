@@ -4,8 +4,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
@@ -15,7 +15,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class ModeratorPlugin extends Plugin {
-  private final static Logger logger = Logger.getLogger(ModeratorPlugin.class.getName());
+  private final static Logger logger = LoggerFactory.getLogger(ModeratorPlugin.class);
 
   public ModeratorPlugin() {
     super("ModeratorPlugin", Group.MODERATOR);
@@ -46,8 +46,7 @@ public class ModeratorPlugin extends Plugin {
                   .setNickname(castedEvent.getGuild().getSelfMember(), param).queue();
               castedEvent.getChannel().sendMessage("**Nickname changed to:** " + param).queue();
 
-              logger.log(Level.INFO,
-                  LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             } else if (message.equals("-channel")) {
               Map<String, String> channelInfo = new LinkedHashMap<String, String>();
               channelInfo.put("ID", castedEvent.getChannel().getId());
@@ -91,8 +90,7 @@ public class ModeratorPlugin extends Plugin {
                   .setNickname(castedEvent.getGuild().getSelfMember(), tempName).queue();
               castedEvent.getChannel().sendMessage("**Nickname changed to:** " + tempName).queue();
 
-              logger.log(Level.INFO,
-                  LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             } else if (message.startsWith("-clear ")) {
               String param = message.substring("-clear ".length());
               try {
@@ -104,17 +102,16 @@ public class ModeratorPlugin extends Plugin {
                 } catch (RateLimitedException e) {
                   String temp = "The bot is being rate limited!";
                   castedEvent.getChannel().sendMessage(temp).queue();
-                  logger.log(Level.WARNING, LogHelper.elog(castedEvent, temp));
+                  logger.warn(LogHelper.elog(castedEvent, temp));
                 }
 
-                logger.log(Level.INFO,
-                    LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
                 // No point on sending a message that the cleaner is already running since it will
                 // get instantly deleted.
               } catch (NumberFormatException e) {
                 castedEvent.getChannel().sendMessage("**Please enter a correct number!**").queue();
 
-                logger.log(Level.WARNING,
+                logger.warn(
                     LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
               }
             }

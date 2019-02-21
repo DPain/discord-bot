@@ -1,25 +1,14 @@
 package com.dpain.DiscordBot;
 
-import java.io.IOException;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
-	private final static Logger logger = Logger.getLogger(Main.class.getName());
-	private static FileHandler fileHandler = null;
+	
+	private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
 	public static void main(String[] args) {
-		try {
-			fileHandler = new FileHandler("log.log", false);
-		} catch (SecurityException | IOException e) {
-			e.printStackTrace();
-		}
-		
-		fileHandler.setFormatter(new SimpleFormatter());
-		logger.addHandler(fileHandler);
-		logger.setLevel(Level.CONFIG);
+		logger.info("Main Initialized!");
 		
 		DiscordBot myBot = new DiscordBot();
 		myBot.readConsole();

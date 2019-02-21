@@ -2,8 +2,8 @@ package com.dpain.DiscordBot.plugin;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.ChannelNotFoundException;
 import com.dpain.DiscordBot.helper.LogHelper;
@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 public class AudioPlayerPlugin extends Plugin {
-  private final static Logger logger = Logger.getLogger(AudioPlayerPlugin.class.getName());
+  private final static Logger logger = LoggerFactory.getLogger(AudioPlayerPlugin.class);
 
   private final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
   private final Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
@@ -78,7 +78,7 @@ public class AudioPlayerPlugin extends Plugin {
               if (channel == null) {
                 String temp = LogHelper.elog(castedEvent,
                     String.format("Channel does not exist Command: %s", message));
-                logger.log(Level.INFO, temp);
+                logger.warn(temp);
                 if (this.loggingChannel != null) {
                   this.loggingChannel.sendMessage(temp);
                 }
@@ -86,7 +86,7 @@ public class AudioPlayerPlugin extends Plugin {
               } else {
                 castedEvent.getGuild().getAudioManager().openAudioConnection(channel);
                 String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-                logger.log(Level.INFO, temp);
+                logger.info(temp);
                 if (this.loggingChannel != null) {
                   this.loggingChannel.sendMessage(temp);
                 }
@@ -96,7 +96,7 @@ public class AudioPlayerPlugin extends Plugin {
               // VoiceChannel.
               castedEvent.getGuild().getAudioManager().closeAudioConnection();
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.log(Level.INFO, temp);
+              logger.info(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
@@ -105,28 +105,29 @@ public class AudioPlayerPlugin extends Plugin {
               castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*");
               String temp =
                   LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
-              logger.log(Level.WARNING, temp);
+              logger.warn(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
             } else if (message.startsWith("-play ")) {
               // Plays a local audio file.
               String trackName = message.substring(6);
-              // Implement
+
+              // #TODO Implement
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.log(Level.INFO, temp);
+              logger.info(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
             } else if (message.startsWith("-playlist ")) {
               // Plays a playlist
-
               String playlistName = message.substring(10);
-              // Implement
+
+              // #TODO Implement
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.log(Level.INFO, temp);
+              logger.info(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
@@ -137,7 +138,7 @@ public class AudioPlayerPlugin extends Plugin {
               loadAndPlay(castedEvent.getChannel(), urlString);
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.log(Level.INFO, temp);
+              logger.info(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
@@ -147,7 +148,7 @@ public class AudioPlayerPlugin extends Plugin {
                   .queue();
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.log(Level.INFO, temp);
+              logger.info(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
@@ -155,6 +156,14 @@ public class AudioPlayerPlugin extends Plugin {
               String input = message.substring(8);
               try {
                 int temp = Integer.parseInt(input);
+
+                // Sanitize user input.
+                if (temp < 0) {
+                  temp = 0;
+                } else if (temp > 100) {
+                  temp = 100;
+                }
+
                 setVolume(castedEvent.getChannel(), temp);
 
                 castedEvent.getChannel().sendMessage(
@@ -162,7 +171,7 @@ public class AudioPlayerPlugin extends Plugin {
                     .queue();
 
                 String temp0 = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-                logger.log(Level.INFO, temp0);
+                logger.info(temp0);
                 if (this.loggingChannel != null) {
                   this.loggingChannel.sendMessage(temp0);
                 }
@@ -172,7 +181,7 @@ public class AudioPlayerPlugin extends Plugin {
 
                 String temp1 =
                     LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
-                logger.log(Level.WARNING, temp1);
+                logger.warn(temp1);
                 if (this.loggingChannel != null) {
                   this.loggingChannel.sendMessage(temp1);
                 }
@@ -183,7 +192,7 @@ public class AudioPlayerPlugin extends Plugin {
               castedEvent.getChannel().sendMessage("Resumed Song!").queue();
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.log(Level.INFO, temp);
+              logger.info(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
@@ -193,7 +202,7 @@ public class AudioPlayerPlugin extends Plugin {
               castedEvent.getChannel().sendMessage("Paused Song!").queue();
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.log(Level.INFO, temp);
+              logger.info(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
@@ -209,7 +218,7 @@ public class AudioPlayerPlugin extends Plugin {
               }
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.log(Level.INFO, temp);
+              logger.info(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
@@ -217,7 +226,7 @@ public class AudioPlayerPlugin extends Plugin {
               skipTrack(castedEvent.getChannel());
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.log(Level.INFO, temp);
+              logger.info(temp);
               if (this.loggingChannel != null) {
                 this.loggingChannel.sendMessage(temp);
               }
@@ -272,9 +281,8 @@ public class AudioPlayerPlugin extends Plugin {
           play(musicManager, track);
         }
 
-        channel
-            .sendMessage(String.format("Added playlist \"%s\" to the queue!", playlist.getName()))
-            .queue();
+        channel.sendMessage(String.format("Added playlist \"%s\" with %d songs to the queue!",
+            playlist.getName(), playlist.getTracks().size())).queue();
       }
 
       @Override
