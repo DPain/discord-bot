@@ -12,6 +12,7 @@ public enum Property {
   WEATHER_API_KEY("weather-api-key"),
   GAME_ROLE_FEATURE("game-role-feature"),
   USE_TWITCH_ALERTER("use-twitch-alerter"),
+  USE_G2G_ALERTER("use-g2g-alerter"),
   GREET_GUILD_MEMBER("greet-guild-member"),
   LOGGER_CHANNEL_ID("logger-channel-id"),
   TORRENT_ENTRY_LIMIT("torrent-entry-limit");

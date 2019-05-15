@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.listener.g2g.G2gAlerter;
 import com.dpain.DiscordBot.system.MemberManager;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -68,6 +69,7 @@ public class OwnerPlugin extends Plugin {
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             } else if (message.equals("-exit")) {
               MemberManager.load().saveConfig();
+              G2gAlerter.load().saveConfig();
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
               castedEvent.getJDA().shutdown();
               System.exit(0);

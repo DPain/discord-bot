@@ -8,6 +8,7 @@ import com.dpain.DiscordBot.plugin.AnimePlugin;
 import com.dpain.DiscordBot.plugin.AudioPlayerPlugin;
 import com.dpain.DiscordBot.plugin.Plugin;
 import com.dpain.DiscordBot.plugin.EssentialsPlugin;
+import com.dpain.DiscordBot.plugin.G2gNotifierPlugin;
 import com.dpain.DiscordBot.plugin.GamerolePlugin;
 import com.dpain.DiscordBot.plugin.ModeratorPlugin;
 import com.dpain.DiscordBot.plugin.OwnerPlugin;
@@ -43,6 +44,10 @@ public class PluginListener implements EventListener {
     if (PropertiesManager.load().getValue(Property.GAME_ROLE_FEATURE).toUpperCase()
         .equals("TRUE")) {
       plugins.add(new GamerolePlugin());
+    }
+    if (PropertiesManager.load().getValue(Property.USE_G2G_ALERTER).toUpperCase()
+        .equals("TRUE")) {
+      plugins.add(new G2gNotifierPlugin());
     }
 
     logger.info("Added all the plugins!");

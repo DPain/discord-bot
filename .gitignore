@@ -12,5 +12,6 @@ bot.properties
 *.sh
 *.bat
 users.yml
+subscription.yml
 log*
 *.html
