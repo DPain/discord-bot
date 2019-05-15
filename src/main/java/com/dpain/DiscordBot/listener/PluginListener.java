@@ -25,7 +25,7 @@ public class PluginListener implements EventListener {
 
   private LinkedList<Plugin> plugins;
 
-  public PluginListener(JDA jda) {
+  public PluginListener() {
     // Maybe use one hashmap and have each plugins to add into the hashmap.
     plugins = new LinkedList<Plugin>();
 

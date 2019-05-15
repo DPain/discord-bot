@@ -6,7 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
 public class G2gAlerter {
@@ -22,10 +25,12 @@ public class G2gAlerter {
 
   // Max message length is 2000. So charLimit must be at max: 1996
   public static int charLimit = 800;
-  public static double priceLimit = 0.003;
+  public static double priceLimit = 0.004;
 
   private final String SUBSCRIPTION_FILENAME = "subscription.yml";
   private List<String> userList = new ArrayList<String>();
+
+  private JDA jda;
 
   private static G2gAlerter ref;
 
@@ -47,7 +52,14 @@ public class G2gAlerter {
     }
     return ref;
   }
-
+  
+  public void setJDA(JDA jda) {
+    this.jda = jda;
+  }
+  
+  public JDA getJDA() {
+    return jda;
+  }
 
   private void readSubscriptionFile() throws IOException {
     Yaml yaml = new Yaml();
@@ -62,6 +74,7 @@ public class G2gAlerter {
 
   /**
    * Either adds or removes a user from the subscriptionList.
+   * 
    * @param user
    * @return true when added, false when removed.
    */
@@ -104,8 +117,22 @@ public class G2gAlerter {
   }
 
   public void broadcastPrice() {
-    for (String id : userList) {
-
+    try {
+      ArrayList<SellerInfo> list = G2gAlerter.load().checkPrice();
+      SellerInfo min = list.stream().min(Comparator.comparing(SellerInfo::getPrice))
+          .orElseThrow(NoSuchElementException::new);
+      
+      System.out.println(min);
+      if (min.getPrice() <= priceLimit) {
+        for (String id : userList) {
+          jda.getUserById(id).openPrivateChannel().queue((channel) -> {
+            channel.sendMessage(min.toString()).queue();
+          });
+        }
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 
@@ -115,7 +142,6 @@ public class G2gAlerter {
     Document doc = Jsoup.connect(parseLink).get();
 
     Elements listing = doc.select("li[data-name='ArcheAge (US) > Kadum (Gold)']");
-    System.out.println(String.format("listing size: %d", listing.size()));
     for (Element entry : listing) {
       String sellerName = entry.select("a.seller__name").html();
       Element priceSpan = entry.select("span.products__exch-rate").first();

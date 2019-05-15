@@ -8,6 +8,10 @@ public class SellerInfo {
     this.name = name;
     this.price = price;
   }
+  
+  public double getPrice() {
+    return price;
+  }
 
   @Override
   public String toString() {

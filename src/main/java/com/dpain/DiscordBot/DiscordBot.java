@@ -12,6 +12,7 @@ import com.dpain.DiscordBot.enums.Property;
 import com.dpain.DiscordBot.listener.ConsoleInputReader;
 import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.listener.UserEventListener;
+import com.dpain.DiscordBot.listener.g2g.G2gAlerter;
 import com.dpain.DiscordBot.system.PropertiesManager;
 import com.dpain.DiscordBot.system.MemberManager;
 
@@ -36,7 +37,7 @@ public class DiscordBot {
 			// properties.
 			PropertiesManager.load();
 
-			pluginListener = new PluginListener(jda);
+			pluginListener = new PluginListener();
 
 			JDABuilder builder = new JDABuilder(AccountType.BOT)
 					.setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN));
@@ -50,6 +51,9 @@ public class DiscordBot {
 			MemberManager.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
 			MemberManager.load();
 			UserEventListener.setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
+			
+			G2gAlerter.load().setJDA(jda);
+            // Set thread for automated g2g price check and accouncment.
 
 			logger.info("Registered Guilds:");
 			for (Guild guild : jda.getGuilds()) {
