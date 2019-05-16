@@ -121,10 +121,14 @@ public class G2gAlerter {
     if (userList.contains(user.getId())) {
       userList.remove(user.getId());
       logger.info("User id removed: " + user.getId());
+      
+      saveConfig();
       return false;
     } else {
       userList.add(user.getId());
       logger.info("User id added: " + user.getId());
+      
+      saveConfig();
       return true;
     }
   }
