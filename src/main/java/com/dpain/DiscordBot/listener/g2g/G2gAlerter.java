@@ -4,11 +4,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,7 +29,7 @@ public class G2gAlerter {
 
   // Max message length is 2000. So charLimit must be at max: 1996
   public static int charLimit = 800;
-  public static double priceLimit = 0.004;
+  public static double priceLimit = 0.003;
 
   private final String SUBSCRIPTION_FILENAME = "subscription.yml";
   private List<String> userList = new ArrayList<String>();
@@ -34,9 +38,29 @@ public class G2gAlerter {
 
   private static G2gAlerter ref;
 
+  /**
+   * Constructor
+   */
   private G2gAlerter() {
     try {
       readSubscriptionFile();
+
+      // Calculating initial delay
+      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime nextRun = now.withMinute(0).withSecond(0).plusHours(1);
+
+      Duration duration = Duration.between(now, nextRun);
+      long initalDelay = duration.getSeconds();
+
+      // Starting scheduled service every hour
+      ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+      scheduler.scheduleAtFixedRate(new Runnable() {
+        @Override
+        public void run() {
+          broadcastPrice();
+        }
+      }, initalDelay, TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
+
     } catch (IOException e) {
       logger.error("Did not have permission to create the " + SUBSCRIPTION_FILENAME + " file!");
     }
@@ -52,15 +76,30 @@ public class G2gAlerter {
     }
     return ref;
   }
-  
+
+  /**
+   * Sets the JDA the Alerter will use
+   * 
+   * @param jda
+   */
   public void setJDA(JDA jda) {
     this.jda = jda;
   }
-  
+
+  /**
+   * Gets the JDA that Alerter is using
+   * 
+   * @return jda
+   */
   public JDA getJDA() {
     return jda;
   }
 
+  /**
+   * Reads the list of users who signed for alert subscription.
+   * 
+   * @throws IOException
+   */
   private void readSubscriptionFile() throws IOException {
     Yaml yaml = new Yaml();
 
@@ -90,14 +129,20 @@ public class G2gAlerter {
     }
   }
 
+  /**
+   * Removes everyone in the subscription list.
+   */
   public void rebuild() {
-    // Clears the userMap
+    // Clears the userList
     userList.clear();
 
     logger.info("Rebuit " + SUBSCRIPTION_FILENAME + " file!");
     saveConfig();
   }
 
+  /**
+   * Saves subscription list from memory to file.
+   */
   public void saveConfig() {
     Yaml yaml = new Yaml();
 
@@ -108,20 +153,26 @@ public class G2gAlerter {
     }
   }
 
+  /**
+   * Reads the subscription list into memory again.
+   */
   public void reload() {
     try {
       readSubscriptionFile();
     } catch (IOException e) {
-      logger.error("Did not have permission to create the " + SUBSCRIPTION_FILENAME + " file!");
+      logger.error("Did not have permission to read the " + SUBSCRIPTION_FILENAME + " file!");
     }
   }
 
+  /**
+   * Checks price from G2G and returns the lowest price if it is lower than the threshold.
+   */
   public void broadcastPrice() {
     try {
       ArrayList<SellerInfo> list = G2gAlerter.load().checkPrice();
       SellerInfo min = list.stream().min(Comparator.comparing(SellerInfo::getPrice))
           .orElseThrow(NoSuchElementException::new);
-      
+
       System.out.println(min);
       if (min.getPrice() <= priceLimit) {
         for (String id : userList) {
@@ -136,6 +187,12 @@ public class G2gAlerter {
     }
   }
 
+  /**
+   * Checks price from G2G.
+   * 
+   * @return ArrayList<SellerInfo> list of sellers
+   * @throws IOException
+   */
   public ArrayList<SellerInfo> checkPrice() throws IOException {
     ArrayList<SellerInfo> result = new ArrayList<SellerInfo>();
     String parseLink = "https://www.g2g.com/archeage-us/Gold-20354-20357?&server=29358";
