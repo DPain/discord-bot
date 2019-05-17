@@ -36,12 +36,6 @@ public class UserEventListener implements EventListener {
 
       MemberManager.load().addMember(castedEvent.getMember());
 
-      if (PropertiesManager.load().getValue(Property.GREET_GUILD_MEMBER).equals("true")) {
-        castedEvent.getGuild().getDefaultChannel()
-            .sendMessage(
-                "Hi, " + castedEvent.getUser().getName() + "!\nWelcome to the Discord Server!")
-            .queue();
-      }
       logger.info(LogHelper.elog(castedEvent, "User joined!"));
     } else if (event instanceof GuildBanEvent) {
       GuildBanEvent castedEvent = (GuildBanEvent) event;

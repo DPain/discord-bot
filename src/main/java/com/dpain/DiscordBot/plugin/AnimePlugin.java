@@ -17,11 +17,7 @@ public class AnimePlugin extends Plugin {
   private AnimeTorrentFinder animeTorrentFinder;
 
   public AnimePlugin() {
-    this(null);
-  }
-
-  public AnimePlugin(TextChannel loggingChannel) {
-    super("AnimePlugin", Group.TRUSTED_USER, loggingChannel);
+    super("AnimePlugin", Group.TRUSTED_USER);
     animeTorrentFinder = new AnimeTorrentFinder();
 
     super.helpString = "**Anime Plugin Usage:** \n"

@@ -1,9 +1,17 @@
 package com.dpain.DiscordBot.plugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.CodeSource;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.Main;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.mcsplash.MinecraftSplashReader;
@@ -26,9 +34,20 @@ public class EssentialsPlugin extends Plugin {
   public EssentialsPlugin() {
     super("EssentialsPlugin", Group.USER);
 
+    // Create img folder is it does not exist.
+    Path imgDir = Paths.get("rsc/img");
+    if (!Files.isDirectory(imgDir)) {
+      try {
+        Files.createDirectories(imgDir);
+      } catch (IOException e) {
+        // Fail to create directory
+        e.printStackTrace();
+      }
+    }
+
     emoteMap = new HashMap<String, File>();
     instantiateEmoteMap();
-    mcSplash = new MinecraftSplashReader("./rsc/splashes.txt");
+    mcSplash = new MinecraftSplashReader(new File("rsc/splashes.txt"));
 
     super.helpString = "**Essentials Plugin Usage:** \n" + "-splash : Gets a random string.\n"
         + "-emotes : Returns the list of twitch emotes available.\n"
@@ -38,7 +57,7 @@ public class EssentialsPlugin extends Plugin {
   }
 
   private void instantiateEmoteMap() {
-    File imageFolder = new File("./rsc/img");
+    File imageFolder = new File("rsc/img");
     File[] listOfFiles = imageFolder.listFiles();
 
     String temp = "";
@@ -55,7 +74,11 @@ public class EssentialsPlugin extends Plugin {
         temp += key + ", ";
       }
     }
-    temp = temp.substring(0, temp.length() - 2);
+
+    if (temp.length() > 2) {
+      temp = temp.substring(0, temp.length() - 2);
+    }
+
     twitchEmoteList = temp;
   }
 
@@ -127,6 +150,7 @@ public class EssentialsPlugin extends Plugin {
 
   /**
    * Determines whether the bot should display an emote.
+   * 
    * @param key
    * @param msg
    * @return

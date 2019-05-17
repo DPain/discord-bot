@@ -14,6 +14,7 @@ The program requires the JDA Discord library and several other libraries which i
 	* snakeyaml 1.23
 	* lavaplayer 1.3.10
 	* slf4j-simple 1.7.25
+	* org.json 20180813
 
 ## Contribution guidelines ##
 ### Advice ###

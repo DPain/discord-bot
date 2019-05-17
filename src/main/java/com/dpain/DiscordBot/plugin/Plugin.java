@@ -16,15 +16,17 @@ public abstract class Plugin {
   protected String helpString;
   protected TextChannel loggingChannel;
 
+  /**
+   * Constructor
+   * 
+   * @param name Name of the plugin
+   * @param group Default Group allowed to access the plugin
+   */
   public Plugin(String name, Group group) {
-    this(name, group, null);
-  }
-
-  public Plugin(String name, Group group, TextChannel loggingChannel) {
     this.name = name;
     this.group = group;
-    this.loggingChannel = loggingChannel;
-    logger.info("Plugin Initialized!");
+
+    logger.info(String.format("%s Plugin Initialized!", name));
   }
 
   public abstract void handleEvent(Event event);
@@ -35,14 +37,6 @@ public abstract class Plugin {
 
   public final String getName() {
     return name;
-  }
-
-  public final void setLoggingChannel(TextChannel channel) {
-    this.loggingChannel = channel;
-  }
-
-  public final TextChannel getLoggingChannel() {
-    return this.loggingChannel;
   }
 
   protected boolean canAccessPlugin(Member member) {

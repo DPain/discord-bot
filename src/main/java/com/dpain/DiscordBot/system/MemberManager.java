@@ -147,7 +147,7 @@ public class MemberManager {
           .equals(PropertiesManager.load().getValue(Property.OWNER_USER_ID))) {
         addMember(member, Group.OWNER);
       } else if (member.getUser().getId()
-          .equals(PropertiesManager.load().getValue(Property.BOT_ID))) {
+          .equals(guild.getJDA().getSelfUser().getId())) {
         addMember(member, Group.BOT);
       } else {
         addMember(member);

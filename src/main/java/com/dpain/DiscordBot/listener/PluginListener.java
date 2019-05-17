@@ -16,7 +16,6 @@ import com.dpain.DiscordBot.plugin.SchedulerPlugin;
 import com.dpain.DiscordBot.plugin.WeatherPlugin;
 import com.dpain.DiscordBot.plugin.WikipediaPlugin;
 import com.dpain.DiscordBot.system.PropertiesManager;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.hooks.EventListener;
 
@@ -41,7 +40,7 @@ public class PluginListener implements EventListener {
     plugins.add(new SchedulerPlugin());
     plugins.add(new WeatherPlugin());
     plugins.add(new WikipediaPlugin());
-    if (PropertiesManager.load().getValue(Property.GAME_ROLE_FEATURE).toUpperCase()
+    if (PropertiesManager.load().getValue(Property.USE_GAME_ROLE).toUpperCase()
         .equals("TRUE")) {
       plugins.add(new GamerolePlugin());
     }

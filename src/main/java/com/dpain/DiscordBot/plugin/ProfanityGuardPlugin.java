@@ -13,7 +13,6 @@ public class ProfanityGuardPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(ProfanityGuardPlugin.class);
 
   private boolean activated = false;
-  private HashMap<String, File> emoteMap;
 
   /**
    * #TODO In future, implement strike out system and save into a file

@@ -15,13 +15,11 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.managers.AudioManager;
 
 public class AudioPlayerPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(AudioPlayerPlugin.class);
@@ -30,11 +28,7 @@ public class AudioPlayerPlugin extends Plugin {
   private final Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
 
   public AudioPlayerPlugin() {
-    this(null);
-  }
-
-  public AudioPlayerPlugin(TextChannel loggingChannel) {
-    super("AudioPlayerPlugin", Group.TRUSTED_USER, loggingChannel);
+    super("AudioPlayerPlugin", Group.TRUSTED_USER);
 
     super.helpString =
         "**Audio Player Plugin Usage:** \n" + "-join *\"channelName\"* : Joins a voice channel.\n"
