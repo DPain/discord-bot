@@ -1,5 +1,6 @@
 package com.dpain.DiscordBot.plugin.moderator;
 
+import java.util.Iterator;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,38 +14,48 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 public class Cleaner implements Runnable {
   private final static Logger logger = LoggerFactory.getLogger(Cleaner.class);
 
-  private MessageHistory messageHistory;
+  private TextChannel targetChannel;
   private List<Message> messages;
   private int count;
 
+  /**
+   * Constructor
+   * @param targetChannel channel to delete messages.
+   * @param i number of messages
+   * @throws RateLimitedException
+   */
   public Cleaner(TextChannel targetChannel, int i) throws RateLimitedException {
     logger.info(String.format("Cleaner Initialized!"));
 
-    messageHistory = targetChannel.getHistory();
-    messages = messageHistory.retrievePast(i).complete(true);
+    this.targetChannel = targetChannel;
 
-    count = i + 1;
+    // Plugin shouldn't allow this case, but just for safety.
+    if (i < 0) {
+      i = 0;
+    }
+
+    // Need one extra message to exclude the clear request message.
+    messages = targetChannel.getHistory().retrievePast(i + 1).complete(true);
+    count = i;
   }
 
   @Override
   public void run() {
+    String text = String.format("Deleting %d messages.", count);
+    logger.info(text);
 
-    int i = 0;
-    while (messages != null && i < count) {
-      for (Message item : messages) {
+    // Does not delete the clear request message.
+    messages.remove(0);
 
-        if (i >= count) {
-          logger.info(String.format("Deleted %d messages.", count - 1));
-          return;
-        }
-
-        item.delete().queue();
-        i++;
-      }
-      if (messages == null) {
-        logger.info("No more messages left.");
-        return;
-      }
+    Iterator<Message> iter = messages.iterator();
+    while (iter.hasNext()) {
+      Message msg = iter.next();
+      msg.delete().queue();
     }
+
+    targetChannel.sendMessage(text).queue();
+
+    logger.info("Message deletion all queued. Thread now terminated!");
+    return;
   }
 }

@@ -30,16 +30,13 @@ public class AudioPlayerPlugin extends Plugin {
   public AudioPlayerPlugin() {
     super("AudioPlayerPlugin", Group.TRUSTED_USER);
 
-    super.helpString =
-        "**Audio Player Plugin Usage:** \n" + "-join *\"channelName\"* : Joins a voice channel.\n"
-            + "-leave : Leaves a voice channel.\n"
-            + "-play *\"fileName\"* : Plays an audio file the bot has.\n"
-            + "-playlist *\"name\"* : Plays a playlist the bot has.\n"
-            + "-playurl *\"url\"* : Plays an audio from a url.\n"
-            + "-volume : Displays the current volume.\n"
-            + "-volume *\"integer\"* : Sets the volume of the audio player (0-100).\n"
-            + "-resume : Resumes the audio.\n" + "-pause : Pauses the audio.\n"
-            + "-current : Displays the current song.\n" + "-skip : Skips the audio.\n";
+    super.helpString = "**Audio Player Plugin Usage:** \n"
+        + "-join *\"channelName\"* : Joins a voice channel.\n"
+        + "-leave : Leaves a voice channel.\n" + "-play *\"url\"* : Plays an audio from a url.\n"
+        + "-volume : Displays the current volume.\n"
+        + "-volume *\"integer\"* : Sets the volume of the audio player (0-100).\n"
+        + "-resume : Resumes the audio.\n" + "-pause : Pauses the audio.\n"
+        + "-current : Displays the current song.\n" + "-skip : Skips the audio.\n";
     EssentialsPlugin.appendHelpString(super.helpString);
 
     AudioSourceManagers.registerRemoteSources(playerManager);
@@ -73,17 +70,11 @@ public class AudioPlayerPlugin extends Plugin {
                 String temp = LogHelper.elog(castedEvent,
                     String.format("Channel does not exist Command: %s", message));
                 logger.warn(temp);
-                if (this.loggingChannel != null) {
-                  this.loggingChannel.sendMessage(temp);
-                }
                 throw new ChannelNotFoundException();
               } else {
                 castedEvent.getGuild().getAudioManager().openAudioConnection(channel);
                 String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
                 logger.info(temp);
-                if (this.loggingChannel != null) {
-                  this.loggingChannel.sendMessage(temp);
-                }
               }
             } else if (message.equals("-leave")) {
               // Disconnect the audio connection with the
@@ -91,41 +82,13 @@ public class AudioPlayerPlugin extends Plugin {
               castedEvent.getGuild().getAudioManager().closeAudioConnection();
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             } else if (message.equals("-play")) {
               // Incorrect usage of play
               castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*");
               String temp =
                   LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
               logger.warn(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             } else if (message.startsWith("-play ")) {
-              // Plays a local audio file.
-              String trackName = message.substring(6);
-
-              // #TODO Implement
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
-            } else if (message.startsWith("-playlist ")) {
-              // Plays a playlist
-              String playlistName = message.substring(10);
-
-              // #TODO Implement
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
-            } else if (message.startsWith("-playurl ")) {
               // Plays audio with the URLPlayer
 
               String urlString = message.substring(9);
@@ -133,9 +96,6 @@ public class AudioPlayerPlugin extends Plugin {
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             } else if (message.equals("-volume")) {
               castedEvent.getChannel().sendMessage(
                   String.format("**Current volume:** *%d*", getVolume(castedEvent.getChannel())))
@@ -143,9 +103,6 @@ public class AudioPlayerPlugin extends Plugin {
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             } else if (message.startsWith("-volume ")) {
               String input = message.substring(8);
               try {
@@ -166,9 +123,6 @@ public class AudioPlayerPlugin extends Plugin {
 
                 String temp0 = LogHelper.elog(castedEvent, String.format("Command: %s", message));
                 logger.info(temp0);
-                if (this.loggingChannel != null) {
-                  this.loggingChannel.sendMessage(temp0);
-                }
               } catch (NumberFormatException e) {
                 castedEvent.getChannel()
                     .sendMessage("You must input an int value between 0-100. (inclusive)").queue();
@@ -176,9 +130,6 @@ public class AudioPlayerPlugin extends Plugin {
                 String temp1 =
                     LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
                 logger.warn(temp1);
-                if (this.loggingChannel != null) {
-                  this.loggingChannel.sendMessage(temp1);
-                }
               }
             } else if (message.equals("-resume")) {
               getGuildAudioPlayer(castedEvent.getGuild()).getPlayer().setPaused(false);
@@ -187,9 +138,6 @@ public class AudioPlayerPlugin extends Plugin {
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             } else if (message.equals("-pause")) {
               getGuildAudioPlayer(castedEvent.getGuild()).getPlayer().setPaused(true);
 
@@ -197,9 +145,6 @@ public class AudioPlayerPlugin extends Plugin {
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             } else if (message.equals("-current")) {
 
               AudioTrack track =
@@ -213,17 +158,11 @@ public class AudioPlayerPlugin extends Plugin {
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             } else if (message.equals("-skip")) {
               skipTrack(castedEvent.getChannel());
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             }
           }
         }

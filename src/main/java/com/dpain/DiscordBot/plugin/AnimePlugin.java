@@ -43,9 +43,6 @@ public class AnimePlugin extends Plugin {
               String temp =
                   LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
               logger.warn(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             } else if (message.startsWith("-anime ")) {
               String param = message.substring(7);
               if (param.toLowerCase().startsWith("search ")) {
@@ -69,9 +66,6 @@ public class AnimePlugin extends Plugin {
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
-              if (this.loggingChannel != null) {
-                this.loggingChannel.sendMessage(temp);
-              }
             }
           }
         }

@@ -14,7 +14,6 @@ public abstract class Plugin {
   private final String name;
   private Group group;
   protected String helpString;
-  protected TextChannel loggingChannel;
 
   /**
    * Constructor
