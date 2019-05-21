@@ -9,6 +9,7 @@ import com.dpain.DiscordBot.plugin.AudioPlayerPlugin;
 import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class Cleaner implements Runnable {
@@ -17,6 +18,8 @@ public class Cleaner implements Runnable {
   private TextChannel targetChannel;
   private List<Message> messages;
   private int count;
+  
+  private boolean successful;
 
   /**
    * Constructor
@@ -37,8 +40,13 @@ public class Cleaner implements Runnable {
     // Need one extra message to exclude the clear request message.
     messages = targetChannel.getHistory().retrievePast(i + 1).complete(true);
     count = i;
+    
+    successful = true;
   }
 
+  /**
+   * Cleaner Thread task
+   */
   @Override
   public void run() {
     String text = String.format("Deleting %d messages.", count);
@@ -50,9 +58,18 @@ public class Cleaner implements Runnable {
     Iterator<Message> iter = messages.iterator();
     while (iter.hasNext()) {
       Message msg = iter.next();
-      msg.delete().queue();
+      try {
+        msg.delete().queue();
+      } catch(InsufficientPermissionException e) {
+        logger.error("Bot lacks Permissions to delete some of the messages!");
+        successful = false;
+      }
     }
 
+    if(!successful) {
+      text += "\nThe bot lacks Permissions so it only deleted the messages it could delete!";
+    }
+    
     targetChannel.sendMessage(text).queue();
 
     logger.info("Message deletion all queued. Thread now terminated!");
