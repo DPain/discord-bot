@@ -7,7 +7,7 @@ public enum AudioType {
   URL("url");
   /* @formatter:on */
 
-  private String key;
+  private final String key;
 
   AudioType(String key) {
     this.key = key;

@@ -16,7 +16,7 @@ public enum Group {
   /* @formatter:on */
 
   private final String name;
-  private int hierarchy;
+  private final int hierarchy;
 
   Group(String name, int value) {
     this.name = name;

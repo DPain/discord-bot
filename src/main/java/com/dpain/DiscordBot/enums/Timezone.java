@@ -13,7 +13,7 @@ public enum Timezone {
   ACT(ZoneId.of("Australia/Sydney"));
   /* @formatter:on */
 
-  private ZoneId id;
+  private final ZoneId id;
 
   Timezone(ZoneId id) {
     this.id = id;

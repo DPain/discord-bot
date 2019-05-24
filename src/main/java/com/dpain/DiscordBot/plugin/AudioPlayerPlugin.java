@@ -91,7 +91,7 @@ public class AudioPlayerPlugin extends Plugin {
             } else if (message.startsWith("-play ")) {
               // Plays audio with the URLPlayer
 
-              String urlString = message.substring(9);
+              String urlString = message.substring("-play ".length());
               loadAndPlay(castedEvent.getChannel(), urlString);
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));

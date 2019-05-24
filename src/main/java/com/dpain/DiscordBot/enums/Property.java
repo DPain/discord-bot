@@ -13,7 +13,7 @@ public enum Property {
   TORRENT_ENTRY_LIMIT("torrent-entry-limit");
   /* @formatter:on */
 
-  private String key;
+  private final String key;
 
   Property(String key) {
     this.key = key;
