@@ -13,7 +13,7 @@ public class GuildMusicManager {
   private final AudioPlayer player;
 
   /**
-   * Track scheduler for the player.
+   * Custom -clearAudioEventAdapter for the player.
    */
   private final TrackListener listener;
 
@@ -29,7 +29,7 @@ public class GuildMusicManager {
    */
   public GuildMusicManager(AudioPlayerManager manager) {
     player = manager.createPlayer();
-    queue = new LinkedBlockingQueue<>();
+    queue = new LinkedBlockingQueue<AudioTrack>();
     listener = new TrackListener(this);
     player.addListener(listener);
   }
@@ -39,6 +39,40 @@ public class GuildMusicManager {
    */
   public AudioPlayerSendHandler getSendHandler() {
     return new AudioPlayerSendHandler(player);
+  }
+
+  /**
+   * Start the next track, stopping the current one if it is playing.
+   */
+  public void nextTrack() {
+    player.startTrack(queue.poll(), false);
+  }
+
+  /**
+   * Add the next track to queue or play right away if nothing is in the queue.
+   *
+   * @param AudioTrack The track to play or add to queue.
+   */
+  public void queue(AudioTrack track) {
+    if (!player.startTrack(track, true)) {
+      queue.offer(track);
+    }
+  }
+
+  /**
+   * Clears the queue.
+   */
+  public void clear() {
+    queue.clear();
+  }
+
+  /**
+   * Returns whether the queue is empty.
+   * 
+   * @return boolean
+   */
+  public boolean isEmpty() {
+    return queue.isEmpty();
   }
 
   public AudioPlayer getPlayer() {

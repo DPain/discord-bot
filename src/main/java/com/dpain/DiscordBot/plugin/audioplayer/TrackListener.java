@@ -20,29 +20,11 @@ public class TrackListener extends AudioEventAdapter {
     this.musicMgr = musicMgr;
   }
 
-  /**
-   * Add the next track to queue or play right away if nothing is in the queue.
-   *
-   * @param AudioTrack The track to play or add to queue.
-   */
-  public void queue(AudioTrack track) {
-    if (!musicMgr.getPlayer().startTrack(track, true)) {
-      musicMgr.getQueue().offer(track);
-    }
-  }
-
-  /**
-   * Start the next track, stopping the current one if it is playing.
-   */
-  public void nextTrack() {
-    musicMgr.getPlayer().startTrack(musicMgr.getQueue().poll(), false);
-  }
-
   @Override
   public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
     // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
     if (endReason.mayStartNext) {
-      nextTrack();
+      musicMgr.nextTrack();
     }
   }
 }

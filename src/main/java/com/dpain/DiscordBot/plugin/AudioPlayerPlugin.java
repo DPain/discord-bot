@@ -1,7 +1,10 @@
 package com.dpain.DiscordBot.plugin;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
@@ -15,7 +18,11 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.MessageBuilder.Formatting;
+import net.dv8tion.jda.core.MessageBuilder.SplitPolicy;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
@@ -33,10 +40,11 @@ public class AudioPlayerPlugin extends Plugin {
     super.helpString = "**Audio Player Plugin Usage:** \n"
         + "-join *\"channelName\"* : Joins a voice channel.\n"
         + "-leave : Leaves a voice channel.\n" + "-play *\"url\"* : Plays an audio from a url.\n"
-        + "-volume : Displays the current volume.\n"
+        + "-list : Displays the Playlist.\n" + "-volume : Displays the current volume.\n"
         + "-volume *\"integer\"* : Sets the volume of the audio player (0-100).\n"
         + "-resume : Resumes the audio.\n" + "-pause : Pauses the audio.\n"
-        + "-current : Displays the current song.\n" + "-skip : Skips the audio.\n";
+        + "-current : Displays the current song.\n" + "-skip : Skips the current Track.\n"
+        + "-skipall : Clears the Playlist.\n";
     EssentialsPlugin.appendHelpString(super.helpString);
 
     AudioSourceManagers.registerRemoteSources(playerManager);
@@ -84,7 +92,7 @@ public class AudioPlayerPlugin extends Plugin {
               logger.info(temp);
             } else if (message.equals("-play")) {
               // Incorrect usage of play
-              castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*");
+              castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*").queue();
               String temp =
                   LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
               logger.warn(temp);
@@ -145,6 +153,29 @@ public class AudioPlayerPlugin extends Plugin {
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
+            } else if (message.equals("-list")) {
+              GuildMusicManager musicMgr = getGuildAudioPlayer(castedEvent.getGuild());
+
+              if (!musicMgr.isEmpty()) {
+                logger.info("Playlist is not empty!");
+                MessageBuilder builder = new MessageBuilder();
+
+                builder.appendCodeBlock(playlistToString(musicMgr.getQueue()), "");
+
+                Queue<Message> messages = builder.buildAll(SplitPolicy.NEWLINE);
+
+                castedEvent.getChannel().sendMessage("**Playlist: **").complete();
+                for (Message msg : messages) {
+                  castedEvent.getChannel().sendMessage(msg).complete();
+                }
+
+              } else {
+                logger.info("Playlist is empty!");
+                castedEvent.getChannel().sendMessage("The Queue is empty!").queue();
+              }
+
+              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+              logger.info(temp);
             } else if (message.equals("-current")) {
 
               AudioTrack track =
@@ -160,6 +191,11 @@ public class AudioPlayerPlugin extends Plugin {
               logger.info(temp);
             } else if (message.equals("-skip")) {
               skipTrack(castedEvent.getChannel());
+
+              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+              logger.info(temp);
+            } else if (message.equals("-skipall")) {
+              skipAllTrack(castedEvent.getChannel());
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
@@ -230,14 +266,42 @@ public class AudioPlayerPlugin extends Plugin {
     });
   }
 
+  private String playlistToString(BlockingQueue<AudioTrack> list) {
+    String output = "";
+
+    int i = 0;
+
+    Iterator<AudioTrack> iter = list.iterator();
+    while (iter.hasNext()) {
+      AudioTrack track = iter.next();
+
+      i++;
+
+      output += String.format("\n%d. %s - by %s", i, track.getInfo().title, track.getInfo().author);
+    }
+
+    // Removes the first newline character.
+    output = output.substring(1);
+
+    return output;
+  }
+
   private void play(GuildMusicManager musicManager, AudioTrack track) {
-    musicManager.getTrackListener().queue(track);
+    musicManager.queue(track);
   }
 
   private void skipTrack(TextChannel channel) {
-    GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-    musicManager.getTrackListener().nextTrack();
+    GuildMusicManager musicMgr = getGuildAudioPlayer(channel.getGuild());
+    musicMgr.nextTrack();
 
     channel.sendMessage("Skipped to next track.").queue();
+  }
+
+  private void skipAllTrack(TextChannel channel) {
+    GuildMusicManager musicMgr = getGuildAudioPlayer(channel.getGuild());
+    musicMgr.clear();
+    musicMgr.nextTrack();
+
+    channel.sendMessage("Cleared the Playlist.").queue();
   }
 }
