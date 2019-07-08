@@ -6,14 +6,15 @@ import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.listener.g2g.G2gAlerter;
 import com.dpain.DiscordBot.system.MemberManager;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class OwnerPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(OwnerPlugin.class);
 
-  public OwnerPlugin() {
-    super("OwnerPlugin", Group.OWNER);
+  public OwnerPlugin(EventWaiter waiter) {
+    super("OwnerPlugin", Group.OWNER, waiter);
 
     super.helpString =
         "**Owner Plugin Usage:** \n" + "-username *\"name\"* : Changes the username of the bot.\n"

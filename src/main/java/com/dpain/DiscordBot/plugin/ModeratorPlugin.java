@@ -10,6 +10,7 @@ import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.moderator.Cleaner;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -17,8 +18,8 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 public class ModeratorPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(ModeratorPlugin.class);
 
-  public ModeratorPlugin() {
-    super("ModeratorPlugin", Group.MODERATOR);
+  public ModeratorPlugin(EventWaiter waiter) {
+    super("ModeratorPlugin", Group.MODERATOR, waiter);
 
     super.helpString =
         "**Moderator Plugin Usage:**\n" + "-nick *\"name\"* : Changes the nickname of the bot.\n"

@@ -9,12 +9,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.Main;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.helper.MessageHelper;
 import com.dpain.DiscordBot.plugin.mcsplash.MinecraftSplashReader;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -23,7 +27,6 @@ public class EssentialsPlugin extends Plugin {
 
   private HashMap<String, File> emoteMap;
   private MinecraftSplashReader mcSplash;
-  private String twitchEmoteList;
 
   private static String helpString = "";
 
@@ -31,8 +34,8 @@ public class EssentialsPlugin extends Plugin {
     helpString += help;
   }
 
-  public EssentialsPlugin() {
-    super("EssentialsPlugin", Group.USER);
+  public EssentialsPlugin(EventWaiter waiter) {
+    super("EssentialsPlugin", Group.USER, waiter);
 
     // Create img folder is it does not exist.
     Path imgDir = Paths.get("rsc/img");
@@ -60,8 +63,6 @@ public class EssentialsPlugin extends Plugin {
     File imageFolder = new File("rsc/img");
     File[] listOfFiles = imageFolder.listFiles();
 
-    String temp = "";
-
     // Puts all the emotes that are in the ./rsc/img directory into the HashMap
     for (int i = 0; i < listOfFiles.length; i++) {
       if (listOfFiles[i].isFile()) {
@@ -71,15 +72,8 @@ public class EssentialsPlugin extends Plugin {
             listOfFiles[i].getName().substring(listOfFiles[i].getName().lastIndexOf("."));
         String key = fileName.replace("(C)", ":");
         emoteMap.put(key.toLowerCase(), new File("./rsc/img/" + fileName + extension));
-        temp += key + ", ";
       }
     }
-
-    if (temp.length() > 2) {
-      temp = temp.substring(0, temp.length() - 2);
-    }
-
-    twitchEmoteList = temp;
   }
 
   @Override
@@ -97,33 +91,10 @@ public class EssentialsPlugin extends Plugin {
               castedEvent.getChannel().sendMessage(mcSplash.getRandomSplash()).queue();
               logger.info(LogHelper.elog(castedEvent, "User triggered the easter egg."));
             } else if (message.equals("-emotes")) {
-              /**
-               * @TODO Refine message format to not have commands to be split.
-               */
-              if (twitchEmoteList.length() > 1800) {
-                int numRecurssion = twitchEmoteList.length() / 1800;
-                // Safe margin of 1800 instead of 2000
-                for (int i = 0; i <= numRecurssion; i++) {
-                  if (i == 0) {
-                    String temp = twitchEmoteList.substring(i * 1800, (1 + i) * 1800);
-                    castedEvent.getChannel().sendMessage("**Twitch Emotes:** \n*" + temp + "*\n ("
-                        + (i + 1) + "/" + (numRecurssion + 1) + ")");
-                  } else if (i >= numRecurssion) {
-                    String temp = twitchEmoteList.substring(i * 1800);
-                    castedEvent.getChannel().sendMessage(
-                        "*" + temp + "*\n (" + (i + 1) + "/" + (numRecurssion + 1) + ")");
-                  } else {
-                    String temp = twitchEmoteList.substring(i * 1800, (1 + i) * 1800);
-                    castedEvent.getChannel().sendMessage(
-                        "*" + temp + "*\n (" + (i + 1) + "/" + (numRecurssion + 1) + ")");
-                  }
-                }
-                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-              } else {
-                castedEvent.getChannel()
-                    .sendMessage("**Twitch Emotes:** \n*" + twitchEmoteList + "*").queue();
-                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-              }
+              Set<String> set = emoteMap.keySet();
+              String[] keys = set.toArray(new String[set.size()]);
+              MessageHelper.sendPage("**Twitch Emotes: **", keys, 3, 50, waiter, castedEvent.getChannel(), 1, TimeUnit.HOURS);
+              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             } else if (message.equals("-help")) {
               castedEvent.getChannel().sendMessage(EssentialsPlugin.helpString).queue();
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));

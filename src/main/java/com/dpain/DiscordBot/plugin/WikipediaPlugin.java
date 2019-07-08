@@ -7,14 +7,15 @@ import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.wiki.WikiFinder;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class WikipediaPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(WikipediaPlugin.class);
 
-  public WikipediaPlugin() {
-    super("WikipediaPlugin", Group.USER);
+  public WikipediaPlugin(EventWaiter waiter) {
+    super("WikipediaPlugin", Group.USER, waiter);
     super.helpString =
         "**Wikipedia Plugin Usage:** \n-wiki *\"searchParam\"* : Searches the a topic in Wikipedia.\n";
     EssentialsPlugin.appendHelpString(super.helpString);

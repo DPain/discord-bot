@@ -6,14 +6,15 @@ import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.weather.WeatherDataSet;
 import com.dpain.DiscordBot.plugin.weather.WeatherFinder;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class WeatherPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(WeatherPlugin.class);
 
-  public WeatherPlugin() {
-    super("WeatherPlugin", Group.USER);
+  public WeatherPlugin(EventWaiter waiter) {
+    super("WeatherPlugin", Group.USER, waiter);
     super.helpString =
         "**Weather Plugin Usage:** \n-weather *\"name\"* : Gets the weather at a location.\n";
     EssentialsPlugin.appendHelpString(super.helpString);

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -18,8 +19,8 @@ public class ProfanityGuardPlugin extends Plugin {
    * #TODO In future, implement strike out system and save into a file
    */
 
-  public ProfanityGuardPlugin() {
-    super("ProfanityGuardPlugin", Group.MODERATOR);
+  public ProfanityGuardPlugin(EventWaiter waiter) {
+    super("ProfanityGuardPlugin", Group.MODERATOR, waiter);
 
     super.helpString = "**Profanity Guard Plugin Usage:** \n"
         + "-profguard *\"enable/disable\"* : Enables or disables Profanity Guard\n"

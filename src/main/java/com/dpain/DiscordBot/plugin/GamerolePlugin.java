@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.NoPermissionException;
 import com.dpain.DiscordBot.helper.LogHelper;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -16,8 +17,8 @@ import net.dv8tion.jda.core.managers.RoleManager;
 public class GamerolePlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(GamerolePlugin.class);
 
-  public GamerolePlugin() {
-    super("GamerolePlugin", Group.GUEST);
+  public GamerolePlugin(EventWaiter waiter) {
+    super("GamerolePlugin", Group.GUEST, waiter);
     super.helpString = "**Gamerole Plugin Usage:** \n"
         + "-gamerole add *\"name\"* : Add yourself to the gamerole.\n"
         + "-gamerole remove *\"name\"* : Remove yourself from the gamerole.\n";

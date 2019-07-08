@@ -11,6 +11,7 @@ import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.listener.UserEventListener;
 import com.dpain.DiscordBot.listener.g2g.G2gAlerter;
 import com.dpain.DiscordBot.system.PropertiesManager;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.dpain.DiscordBot.system.MemberManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -29,17 +30,21 @@ public class DiscordBot {
   public DiscordBot() {
 
     try {
+      // Defines an EventWaiter used for paginators.
+      EventWaiter waiter = new EventWaiter();
+      
       // Initialized before PluginListener since a plugin might rely on some
       // properties.
       PropertiesManager.load();
 
-      pluginListener = new PluginListener();
+      pluginListener = new PluginListener(waiter);
 
       JDABuilder builder = new JDABuilder(AccountType.BOT)
           .setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN));
 
       builder.addEventListener(pluginListener);
       builder.addEventListener(new UserEventListener());
+      builder.addEventListener(waiter);
 
       jda = builder.build().awaitReady();
       jda.getPresence().setGame(Game.of(GameType.DEFAULT, "Bot Activated!"));
@@ -67,7 +72,7 @@ public class DiscordBot {
       System.exit(0);
     }
     // changeAvatar();
-
+    // leaveGuild();
   }
 
   public void readConsole() {
@@ -75,6 +80,9 @@ public class DiscordBot {
         jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID))))).start();
   }
 
+  /**
+   * Quick method used to change profile picture.
+   */
   private void changeAvatar() {
     Icon icon = null;
     try {
@@ -83,5 +91,16 @@ public class DiscordBot {
       logger.error("The image file does not exist!");
     }
     jda.getSelfUser().getManager().setAvatar(icon).complete();
+  }
+
+  /**
+   * Quick method used to leave guild.
+   */
+  private void leaveGuild() {
+    try {
+      jda.getGuildById("244728414165139457").leave().complete();
+    } catch(NullPointerException e) {
+      System.out.println("Already left the server!");
+    }
   }
 }

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -16,8 +17,8 @@ public class AnimePlugin extends Plugin {
 
   private AnimeTorrentFinder animeTorrentFinder;
 
-  public AnimePlugin() {
-    super("AnimePlugin", Group.TRUSTED_USER);
+  public AnimePlugin(EventWaiter waiter) {
+    super("AnimePlugin", Group.TRUSTED_USER, waiter);
     animeTorrentFinder = new AnimeTorrentFinder();
 
     super.helpString = "**Anime Plugin Usage:** \n"

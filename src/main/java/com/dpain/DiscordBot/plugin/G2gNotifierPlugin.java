@@ -7,14 +7,15 @@ import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.listener.g2g.G2gAlerter;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class G2gNotifierPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(G2gNotifierPlugin.class);
 
-  public G2gNotifierPlugin() {
-    super("G2gNotifierPlugin", Group.USER);
+  public G2gNotifierPlugin(EventWaiter waiter) {
+    super("G2gNotifierPlugin", Group.USER, waiter);
     G2gAlerter.load();
     super.helpString =
         "**G2gNotifier Plugin Usage:** \n-g2g : Gets added to the G2G Notifier list.\n"

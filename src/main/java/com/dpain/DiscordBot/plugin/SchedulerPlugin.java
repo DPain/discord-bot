@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -16,8 +17,8 @@ public class SchedulerPlugin extends Plugin {
 
   public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
 
-  public SchedulerPlugin() {
-    super("SchedulerPlugin", Group.TRUSTED_USER);
+  public SchedulerPlugin(EventWaiter waiter) {
+    super("SchedulerPlugin", Group.TRUSTED_USER, waiter);
 
     super.helpString = "**Scheduler Plugin Usage:** \n"
         + "-remind *\"hours later\"* *\"description\"* : Sets a reminder for x hours later.\n"

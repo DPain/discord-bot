@@ -1,16 +1,20 @@
 package com.dpain.DiscordBot.plugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.ChannelNotFoundException;
 import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.helper.MessageHelper;
 import com.dpain.DiscordBot.plugin.audioplayer.GuildMusicManager;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -34,8 +38,8 @@ public class AudioPlayerPlugin extends Plugin {
   private final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
   private final Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
 
-  public AudioPlayerPlugin() {
-    super("AudioPlayerPlugin", Group.TRUSTED_USER);
+  public AudioPlayerPlugin(EventWaiter waiter) {
+    super("AudioPlayerPlugin", Group.TRUSTED_USER, waiter);
 
     super.helpString = "**Audio Player Plugin Usage:** \n"
         + "-join *\"channelName\"* : Joins a voice channel.\n"
@@ -158,16 +162,7 @@ public class AudioPlayerPlugin extends Plugin {
 
               if (!musicMgr.isEmpty()) {
                 logger.info("Playlist is not empty!");
-                MessageBuilder builder = new MessageBuilder();
-
-                builder.appendCodeBlock(playlistToString(musicMgr.getQueue()), "");
-
-                Queue<Message> messages = builder.buildAll(SplitPolicy.NEWLINE);
-
-                castedEvent.getChannel().sendMessage("**Playlist: **").complete();
-                for (Message msg : messages) {
-                  castedEvent.getChannel().sendMessage(msg).complete();
-                }
+                MessageHelper.sendPage("**Playlist: **", getTrackInfos(musicMgr.getQueue()), 1, 15, waiter, castedEvent.getChannel(), 1, TimeUnit.HOURS);
 
               } else {
                 logger.info("Playlist is empty!");
@@ -265,25 +260,18 @@ public class AudioPlayerPlugin extends Plugin {
       }
     });
   }
-
-  private String playlistToString(BlockingQueue<AudioTrack> list) {
-    String output = "";
-
-    int i = 0;
+  
+  private String[] getTrackInfos(BlockingQueue<AudioTrack> list) {
+    ArrayList<String> output = new ArrayList<String>();
 
     Iterator<AudioTrack> iter = list.iterator();
     while (iter.hasNext()) {
       AudioTrack track = iter.next();
-
-      i++;
-
-      output += String.format("\n%d. %s - by %s", i, track.getInfo().title, track.getInfo().author);
+      
+      output.add(String.format("%s - by %s", track.getInfo().title, track.getInfo().author));
     }
 
-    // Removes the first newline character.
-    output = output.substring(1);
-
-    return output;
+    return output.toArray(new String[output.size()]);
   }
 
   private void play(GuildMusicManager musicManager, AudioTrack track) {
