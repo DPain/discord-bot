@@ -3,12 +3,13 @@ package com.dpain.DiscordBot.helper;
 import java.util.concurrent.TimeUnit;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.Paginator;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
 public class MessageHelper {
   
-  public static void sendPage(final String title, final String[] items, int numCol, int numItems, EventWaiter waiter, TextChannel channel, long time, TimeUnit timeUnit) {
+  public static void sendPage(final String title, final String[] items, int numCol, int numItems, EventWaiter waiter, MessageChannel channel, long time, TimeUnit timeUnit) {
     Paginator pBuilder = new Paginator.Builder().setColumns(numCol).setItemsPerPage(numItems)
         .showPageNumbers(true)
         .waitOnSinglePage(false)

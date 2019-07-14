@@ -1,4 +1,4 @@
-package com.dpain.DiscordBot.listener.g2g;
+package com.dpain.DiscordBot.plugin.g2g;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

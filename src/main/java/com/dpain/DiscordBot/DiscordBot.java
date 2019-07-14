@@ -9,7 +9,7 @@ import com.dpain.DiscordBot.enums.Property;
 import com.dpain.DiscordBot.listener.ConsoleInputReader;
 import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.listener.UserEventListener;
-import com.dpain.DiscordBot.listener.g2g.G2gAlerter;
+import com.dpain.DiscordBot.plugin.g2g.G2gAlerter;
 import com.dpain.DiscordBot.system.PropertiesManager;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.dpain.DiscordBot.system.MemberManager;
