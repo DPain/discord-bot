@@ -2,21 +2,19 @@ package com.dpain.DiscordBot.plugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.enums.G2gServer;
 import com.dpain.DiscordBot.enums.Group;
-import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.helper.MessageHelper;
 import com.dpain.DiscordBot.plugin.g2g.G2gAlerter;
+import com.dpain.DiscordBot.plugin.g2g.SubscriptionInfo;
 import com.dpain.DiscordBot.plugin.g2g.SellerInfo;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -27,7 +25,8 @@ public class G2gNotifierPlugin extends Plugin {
     super("G2gNotifierPlugin", Group.USER, waiter);
     G2gAlerter.load();
     super.helpString =
-        "**G2gNotifier Plugin Usage:** \n-g2g : Gets added to the G2G Notifier list.\n"
+        "**G2gNotifier Plugin Usage:** \n-g2gadd *\"serverName\"* *\"price\"* : Gets added to the G2G Notifier list for a server with the corresponding rate.\n"
+            + "-g2gremove : Removes yourself from the G2G Notifier list."
             + "-g2gcheck : Checks G2G price and sends a Private message.\n";
     EssentialsPlugin.appendHelpString(super.helpString);
   }
@@ -41,20 +40,62 @@ public class G2gNotifierPlugin extends Plugin {
 
         if ((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId()))
             || canAccessPlugin(castedEvent.getMember())) {
-          if (message.equals("-g2g")) {
-            boolean result = G2gAlerter.load().toggleUser(castedEvent.getAuthor());
-            if (result) {
-              castedEvent.getChannel().sendMessage("Added user from subscription list.").queue();
-            } else {
-              castedEvent.getChannel().sendMessage("Removed user from subscription list.").queue();
-            }
-
-          } else if (message.equals("-g2gcheck")) {
-            castedEvent.getAuthor().openPrivateChannel().queue((channel) -> {
+          if (message.startsWith("-g2gadd ")) {
+            String[] params = message.substring("-g2gadd ".length()).split(" ");
+            if (params.length >= 2) {
+              G2gServer server;
               try {
-                ArrayList<SellerInfo> prices = G2gAlerter.load().checkPrice();
+                server = G2gServer.valueOf(params[0].toUpperCase());
+              } catch (IllegalArgumentException e) {
+                castedEvent.getChannel().sendMessage("Incorrect Server name!").queue();
+                return;
+              }
+
+              double priceLimit;
+              try {
+                priceLimit = Double.parseDouble(params[1]);
+              } catch (NumberFormatException e) {
+                castedEvent.getChannel().sendMessage("Incorrect price limit!").queue();
+                return;
+              }
+
+              SubscriptionInfo info = new SubscriptionInfo();
+              info.server = server;
+              info.limit = priceLimit;
+
+              boolean result = G2gAlerter.load().addUser(castedEvent.getAuthor(), info);
+              if (result) {
+                castedEvent.getChannel().sendMessage("Added user to subscription list.").queue();
+              } else {
+                castedEvent.getChannel().sendMessage("You were already subscripted.").queue();
+              }
+            } else {
+              castedEvent.getChannel().sendMessage("Incorrect amount of parameters!").queue();
+            }
+          } else if (message.equals("-g2gremove")) {
+            boolean result = G2gAlerter.load().removeUser(castedEvent.getAuthor());
+            if (result) {
+              castedEvent.getChannel().sendMessage("Removed user from subscription list.").queue();
+            } else {
+              castedEvent.getChannel().sendMessage("You were not subscripted.").queue();
+            }
+          } else if (message.equals("-g2gcheck")) {
+            User user = castedEvent.getAuthor();
+            user.openPrivateChannel().queue((channel) -> {
+              try {
+                G2gServer server = null;
+                if (G2gAlerter.load().userExists(user)) {
+                  server = G2gAlerter.load().getSubscriptionInfo(user).server;
+                } else {
+                  server = G2gAlerter.DEFAULT_SERVER;
+                }
+                
+                System.out.println(server);
+
+                ArrayList<SellerInfo> prices = G2gAlerter.load().checkPrice(server);
                 prices.sort((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
-                MessageHelper.sendPage("**G2G Gold Prices: **", getPrices(prices), 3, 15, waiter, channel, 30, TimeUnit.MINUTES);
+                MessageHelper.sendPage(String.format("**%s G2G Gold Prices: **", server.toString()),
+                    getPrices(prices), 3, 15, waiter, channel, 30, TimeUnit.MINUTES);
               } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -67,7 +108,7 @@ public class G2gNotifierPlugin extends Plugin {
       }
     }
   }
-  
+
   private String[] getPrices(List<SellerInfo> list) {
     ArrayList<String> output = new ArrayList<String>();
 

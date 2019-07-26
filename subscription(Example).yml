@@ -1,0 +1,5 @@
+!subscriptions
+subscriptions:
+  '123412341234123412': !info {limit: 0.0035, server: !server 'ARIA'}
+  '432143214321431123': !info {limit: 0.004, server: !server 'KADUM'}
+  '999888777666555444': !info {limit: 0.003, server: !server 'NUI'}
