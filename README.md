@@ -19,11 +19,11 @@ The program requires the JDA Discord library and several other libraries which i
 
 ## Contribution guidelines ##
 ### Advice ###
-At the moment, as the bot needs a substantial amount of new features, I will most likely not be accepting any pull requests.
+At the moment, the bot needs a substantial amount of new features and enhancements (not to mention refactoring as well) so feel free to submit pull requests!
 
 ### Acknowledges ###
 	* Many thanks to Austin Keener and other contributors creating the JDA library.
-    https://github.com/DV8FromTheWorld/JDA
+	https://github.com/DV8FromTheWorld/JDA
 	
 	* Many thanks to Jonathan Hedley creating jsoup, a Java HTML parser.
 	http://jsoup.org/
