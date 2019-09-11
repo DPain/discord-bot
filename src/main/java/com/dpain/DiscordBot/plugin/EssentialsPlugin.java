@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -93,6 +94,7 @@ public class EssentialsPlugin extends Plugin {
             } else if (message.equals("-emotes")) {
               Set<String> set = emoteMap.keySet();
               String[] keys = set.toArray(new String[set.size()]);
+              System.out.println(Arrays.toString(keys));
               MessageHelper.sendPage("**Twitch Emotes: **", keys, 3, 50, waiter, castedEvent.getChannel(), 1, TimeUnit.HOURS);
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             } else if (message.equals("-help")) {

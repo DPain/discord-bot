@@ -3,11 +3,14 @@ package com.dpain.DiscordBot.plugin;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.NoPermissionException;
 import com.dpain.DiscordBot.helper.LogHelper;
+import com.dpain.DiscordBot.helper.MessageHelper;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.Event;
@@ -50,8 +53,8 @@ public class GamerolePlugin extends Plugin {
                   output.add(role.getName());
                 }
               }
-              castedEvent.getChannel()
-                  .sendMessage("Game Roles: " + Arrays.toString(output.toArray())).queue();
+              
+              MessageHelper.sendPage("**Game Roles: **", output.toArray(new String[output.size()]), 3, 50, waiter, castedEvent.getChannel(), 1, TimeUnit.HOURS);
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             } else if (message.startsWith("-gamerole ")) {
               String param = message.substring(10);
