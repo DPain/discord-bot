@@ -25,7 +25,7 @@ public class DiscordBot {
   private final static Logger logger = LoggerFactory.getLogger(DiscordBot.class);
   private JDA jda;
 
-  PluginListener pluginListener;
+  public PluginListener pluginListener;
 
   public DiscordBot() {
 
@@ -37,7 +37,7 @@ public class DiscordBot {
       // properties.
       PropertiesManager.load();
 
-      pluginListener = new PluginListener(waiter);
+      pluginListener = new PluginListener(waiter, this);
 
       JDABuilder builder = new JDABuilder(AccountType.BOT)
           .setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN));

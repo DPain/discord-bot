@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
@@ -18,15 +19,8 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 public class ModeratorPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(ModeratorPlugin.class);
 
-  public ModeratorPlugin(EventWaiter waiter) {
-    super("ModeratorPlugin", Group.MODERATOR, waiter);
-
-    super.helpString =
-        "**Moderator Plugin Usage:**\n" + "-nick *\"name\"* : Changes the nickname of the bot.\n"
-            + "-channel : Returns some info of the current Channel.\n"
-            + "-randomnick : Randomly changes the nickname of the bot.\n"
-            + "-clear *\"x\"* : Clears x amount of messages in the current text channel\n";
-    EssentialsPlugin.appendHelpString(super.helpString);
+  public ModeratorPlugin(EventWaiter waiter, DiscordBot bot) {
+    super("ModeratorPlugin", Group.MODERATOR, waiter, bot);
   }
 
   @Override
@@ -122,6 +116,14 @@ public class ModeratorPlugin extends Plugin {
         e.printStackTrace();
       }
     }
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-nick *\\\"name\\\"*", "Changes the nickname of the bot.");
+    super.commands.put("-channel", "Returns some info of the current Channel.");
+    super.commands.put("-randomnick", "Randomly changes the nickname of the bot.");
+    super.commands.put("-clear *\\\"x\\\"*", "Clears x amount of messages in the current text channel.");
   }
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
@@ -17,14 +18,9 @@ public class AnimePlugin extends Plugin {
 
   private AnimeTorrentFinder animeTorrentFinder;
 
-  public AnimePlugin(EventWaiter waiter) {
-    super("AnimePlugin", Group.TRUSTED_USER, waiter);
+  public AnimePlugin(EventWaiter waiter, DiscordBot bot) {
+    super("AnimePlugin", Group.TRUSTED_USER, waiter, bot);
     animeTorrentFinder = new AnimeTorrentFinder();
-
-    super.helpString = "**Anime Plugin Usage:** \n"
-        + "-anime search *\"name\"* : Gets a list of torrrent from Tokyo toshokan.\n"
-        + "-anime today/week : Gets the anime schedule\n";
-    EssentialsPlugin.appendHelpString(super.helpString);
   }
 
   @Override
@@ -74,6 +70,13 @@ public class AnimePlugin extends Plugin {
         e.printStackTrace();
       }
     }
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-anime search *\\\"name\\\"*",
+        "Gets a list of torrrent from Tokyo toshokan.");
+    super.commands.put("-anime today/week", "Gets the anime schedule");
   }
 
 }

@@ -8,12 +8,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.Main;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
@@ -29,14 +31,8 @@ public class EssentialsPlugin extends Plugin {
   private HashMap<String, File> emoteMap;
   private MinecraftSplashReader mcSplash;
 
-  private static String helpString = "";
-
-  public static void appendHelpString(String help) {
-    helpString += help;
-  }
-
-  public EssentialsPlugin(EventWaiter waiter) {
-    super("EssentialsPlugin", Group.USER, waiter);
+  public EssentialsPlugin(EventWaiter waiter, DiscordBot bot) {
+    super("EssentialsPlugin", Group.USER, waiter, bot);
 
     // Create img folder is it does not exist.
     Path imgDir = Paths.get("rsc/img");
@@ -52,12 +48,6 @@ public class EssentialsPlugin extends Plugin {
     emoteMap = new HashMap<String, File>();
     instantiateEmoteMap();
     mcSplash = new MinecraftSplashReader(new File("rsc/splashes.txt"));
-
-    super.helpString = "**Essentials Plugin Usage:** \n" + "-splash : Gets a random string.\n"
-        + "-emotes : Returns the list of twitch emotes available.\n"
-        + "-help : Displays the available commands.\n";
-
-    appendHelpString(super.helpString);
   }
 
   private void instantiateEmoteMap() {
@@ -94,11 +84,23 @@ public class EssentialsPlugin extends Plugin {
             } else if (message.equals("-emotes")) {
               Set<String> set = emoteMap.keySet();
               String[] keys = set.toArray(new String[set.size()]);
-              System.out.println(Arrays.toString(keys));
-              MessageHelper.sendPage("**Twitch Emotes: **", keys, 3, 50, waiter, castedEvent.getChannel(), 1, TimeUnit.HOURS);
+
+              MessageHelper.sendPage("**Twitch Emotes: **", keys, 3, 50, waiter,
+                  castedEvent.getChannel(), 1, TimeUnit.HOURS);
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             } else if (message.equals("-help")) {
-              castedEvent.getChannel().sendMessage(EssentialsPlugin.helpString).queue();
+              ArrayList<String> helpStrings = new ArrayList<String>();
+              for (Plugin plugin : super.bot.pluginListener.plugins) {
+                String pluginPage = String.format("**%s Plugin Usage**", plugin.getName());
+                for (String cmd : plugin.getCommands().keySet()) {
+                  pluginPage += String.format("\n%s : %s", cmd, plugin.getCommands().get(cmd));
+                }
+                helpStrings.add(pluginPage);
+              }
+              String[] commands = helpStrings.toArray(new String[helpStrings.size()]);
+
+              MessageHelper.sendPage("**Help: **", commands, 3, 3, waiter,
+                  castedEvent.getChannel(), 1, TimeUnit.HOURS);
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             }
           }
@@ -133,5 +135,12 @@ public class EssentialsPlugin extends Plugin {
     int end = msg.indexOf(key) + key.length() - 1;
     return ((start > 0 && msg.charAt(start - 1) == ' ') || start == 0) && msg.contains(key)
         && (end == msg.length() - 1 || (end < msg.length() - 1 && msg.charAt(end + 1) == ' '));
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-splash", "Gets a random string.");
+    super.commands.put("-emotes", "Deletes a custom command.");
+    super.commands.put("-help", "Displays the available commands.");
   }
 }

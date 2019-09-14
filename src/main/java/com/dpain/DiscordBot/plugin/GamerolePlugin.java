@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.NoPermissionException;
 import com.dpain.DiscordBot.helper.LogHelper;
@@ -20,13 +21,8 @@ import net.dv8tion.jda.core.managers.RoleManager;
 public class GamerolePlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(GamerolePlugin.class);
 
-  public GamerolePlugin(EventWaiter waiter) {
-    super("GamerolePlugin", Group.GUEST, waiter);
-    super.helpString = "**Gamerole Plugin Usage:** \n"
-        + "-gamerole add *\"name\"* : Add yourself to the gamerole.\n"
-        + "-gamerole remove *\"name\"* : Remove yourself from the gamerole.\n";
-
-    EssentialsPlugin.appendHelpString(super.helpString);
+  public GamerolePlugin(EventWaiter waiter, DiscordBot bot) {
+    super("GamerolePlugin", Group.GUEST, waiter, bot);
   }
 
   @Override
@@ -53,9 +49,16 @@ public class GamerolePlugin extends Plugin {
                   output.add(role.getName());
                 }
               }
-              
-              MessageHelper.sendPage("**Game Roles: **", output.toArray(new String[output.size()]), 3, 50, waiter, castedEvent.getChannel(), 1, TimeUnit.HOURS);
-              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+
+              if (output.size() > 0) {
+                MessageHelper.sendPage("**Game Roles: **",
+                    output.toArray(new String[output.size()]), 3, 50, waiter,
+                    castedEvent.getChannel(), 1, TimeUnit.HOURS);
+                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
+              } else {
+                castedEvent.getChannel().sendMessage("There are no Game Roles in this Server!")
+                    .queue();
+              }
             } else if (message.startsWith("-gamerole ")) {
               String param = message.substring(10);
               if (param.startsWith("add ")) {
@@ -116,8 +119,6 @@ public class GamerolePlugin extends Plugin {
                   logger.warn(
                       LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
                 }
-              } else {
-                castedEvent.getChannel().sendMessage(helpString).queue();
               }
             }
           }
@@ -126,5 +127,12 @@ public class GamerolePlugin extends Plugin {
         e.printStackTrace();
       }
     }
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-gamerole", "Returns a list of available Game Roles in the server.");
+    super.commands.put("-gamerole add *\\\"name\\\"*", "Add yourself to the gamerole.");
+    super.commands.put("-gamerole remove *\\\"name\\\"*", "Remove yourself from the gamerole.");
   }
 }

@@ -2,6 +2,7 @@ package com.dpain.DiscordBot.plugin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.weather.WeatherDataSet;
@@ -13,11 +14,8 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 public class WeatherPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(WeatherPlugin.class);
 
-  public WeatherPlugin(EventWaiter waiter) {
-    super("WeatherPlugin", Group.USER, waiter);
-    super.helpString =
-        "**Weather Plugin Usage:** \n-weather *\"name\"* : Gets the weather at a location.\n";
-    EssentialsPlugin.appendHelpString(super.helpString);
+  public WeatherPlugin(EventWaiter waiter, DiscordBot bot) {
+    super("WeatherPlugin", Group.USER, waiter, bot);
   }
 
   @Override
@@ -52,5 +50,10 @@ public class WeatherPlugin extends Plugin {
         e.printStackTrace();
       }
     }
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-weather *\\\"name\\\"*", "Gets the weather at a location.");
   }
 }

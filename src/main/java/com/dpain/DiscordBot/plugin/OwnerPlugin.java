@@ -2,6 +2,7 @@ package com.dpain.DiscordBot.plugin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.g2g.G2gAlerter;
@@ -13,17 +14,8 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 public class OwnerPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(OwnerPlugin.class);
 
-  public OwnerPlugin(EventWaiter waiter) {
-    super("OwnerPlugin", Group.OWNER, waiter);
-
-    super.helpString =
-        "**Owner Plugin Usage:** \n" + "-username *\"name\"* : Changes the username of the bot.\n"
-            + "-group *\"userId\" \"group\"* : Changes the user's group.\n"
-            + "-info : Displays the server info.\n"
-            + "-rebuild : Resets the userdata file to default.\n"
-            + "-update : Updates the userdata file.\n"
-            + "-reload : Reads the userdata file again.\n" + "-exit : Shutsdown the bot.\n";
-    EssentialsPlugin.appendHelpString(super.helpString);
+  public OwnerPlugin(EventWaiter waiter, DiscordBot bot) {
+    super("OwnerPlugin", Group.OWNER, waiter, bot);
   }
 
   @Override
@@ -81,6 +73,17 @@ public class OwnerPlugin extends Plugin {
         e.printStackTrace();
       }
     }
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-username *\\\"name\\\"*", "Changes the username of the bot.");
+    super.commands.put("-group *\\\"userId\\\" \\\"group\\\"*", "Changes the user's group.");
+    super.commands.put("-info", "Displays the server info.");
+    super.commands.put("-rebuild", "Resets the userdata file to default.");
+    super.commands.put("-update", "Updates the userdata file.");
+    super.commands.put("-reload", "Reads the userdata fil`e again.");
+    super.commands.put("-exit", "Shutsdown the bot.");
   }
 
 }

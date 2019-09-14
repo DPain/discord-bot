@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -19,13 +20,8 @@ public class ProfanityGuardPlugin extends Plugin {
    * #TODO In future, implement strike out system and save into a file
    */
 
-  public ProfanityGuardPlugin(EventWaiter waiter) {
-    super("ProfanityGuardPlugin", Group.MODERATOR, waiter);
-
-    super.helpString = "**Profanity Guard Plugin Usage:** \n"
-        + "-profguard *\"enable/disable\"* : Enables or disables Profanity Guard\n"
-        + "-profguard *\"offenders\"* : PMs the list of offenders to the one who issued the command\n";
-    EssentialsPlugin.appendHelpString(super.helpString);
+  public ProfanityGuardPlugin(EventWaiter waiter, DiscordBot bot) {
+    super("ProfanityGuardPlugin", Group.MODERATOR, waiter, bot);
   }
 
   @Override
@@ -76,6 +72,12 @@ public class ProfanityGuardPlugin extends Plugin {
         e.printStackTrace();
       }
     }
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-profguard *\\\"enable/disable\\\"*", "Enables or disables Profanity Guard.");
+    super.commands.put("-profguard *\\\"offenders\\\"*", "PMs the list of offenders to the one who issued the command.");
   }
 
 }

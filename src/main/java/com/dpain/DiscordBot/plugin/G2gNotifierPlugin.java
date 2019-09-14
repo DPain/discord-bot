@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.G2gServer;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.MessageHelper;
@@ -21,14 +22,9 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 public class G2gNotifierPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(G2gNotifierPlugin.class);
 
-  public G2gNotifierPlugin(EventWaiter waiter) {
-    super("G2gNotifierPlugin", Group.USER, waiter);
+  public G2gNotifierPlugin(EventWaiter waiter, DiscordBot bot) {
+    super("G2gNotifierPlugin", Group.USER, waiter, bot);
     G2gAlerter.load();
-    super.helpString =
-        "**G2gNotifier Plugin Usage:** \n-g2gadd *\"serverName\"* *\"price\"* : Gets added to the G2G Notifier list for a server with the corresponding rate.\n"
-            + "-g2gremove : Removes yourself from the G2G Notifier list."
-            + "-g2gcheck : Checks G2G price and sends a Private message.\n";
-    EssentialsPlugin.appendHelpString(super.helpString);
   }
 
   @Override
@@ -120,5 +116,12 @@ public class G2gNotifierPlugin extends Plugin {
     }
 
     return output.toArray(new String[output.size()]);
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-g2gadd *\\\"serverName\\\"* *\\\"price\\\"*", "Gets added to the G2G Notifier list for a server with the corresponding rate.");
+    super.commands.put("-g2gremove", "Removes yourself from the G2G Notifier list.");
+    super.commands.put("-g2gcheck", "Checks G2G price and sends a Private message.");
   }
 }

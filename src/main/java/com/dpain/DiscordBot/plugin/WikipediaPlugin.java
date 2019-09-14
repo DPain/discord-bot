@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.wiki.WikiFinder;
@@ -14,11 +15,8 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 public class WikipediaPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(WikipediaPlugin.class);
 
-  public WikipediaPlugin(EventWaiter waiter) {
-    super("WikipediaPlugin", Group.USER, waiter);
-    super.helpString =
-        "**Wikipedia Plugin Usage:** \n-wiki *\"searchParam\"* : Searches the a topic in Wikipedia.\n";
-    EssentialsPlugin.appendHelpString(super.helpString);
+  public WikipediaPlugin(EventWaiter waiter, DiscordBot bot) {
+    super("WikipediaPlugin", Group.USER, waiter, bot);
   }
 
   @Override
@@ -53,5 +51,10 @@ public class WikipediaPlugin extends Plugin {
         e.printStackTrace();
       }
     }
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-wiki *\\\"searchParam\\\"*", "Searches the a topic in Wikipedia.");
   }
 }

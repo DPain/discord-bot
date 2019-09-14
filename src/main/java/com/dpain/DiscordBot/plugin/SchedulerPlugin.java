@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
@@ -17,13 +18,8 @@ public class SchedulerPlugin extends Plugin {
 
   public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
 
-  public SchedulerPlugin(EventWaiter waiter) {
-    super("SchedulerPlugin", Group.TRUSTED_USER, waiter);
-
-    super.helpString = "**Scheduler Plugin Usage:** \n"
-        + "-remind *\"hours later\"* *\"description\"* : Sets a reminder for x hours later.\n"
-        + "-time*\"hours later\"* : Gets the time x hours later for a set of Timezones.\n";
-    EssentialsPlugin.appendHelpString(super.helpString);
+  public SchedulerPlugin(EventWaiter waiter, DiscordBot bot) {
+    super("SchedulerPlugin", Group.TRUSTED_USER, waiter, bot);
   }
 
   @Override
@@ -101,5 +97,11 @@ public class SchedulerPlugin extends Plugin {
     int result = (hours * 3600) + (minutes * 60) + seconds;
 
     return result;
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-remind *\\\"hours later\\\"* *\\\"description\\\"*", "Sets a reminder for x hours later.");
+    super.commands.put("-time*\\\"hours later\\\"*", "Gets the time x hours later for a set of Timezones.");
   }
 }

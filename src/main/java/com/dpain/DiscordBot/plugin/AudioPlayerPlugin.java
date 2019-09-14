@@ -9,6 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.exception.ChannelNotFoundException;
 import com.dpain.DiscordBot.helper.LogHelper;
@@ -38,18 +39,8 @@ public class AudioPlayerPlugin extends Plugin {
   private final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
   private final Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
 
-  public AudioPlayerPlugin(EventWaiter waiter) {
-    super("AudioPlayerPlugin", Group.TRUSTED_USER, waiter);
-
-    super.helpString = "**Audio Player Plugin Usage:** \n"
-        + "-join *\"channelName\"* : Joins a voice channel.\n"
-        + "-leave : Leaves a voice channel.\n" + "-play *\"url\"* : Plays an audio from a url.\n"
-        + "-list : Displays the Playlist.\n" + "-volume : Displays the current volume.\n"
-        + "-volume *\"integer\"* : Sets the volume of the audio player (0-100).\n"
-        + "-resume : Resumes the audio.\n" + "-pause : Pauses the audio.\n"
-        + "-current : Displays the current song.\n" + "-skip : Skips the current Track.\n"
-        + "-skipall : Clears the Playlist.\n";
-    EssentialsPlugin.appendHelpString(super.helpString);
+  public AudioPlayerPlugin(EventWaiter waiter, DiscordBot bot) {
+    super("AudioPlayerPlugin", Group.TRUSTED_USER, waiter, bot);
 
     AudioSourceManagers.registerRemoteSources(playerManager);
     AudioSourceManagers.registerLocalSource(playerManager);
@@ -162,7 +153,8 @@ public class AudioPlayerPlugin extends Plugin {
 
               if (!musicMgr.isEmpty()) {
                 logger.info("Playlist is not empty!");
-                MessageHelper.sendPage("**Playlist: **", getTrackInfos(musicMgr.getQueue()), 1, 15, waiter, castedEvent.getChannel(), 1, TimeUnit.HOURS);
+                MessageHelper.sendPage("**Playlist: **", getTrackInfos(musicMgr.getQueue()), 1, 15,
+                    waiter, castedEvent.getChannel(), 1, TimeUnit.HOURS);
 
               } else {
                 logger.info("Playlist is empty!");
@@ -260,14 +252,14 @@ public class AudioPlayerPlugin extends Plugin {
       }
     });
   }
-  
+
   private String[] getTrackInfos(BlockingQueue<AudioTrack> list) {
     ArrayList<String> output = new ArrayList<String>();
 
     Iterator<AudioTrack> iter = list.iterator();
     while (iter.hasNext()) {
       AudioTrack track = iter.next();
-      
+
       output.add(String.format("%s - by %s", track.getInfo().title, track.getInfo().author));
     }
 
@@ -291,5 +283,20 @@ public class AudioPlayerPlugin extends Plugin {
     musicMgr.nextTrack();
 
     channel.sendMessage("Cleared the Playlist.").queue();
+  }
+
+  @Override
+  public void setCommandDescriptions() {
+    super.commands.put("-join *\\\"channelName\\\"*", "Joins a voice channel.");
+    super.commands.put("-leave", "Leaves a voice channel.");
+    super.commands.put("-play *\\\"url\\\"*", "Plays an audio from a url.");
+    super.commands.put("-list", "Displays the Playlist.");
+    super.commands.put("-volume", "Displays the current volume.");
+    super.commands.put("-volume *\\\"integer\\\"*", "Sets the volume of the audio player (0-100).");
+    super.commands.put("-resume", "Resumes the audio.");
+    super.commands.put("-pause", "Pauses the audio.");
+    super.commands.put("-current", "Displays the current song.");
+    super.commands.put("-skip", "Skips the current Track.");
+    super.commands.put("-skipall", "Clears the Playlist.");
   }
 }
