@@ -1,7 +1,11 @@
 package com.dpain.DiscordBot.plugin;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +64,17 @@ public class SchedulerPlugin extends Plugin {
               ZonedDateTime time = ZonedDateTime.now();
               String result = "";
 
-              for (Timezone zone : Timezone.class.getEnumConstants()) {
+              Timezone[] timezones = Timezone.class.getEnumConstants();
+              
+              // Sorting preset timezones because it looks better.
+              Arrays.sort(timezones, (a, b) -> {
+                LocalDateTime instant = LocalDateTime.now();
+                ZoneOffset aOffset = a.getZoneId().getRules().getOffset(instant);
+                ZoneOffset bOffset = b.getZoneId().getRules().getOffset(instant);
+                return bOffset.compareTo(aOffset);
+              });
+
+              for (Timezone zone : timezones) {
                 result += String.format("\n%s %s",
                     time.withZoneSameInstant(zone.getZoneId()).format(formatter),
                     zone.getZoneId().toString());
@@ -77,8 +91,18 @@ public class SchedulerPlugin extends Plugin {
 
                 ZonedDateTime time = ZonedDateTime.now();
                 time = time.plusHours(hours);
+                
+                Timezone[] timezones = Timezone.class.getEnumConstants();
+                
+                // Sorting preset timezones because it looks better.
+                Arrays.sort(timezones, (a, b) -> {
+                  LocalDateTime instant = LocalDateTime.now();
+                  ZoneOffset aOffset = a.getZoneId().getRules().getOffset(instant);
+                  ZoneOffset bOffset = b.getZoneId().getRules().getOffset(instant);
+                  return bOffset.compareTo(aOffset);
+                });
 
-                for (Timezone zone : Timezone.class.getEnumConstants()) {
+                for (Timezone zone : timezones) {
                   result += String.format("\n%s %s",
                       time.withZoneSameInstant(zone.getZoneId()).format(formatter),
                       zone.getZoneId().toString());

@@ -234,7 +234,8 @@ public class G2gAlerter {
       SellerInfo min = list.stream().min(Comparator.comparing(SellerInfo::getPrice))
           .orElseThrow(NoSuchElementException::new);
 
-      System.out.println(min);
+      logger.info(String.format("Broadcasting G2G Seller Info:\n", min));
+      
       for (String id : userMap.keySet()) {
         if (server == userMap.get(id).server && min.getPrice() <= userMap.get(id).limit) {
           jda.getUserById(id).openPrivateChannel().queue((channel) -> {
@@ -261,7 +262,6 @@ public class G2gAlerter {
     
     Element container = doc.select("ul.products__list").first();
     Elements listing = container.select("li.products__list-item");
-    System.out.println(listing);
     for (Element entry : listing) {
       String sellerName = entry.select("a.seller__name").html();
       Element priceSpan = entry.select("span.products__exch-rate").first();

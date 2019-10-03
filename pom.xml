@@ -4,7 +4,7 @@
 
 	<groupId>com.dpain</groupId>
 	<artifactId>DiscordBot</artifactId>
-	<version>0.5.8</version>
+	<version>0.5.9</version>
 	<packaging>jar</packaging>
 
 	<name>DiscordBot</name>

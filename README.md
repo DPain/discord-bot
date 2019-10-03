@@ -1,8 +1,8 @@
 # DiscordBot
 ### Quick summary: ###
-This is a DiscordBot mainly aimed to function only for the Video Game Tournament Club at University of Delaware. DiscordBot is written in Java using the JDA Discord library. I aim to make a bot that functions as well as other open source bots.
+This is a DiscordBot mainly aimed to fulfill the needs for the Video Game Tournament Club at University of Delaware and some of my private Discord Servers. DiscordBot is written in Java using the JDA Discord library. I aim to make a bot that functions as well as other open source bots. :)
 ### Version: ###
-0.5.8
+0.5.9
 
 ## How do I get set up? ##
 ### Summary of set up: ###
@@ -19,7 +19,7 @@ The program requires the JDA Discord library and several other libraries which i
 
 ## Contribution guidelines ##
 ### Advice ###
-At the moment, the bot needs a substantial amount of new features and enhancements (not to mention refactoring as well) so feel free to submit pull requests!
+The bot needs a substantial amount of new features and enhancements (not to mention refactoring as well) so feel free to submit pull requests!
 
 ### Acknowledges ###
 	* Many thanks to Austin Keener and other contributors creating the JDA library.
