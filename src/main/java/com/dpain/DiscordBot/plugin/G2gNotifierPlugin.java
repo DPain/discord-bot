@@ -23,7 +23,7 @@ public class G2gNotifierPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(G2gNotifierPlugin.class);
 
   public G2gNotifierPlugin(EventWaiter waiter, DiscordBot bot) {
-    super("G2gNotifierPlugin", Group.USER, waiter, bot);
+    super("G2gNotifierPlugin", Group.TRUSTED_USER, waiter, bot);
     G2gAlerter.load();
   }
 

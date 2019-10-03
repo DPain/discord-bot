@@ -19,7 +19,7 @@ public class SchedulerPlugin extends Plugin {
   public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
 
   public SchedulerPlugin(EventWaiter waiter, DiscordBot bot) {
-    super("SchedulerPlugin", Group.TRUSTED_USER, waiter, bot);
+    super("SchedulerPlugin", Group.USER, waiter, bot);
   }
 
   @Override
@@ -56,6 +56,18 @@ public class SchedulerPlugin extends Plugin {
                 logger.warn(
                     LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
               }
+            } else if (message.equals("-time")) {
+              ZonedDateTime time = ZonedDateTime.now();
+              String result = "";
+
+              for (Timezone zone : Timezone.class.getEnumConstants()) {
+                result += String.format("\n%s %s",
+                    time.withZoneSameInstant(zone.getZoneId()).format(formatter),
+                    zone.getZoneId().toString());
+              }
+
+              castedEvent.getChannel().sendMessage("The current Time: " + result).queue();
+              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             } else if (message.startsWith("-time ")) {
               String param = message.substring(6);
               try {
@@ -64,7 +76,7 @@ public class SchedulerPlugin extends Plugin {
                 String result = "";
 
                 ZonedDateTime time = ZonedDateTime.now();
-                time.plusHours(hours);
+                time = time.plusHours(hours);
 
                 for (Timezone zone : Timezone.class.getEnumConstants()) {
                   result += String.format("\n%s %s",

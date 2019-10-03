@@ -19,7 +19,7 @@ public class AnimePlugin extends Plugin {
   private AnimeTorrentFinder animeTorrentFinder;
 
   public AnimePlugin(EventWaiter waiter, DiscordBot bot) {
-    super("AnimePlugin", Group.TRUSTED_USER, waiter, bot);
+    super("AnimePlugin", Group.USER, waiter, bot);
     animeTorrentFinder = new AnimeTorrentFinder();
   }
 

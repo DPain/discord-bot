@@ -40,7 +40,7 @@ public class AudioPlayerPlugin extends Plugin {
   private final Map<Long, GuildMusicManager> musicManagers = new HashMap<>();
 
   public AudioPlayerPlugin(EventWaiter waiter, DiscordBot bot) {
-    super("AudioPlayerPlugin", Group.TRUSTED_USER, waiter, bot);
+    super("AudioPlayerPlugin", Group.USER, waiter, bot);
 
     AudioSourceManagers.registerRemoteSources(playerManager);
     AudioSourceManagers.registerLocalSource(playerManager);
