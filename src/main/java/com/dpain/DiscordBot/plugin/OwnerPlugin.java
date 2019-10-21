@@ -82,7 +82,7 @@ public class OwnerPlugin extends Plugin {
     super.commands.put("-info", "Displays the server info.");
     super.commands.put("-rebuild", "Resets the userdata file to default.");
     super.commands.put("-update", "Updates the userdata file.");
-    super.commands.put("-reload", "Reads the userdata fil`e again.");
+    super.commands.put("-reload", "Reads the userdata file again.");
     super.commands.put("-exit", "Shutsdown the bot.");
   }
 

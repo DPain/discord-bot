@@ -138,6 +138,7 @@ public class SchedulerPlugin extends Plugin {
   @Override
   public void setCommandDescriptions() {
     super.commands.put("-remind *\\\"hours later\\\"* *\\\"description\\\"*", "Sets a reminder for x hours later.");
+    super.commands.put("-time", "Gets the current time for a set of Timezones.");
     super.commands.put("-time*\\\"hours later\\\"*", "Gets the time x hours later for a set of Timezones.");
   }
 }
