@@ -12,7 +12,7 @@ The program requires the JDA Discord library and several other libraries which i
 	* JDA 3.8.3_464
 	* jsoup 1.12.1
 	* snakeyaml 1.24
-	* lavaplayer 1.3.17
+	* lavaplayer 1.3.32
 	* slf4j-simple 1.7.26
 	* org.json 20180813
 	* com.jagrosh 2.1.5
