@@ -18,8 +18,8 @@ import com.dpain.DiscordBot.plugin.WeatherPlugin;
 import com.dpain.DiscordBot.plugin.WikipediaPlugin;
 import com.dpain.DiscordBot.system.PropertiesManager;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 
 public class PluginListener implements EventListener {
   private final static Logger logger = LoggerFactory.getLogger(PluginListener.class);
@@ -56,7 +56,8 @@ public class PluginListener implements EventListener {
     logger.info("Added all the plugins!");
   }
 
-  public void onEvent(Event event) {
+  @Override
+  public void onEvent(GenericEvent event) {
     for (Plugin plugin : plugins) {
       plugin.handleEvent(event);
     }

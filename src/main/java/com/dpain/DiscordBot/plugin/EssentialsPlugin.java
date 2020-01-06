@@ -2,28 +2,24 @@ package com.dpain.DiscordBot.plugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.CodeSource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.DiscordBot;
-import com.dpain.DiscordBot.Main;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.helper.MessageHelper;
 import com.dpain.DiscordBot.plugin.mcsplash.MinecraftSplashReader;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 
 public class EssentialsPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(EssentialsPlugin.class);
@@ -68,7 +64,7 @@ public class EssentialsPlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(Event event) {
+  public void handleEvent(GenericEvent event) {
     if (event instanceof GuildMessageReceivedEvent) {
       try {
         GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
@@ -99,8 +95,8 @@ public class EssentialsPlugin extends Plugin {
               }
               String[] commands = helpStrings.toArray(new String[helpStrings.size()]);
 
-              MessageHelper.sendPage("**Help: **", commands, 3, 3, waiter,
-                  castedEvent.getChannel(), 1, TimeUnit.HOURS);
+              MessageHelper.sendPage("**Help: **", commands, 3, 3, waiter, castedEvent.getChannel(),
+                  1, TimeUnit.HOURS);
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
             }
           }
@@ -111,8 +107,9 @@ public class EssentialsPlugin extends Plugin {
           for (String key : emoteMap.keySet()) {
             String effectiveMessage = message.toLowerCase();
             if (shouldDisplayEmote(key, effectiveMessage)) {
-              castedEvent.getChannel()
-                  .sendFile(emoteMap.get(key), String.format("%s.png", key), null).queue();
+              // No attachment options set. (Attachment Options are things like spoiler alerts)
+              AttachmentOption[] options = new AttachmentOption[0];
+              castedEvent.getChannel().sendFile(emoteMap.get(key), options).queue();
               logger.info(LogHelper.elog(castedEvent, String.format("Triggered emote: %s", key)));
             }
           }

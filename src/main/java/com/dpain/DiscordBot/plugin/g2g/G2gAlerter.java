@@ -28,11 +28,8 @@ import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 import com.dpain.DiscordBot.enums.G2gServer;
-import com.dpain.DiscordBot.enums.Group;
-import com.dpain.DiscordBot.system.Entry;
-import com.dpain.DiscordBot.system.YamlPreferences;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.User;
 
 public class G2gAlerter {
   private final static Logger logger = LoggerFactory.getLogger(G2gAlerter.class);

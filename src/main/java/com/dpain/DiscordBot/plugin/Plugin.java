@@ -8,8 +8,8 @@ import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.system.MemberManager;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.GenericEvent;
 
 public abstract class Plugin {
   private final static Logger logger = LoggerFactory.getLogger(Plugin.class);
@@ -40,7 +40,7 @@ public abstract class Plugin {
     logger.info(String.format("%s Plugin Initialized!", name));
   }
 
-  public abstract void handleEvent(Event event);
+  public abstract void handleEvent(GenericEvent event);
   
   public abstract void setCommandDescriptions();
 

@@ -12,9 +12,9 @@ import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.moderator.Cleaner;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
 public class ModeratorPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(ModeratorPlugin.class);
@@ -24,7 +24,7 @@ public class ModeratorPlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(Event event) {
+  public void handleEvent(GenericEvent event) {
     if (event instanceof GuildMessageReceivedEvent) {
       try {
         GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
@@ -37,8 +37,7 @@ public class ModeratorPlugin extends Plugin {
             if (message.startsWith("-nick ")) {
               String param = message.substring(6);
 
-              castedEvent.getGuild().getController()
-                  .setNickname(castedEvent.getGuild().getSelfMember(), param).queue();
+              castedEvent.getGuild().getSelfMember().modifyNickname(param).queue();;
               castedEvent.getChannel().sendMessage("**Nickname changed to:** " + param).queue();
 
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
@@ -50,15 +49,15 @@ public class ModeratorPlugin extends Plugin {
               channelInfo.put("Channel Type", castedEvent.getChannel().getType().toString());
               DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
               String formattedDateTime =
-                  castedEvent.getChannel().getCreationTime().format(formatter);
+                  castedEvent.getChannel().getTimeCreated().format(formatter);
               channelInfo.put("Created Date", formattedDateTime + " " + Timezone.EST.getZoneId());
               channelInfo.put("NSFW", Boolean.toString(castedEvent.getChannel().isNSFW()));
               if (castedEvent.getChannel().getParent() != null) {
                 channelInfo.put("Category", castedEvent.getChannel().getParent().getName());
                 channelInfo.put("Category ID", castedEvent.getChannel().getParent().getId());
               }
-              channelInfo.put("# of Pinned Messages",
-                  Integer.toString(castedEvent.getChannel().getPinnedMessages().complete().size()));
+              channelInfo.put("# of Pinned Messages", Integer
+                  .toString(castedEvent.getChannel().retrievePinnedMessages().complete().size()));
 
               String formattedString = "";
               for (String category : channelInfo.keySet()) {
@@ -81,8 +80,7 @@ public class ModeratorPlugin extends Plugin {
                 }
               }
 
-              castedEvent.getGuild().getController()
-                  .setNickname(castedEvent.getGuild().getSelfMember(), tempName).queue();
+              castedEvent.getGuild().getSelfMember().modifyNickname(tempName).queue();
               castedEvent.getChannel().sendMessage("**Nickname changed to:** " + tempName).queue();
 
               logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
@@ -123,7 +121,8 @@ public class ModeratorPlugin extends Plugin {
     super.commands.put("-nick *\\\"name\\\"*", "Changes the nickname of the bot.");
     super.commands.put("-channel", "Returns some info of the current Channel.");
     super.commands.put("-randomnick", "Randomly changes the nickname of the bot.");
-    super.commands.put("-clear *\\\"x\\\"*", "Clears x amount of messages in the current text channel.");
+    super.commands.put("-clear *\\\"x\\\"*",
+        "Clears x amount of messages in the current text channel.");
   }
 
 }

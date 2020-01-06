@@ -23,15 +23,16 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.MessageBuilder.Formatting;
-import net.dv8tion.jda.core.MessageBuilder.SplitPolicy;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.MessageBuilder.Formatting;
+import net.dv8tion.jda.api.MessageBuilder.SplitPolicy;
+import net.dv8tion.jda.api.audio.AudioSendHandler;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class AudioPlayerPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(AudioPlayerPlugin.class);
@@ -47,7 +48,7 @@ public class AudioPlayerPlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(Event event) {
+  public void handleEvent(GenericEvent event) {
     if (event instanceof GuildMessageReceivedEvent) {
       try {
         GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
@@ -204,7 +205,7 @@ public class AudioPlayerPlugin extends Plugin {
       musicManagers.put(guildId, musicManager);
     }
 
-    guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+    guild.getAudioManager().setSendingHandler((AudioSendHandler) musicManager.getSendHandler());
 
     return musicManager;
   }

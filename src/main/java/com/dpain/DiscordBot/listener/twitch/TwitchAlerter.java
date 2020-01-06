@@ -1,7 +1,7 @@
 package com.dpain.DiscordBot.listener.twitch;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 
 public class TwitchAlerter {
   private Guild guild;
