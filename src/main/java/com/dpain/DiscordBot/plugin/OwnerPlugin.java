@@ -8,8 +8,8 @@ import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.g2g.G2gAlerter;
 import com.dpain.DiscordBot.system.MemberManager;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class OwnerPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(OwnerPlugin.class);
@@ -19,7 +19,7 @@ public class OwnerPlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(Event event) {
+  public void handleEvent(GenericEvent event) {
     if (event instanceof GuildMessageReceivedEvent) {
       try {
         GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;

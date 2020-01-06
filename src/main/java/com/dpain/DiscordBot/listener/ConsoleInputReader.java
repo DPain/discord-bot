@@ -3,9 +3,9 @@ package com.dpain.DiscordBot.listener;
 import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 
 public class ConsoleInputReader implements Runnable {
   private final static Logger logger = LoggerFactory.getLogger(ConsoleInputReader.class);

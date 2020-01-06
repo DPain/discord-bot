@@ -1,10 +1,10 @@
 package com.dpain.DiscordBot.helper;
 
-import net.dv8tion.jda.core.events.guild.GuildBanEvent;
-import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
-import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.events.user.update.GenericUserPresenceEvent;
+import net.dv8tion.jda.api.events.guild.GuildBanEvent;
+import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
+import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 
 public class LogHelper {
 
@@ -64,9 +64,9 @@ public class LogHelper {
    * @param event Event raised.
    * @param line Description.
    */
-  public static String elog(GenericUserPresenceEvent<?> event, String line) {
+  public static String elog(GenericUserPresenceEvent event, String line) {
     return String.format("Member: %s (username: %s - %s) in guild: %s\nDescription: %s",
-        event.getGuild().getMemberById(event.getUser().getId()).getEffectiveName(),
-        event.getUser().getName(), event.getUser().getId(), event.getGuild().getName(), line);
+        event.getGuild().getMemberById(event.getMember().getId()).getEffectiveName(),
+        event.getMember().getNickname(), event.getMember().getId(), event.getGuild().getName(), line);
   }
 }

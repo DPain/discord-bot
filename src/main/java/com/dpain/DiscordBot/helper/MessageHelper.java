@@ -3,9 +3,8 @@ package com.dpain.DiscordBot.helper;
 import java.util.concurrent.TimeUnit;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.Paginator;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 
 public class MessageHelper {
   

@@ -15,9 +15,9 @@ import com.dpain.DiscordBot.plugin.g2g.G2gAlerter;
 import com.dpain.DiscordBot.plugin.g2g.SubscriptionInfo;
 import com.dpain.DiscordBot.plugin.g2g.SellerInfo;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class G2gNotifierPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(G2gNotifierPlugin.class);
@@ -28,7 +28,7 @@ public class G2gNotifierPlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(Event event) {
+  public void handleEvent(GenericEvent event) {
     if (event instanceof GuildMessageReceivedEvent) {
       try {
         GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
@@ -85,7 +85,7 @@ public class G2gNotifierPlugin extends Plugin {
                 } else {
                   server = G2gAlerter.DEFAULT_SERVER;
                 }
-                
+
                 System.out.println(server);
 
                 ArrayList<SellerInfo> prices = G2gAlerter.load().checkPrice(server);
@@ -120,7 +120,8 @@ public class G2gNotifierPlugin extends Plugin {
 
   @Override
   public void setCommandDescriptions() {
-    super.commands.put("-g2gadd *\\\"serverName\\\"* *\\\"price\\\"*", "Gets added to the G2G Notifier list for a server with the corresponding rate.");
+    super.commands.put("-g2gadd *\\\"serverName\\\"* *\\\"price\\\"*",
+        "Gets added to the G2G Notifier list for a server with the corresponding rate.");
     super.commands.put("-g2gremove", "Removes yourself from the G2G Notifier list.");
     super.commands.put("-g2gcheck", "Checks G2G price and sends a Private message.");
   }

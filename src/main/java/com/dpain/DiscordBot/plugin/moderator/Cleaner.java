@@ -4,13 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.dpain.DiscordBot.helper.LogHelper;
-import com.dpain.DiscordBot.plugin.AudioPlayerPlugin;
-import net.dv8tion.jda.core.entities.MessageHistory;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
 public class Cleaner implements Runnable {
   private final static Logger logger = LoggerFactory.getLogger(Cleaner.class);

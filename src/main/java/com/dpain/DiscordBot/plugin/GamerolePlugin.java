@@ -13,10 +13,10 @@ import com.dpain.DiscordBot.exception.NoPermissionException;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.helper.MessageHelper;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.managers.RoleManager;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.managers.RoleManager;
 
 public class GamerolePlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(GamerolePlugin.class);
@@ -26,7 +26,7 @@ public class GamerolePlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(Event event) {
+  public void handleEvent(GenericEvent event) {
     if (event instanceof GuildMessageReceivedEvent) {
       try {
         GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
@@ -73,8 +73,8 @@ public class GamerolePlugin extends Plugin {
                         .equals(castedEvent.getGuild().getPublicRole().getPermissions())) {
                       gameroleManager =
                           castedEvent.getGuild().getRolesByName(gameName, true).get(0).getManager();
-                      castedEvent.getGuild().getController()
-                          .addRolesToMember(castedEvent.getMember(), gameroleManager.getRole())
+                      castedEvent.getGuild()
+                          .addRoleToMember(castedEvent.getMember(), gameroleManager.getRole())
                           .queue();
                       logger
                           .info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
@@ -104,8 +104,8 @@ public class GamerolePlugin extends Plugin {
                         .equals(castedEvent.getGuild().getPublicRole().getPermissions())) {
                       gameroleManager =
                           castedEvent.getGuild().getRolesByName(gameName, true).get(0).getManager();
-                      castedEvent.getGuild().getController()
-                          .removeRolesFromMember(castedEvent.getMember(), gameroleManager.getRole())
+                      castedEvent.getGuild()
+                          .removeRoleFromMember(castedEvent.getMember(), gameroleManager.getRole())
                           .queue();
                       logger
                           .info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));

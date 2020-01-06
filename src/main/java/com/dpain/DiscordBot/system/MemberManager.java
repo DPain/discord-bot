@@ -16,9 +16,8 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Property;
-import com.dpain.DiscordBot.plugin.AudioPlayerPlugin;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 
 public class MemberManager {
   private final static Logger logger = LoggerFactory.getLogger(MemberManager.class);
@@ -146,8 +145,7 @@ public class MemberManager {
       if (member.getUser().getId()
           .equals(PropertiesManager.load().getValue(Property.OWNER_USER_ID))) {
         addMember(member, Group.OWNER);
-      } else if (member.getUser().getId()
-          .equals(guild.getJDA().getSelfUser().getId())) {
+      } else if (member.getUser().getId().equals(guild.getJDA().getSelfUser().getId())) {
         addMember(member, Group.BOT);
       } else {
         addMember(member);

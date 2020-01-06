@@ -1,7 +1,6 @@
 package com.dpain.DiscordBot.plugin;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,8 +13,8 @@ import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class SchedulerPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(SchedulerPlugin.class);
@@ -27,7 +26,7 @@ public class SchedulerPlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(Event event) {
+  public void handleEvent(GenericEvent event) {
     if (event instanceof GuildMessageReceivedEvent) {
       try {
         GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
@@ -65,7 +64,7 @@ public class SchedulerPlugin extends Plugin {
               String result = "";
 
               Timezone[] timezones = Timezone.class.getEnumConstants();
-              
+
               // Sorting preset timezones because it looks better.
               Arrays.sort(timezones, (a, b) -> {
                 LocalDateTime instant = LocalDateTime.now();
@@ -91,9 +90,9 @@ public class SchedulerPlugin extends Plugin {
 
                 ZonedDateTime time = ZonedDateTime.now();
                 time = time.plusHours(hours);
-                
+
                 Timezone[] timezones = Timezone.class.getEnumConstants();
-                
+
                 // Sorting preset timezones because it looks better.
                 Arrays.sort(timezones, (a, b) -> {
                   LocalDateTime instant = LocalDateTime.now();
@@ -137,8 +136,10 @@ public class SchedulerPlugin extends Plugin {
 
   @Override
   public void setCommandDescriptions() {
-    super.commands.put("-remind *\\\"hours later\\\"* *\\\"description\\\"*", "Sets a reminder for x hours later.");
+    super.commands.put("-remind *\\\"hours later\\\"* *\\\"description\\\"*",
+        "Sets a reminder for x hours later.");
     super.commands.put("-time", "Gets the current time for a set of Timezones.");
-    super.commands.put("-time*\\\"hours later\\\"*", "Gets the time x hours later for a set of Timezones.");
+    super.commands.put("-time*\\\"hours later\\\"*",
+        "Gets the time x hours later for a set of Timezones.");
   }
 }

@@ -1,15 +1,13 @@
 package com.dpain.DiscordBot.plugin;
 
-import java.io.File;
-import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class ProfanityGuardPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(ProfanityGuardPlugin.class);
@@ -25,7 +23,7 @@ public class ProfanityGuardPlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(Event event) {
+  public void handleEvent(GenericEvent event) {
     if (event instanceof GuildMessageReceivedEvent) {
       try {
         GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
@@ -61,8 +59,7 @@ public class ProfanityGuardPlugin extends Plugin {
             }
           }
           /*
-           * # TODO Implement
-           * if() {
+           * # TODO Implement if() {
            * 
            * }
            */
@@ -76,8 +73,10 @@ public class ProfanityGuardPlugin extends Plugin {
 
   @Override
   public void setCommandDescriptions() {
-    super.commands.put("-profguard *\\\"enable/disable\\\"*", "Enables or disables Profanity Guard.");
-    super.commands.put("-profguard *\\\"offenders\\\"*", "PMs the list of offenders to the one who issued the command.");
+    super.commands.put("-profguard *\\\"enable/disable\\\"*",
+        "Enables or disables Profanity Guard.");
+    super.commands.put("-profguard *\\\"offenders\\\"*",
+        "PMs the list of offenders to the one who issued the command.");
   }
 
 }

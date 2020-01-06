@@ -13,13 +13,13 @@ import com.dpain.DiscordBot.plugin.g2g.G2gAlerter;
 import com.dpain.DiscordBot.system.PropertiesManager;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.dpain.DiscordBot.system.MemberManager;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Icon;
-import net.dv8tion.jda.core.entities.Game.GameType;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Icon;
 
 public class DiscordBot {
   private final static Logger logger = LoggerFactory.getLogger(DiscordBot.class);
@@ -42,12 +42,12 @@ public class DiscordBot {
       JDABuilder builder = new JDABuilder(AccountType.BOT)
           .setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN));
 
-      builder.addEventListener(pluginListener);
-      builder.addEventListener(new UserEventListener());
-      builder.addEventListener(waiter);
+      builder.addEventListeners(pluginListener);
+      builder.addEventListeners(new UserEventListener());
+      builder.addEventListeners(waiter);
 
       jda = builder.build().awaitReady();
-      jda.getPresence().setGame(Game.of(GameType.DEFAULT, "Bot Activated!"));
+      jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("Bot Activated!"));
 
       MemberManager
           .setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
