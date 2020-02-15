@@ -1,5 +1,7 @@
 package com.dpain.DiscordBot.plugin.audioplayer;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -44,8 +46,16 @@ public class GuildMusicManager {
   /**
    * Start the next track, stopping the current one if it is playing.
    */
-  public void nextTrack() {
-    player.startTrack(queue.poll(), false);
+  public void nextTrack(int num) {
+    if (num > 0) { 
+      if (num > 1) {
+        List<AudioTrack> temp = new LinkedList<AudioTrack>();
+        queue.drainTo(temp, num - 1);
+        temp.clear();
+      }
+      
+      player.startTrack(queue.poll(), false);
+    }
   }
 
   /**

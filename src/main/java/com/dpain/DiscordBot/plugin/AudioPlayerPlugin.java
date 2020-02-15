@@ -178,10 +178,22 @@ public class AudioPlayerPlugin extends Plugin {
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
             } else if (message.equals("-skip")) {
-              skipTrack(castedEvent.getChannel());
+              skipTrack(castedEvent.getChannel(), 1);
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
+            } else if (message.startsWith("-skip ")) {
+              try {
+                int num = Integer.parseInt(message.substring(6));
+                
+                skipTrack(castedEvent.getChannel(), num);
+
+                String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+                logger.info(temp);
+              } catch(NumberFormatException e) {
+                String temp = LogHelper.elog(castedEvent, String.format("Command: %s, incorrect parameter!", message));
+                logger.warn(temp);
+              }
             } else if (message.equals("-skipall")) {
               skipAllTrack(castedEvent.getChannel());
 
@@ -271,17 +283,22 @@ public class AudioPlayerPlugin extends Plugin {
     musicManager.queue(track);
   }
 
-  private void skipTrack(TextChannel channel) {
-    GuildMusicManager musicMgr = getGuildAudioPlayer(channel.getGuild());
-    musicMgr.nextTrack();
+  private void skipTrack(TextChannel channel, int num) {
+    if (num > 0) {
+      GuildMusicManager musicMgr = getGuildAudioPlayer(channel.getGuild());
+      musicMgr.nextTrack(num);
 
-    channel.sendMessage("Skipped to next track.").queue();
+      channel.sendMessage("Skipped tracks.").queue();
+    } else {
+      // Skipping 0 or negative numbers of tracks.
+      channel.sendMessage("You can't skip tracks like that!").queue();
+    }
   }
 
   private void skipAllTrack(TextChannel channel) {
     GuildMusicManager musicMgr = getGuildAudioPlayer(channel.getGuild());
     musicMgr.clear();
-    musicMgr.nextTrack();
+    musicMgr.nextTrack(1);
 
     channel.sendMessage("Cleared the Playlist.").queue();
   }
