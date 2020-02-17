@@ -76,6 +76,7 @@ public class GamerolePlugin extends Plugin {
                       castedEvent.getGuild()
                           .addRoleToMember(castedEvent.getMember(), gameroleManager.getRole())
                           .queue();
+                      castedEvent.getChannel().sendMessage("Added the Gamerole!").queue();
                       logger
                           .info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
                     } else {
@@ -107,6 +108,7 @@ public class GamerolePlugin extends Plugin {
                       castedEvent.getGuild()
                           .removeRoleFromMember(castedEvent.getMember(), gameroleManager.getRole())
                           .queue();
+                      castedEvent.getChannel().sendMessage("Removed the Gamerole!").queue();
                       logger
                           .info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
                     } else {

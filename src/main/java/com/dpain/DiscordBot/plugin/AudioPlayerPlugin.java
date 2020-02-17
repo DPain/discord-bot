@@ -199,6 +199,11 @@ public class AudioPlayerPlugin extends Plugin {
 
               String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
               logger.info(temp);
+            } else if (message.equals("-shuffle")) {
+              shufflePlaylist(castedEvent.getChannel());
+
+              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
+              logger.info(temp);
             }
           }
         }
@@ -302,6 +307,13 @@ public class AudioPlayerPlugin extends Plugin {
 
     channel.sendMessage("Cleared the Playlist.").queue();
   }
+  
+  private void shufflePlaylist(TextChannel channel) {
+    GuildMusicManager musicMgr = getGuildAudioPlayer(channel.getGuild());
+    musicMgr.shuffle();
+
+    channel.sendMessage("Shuffled the Playlist.").queue();
+  }
 
   @Override
   public void setCommandDescriptions() {
@@ -315,6 +327,8 @@ public class AudioPlayerPlugin extends Plugin {
     super.commands.put("-pause", "Pauses the audio.");
     super.commands.put("-current", "Displays the current song.");
     super.commands.put("-skip", "Skips the current Track.");
+    super.commands.put("-skip *\\\"number\\\"*", "Skips x amount of Tracks.");
     super.commands.put("-skipall", "Clears the Playlist.");
+    super.commands.put("-shuffle", "Shuffles the Playlist.");
   }
 }

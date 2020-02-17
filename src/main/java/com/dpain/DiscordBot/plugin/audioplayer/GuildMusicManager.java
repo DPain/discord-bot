@@ -1,7 +1,12 @@
 package com.dpain.DiscordBot.plugin.audioplayer;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -22,7 +27,7 @@ public class GuildMusicManager {
   /**
    * Queue for the audio player.
    */
-  private final BlockingQueue<AudioTrack> queue;
+  private BlockingQueue<AudioTrack> queue;
 
   /**
    * Creates a player and a track scheduler.
@@ -67,6 +72,32 @@ public class GuildMusicManager {
     if (!player.startTrack(track, true)) {
       queue.offer(track);
     }
+  }
+  
+  /**
+   * Shuffles the playlist.
+   */
+  public void shuffle() {
+    BlockingQueue<AudioTrack> newQueue = new LinkedBlockingQueue<AudioTrack>();
+    List<AudioTrack> tempList = new LinkedList<AudioTrack>();
+    
+    // The current queue in a LinkedList.
+    Collections.addAll(tempList, queue.toArray(new AudioTrack[queue.size()]));
+    
+    // Shuffling the LinkedList
+    Collections.shuffle(tempList);
+    
+    // Adding shuffled list to the new queue.
+    newQueue.addAll(tempList);
+    
+    // The queue is now replaced with the new queue.
+    queue = newQueue;
+    
+    // Play next track after shuffling.
+    player.startTrack(queue.poll(), false);
+    
+    // I guess helping garbage collection could be helpful?
+    tempList.clear();
   }
 
   /**
