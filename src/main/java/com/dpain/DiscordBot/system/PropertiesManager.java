@@ -68,11 +68,11 @@ public class PropertiesManager {
     configFile.createNewFile();
 
     String line = String.format(
-        "#Properties file created at: %s\n%s=\n%s=\n%s=\n%s=\n%s=false\n%s=false\n%s=false\n%s=5",
+        "#Properties file created at: %s\n%s=\n%s=\n%s=\n%s=\n%s=false\n%s=false\n%s=1\n%s=5",
         timePoint.toString(), Property.BOT_TOKEN.getKey(), Property.OWNER_USER_ID.getKey(),
         Property.GUILD_ID.getKey(), Property.WEATHER_API_KEY.getKey(),
         Property.USE_GAME_ROLE.getKey(), Property.USE_TWITCH_ALERTER.getKey(),
-        Property.USE_G2G_ALERTER.getKey(), Property.TORRENT_ENTRY_LIMIT.getKey());
+        Property.G2G_ALERT_INTERVAL.getKey(), Property.TORRENT_ENTRY_LIMIT.getKey());
 
     PrintStream printer = new PrintStream(configFile);
     printer.print(line);

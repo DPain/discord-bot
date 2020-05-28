@@ -25,7 +25,7 @@ public class PluginListener implements EventListener {
   private final static Logger logger = LoggerFactory.getLogger(PluginListener.class);
 
   public LinkedList<Plugin> plugins;
-  
+
   public DiscordBot bot;
 
   public PluginListener(EventWaiter waiter, DiscordBot bot) {
@@ -44,12 +44,12 @@ public class PluginListener implements EventListener {
     plugins.add(new SchedulerPlugin(waiter, bot));
     plugins.add(new WeatherPlugin(waiter, bot));
     plugins.add(new WikipediaPlugin(waiter, bot));
-    if (PropertiesManager.load().getValue(Property.USE_GAME_ROLE).toUpperCase()
-        .equals("TRUE")) {
+    if (PropertiesManager.load().getValue(Property.USE_GAME_ROLE).toUpperCase().equals("TRUE")) {
       plugins.add(new GamerolePlugin(waiter, bot));
     }
-    if (PropertiesManager.load().getValue(Property.USE_G2G_ALERTER).toUpperCase()
-        .equals("TRUE")) {
+    String g2gInterval = PropertiesManager.load().getValue(Property.G2G_ALERT_INTERVAL);
+    if (g2gInterval != null && !g2gInterval.isEmpty()) {
+      // String value is checked within the plugin.
       plugins.add(new G2gNotifierPlugin(waiter, bot));
     }
 

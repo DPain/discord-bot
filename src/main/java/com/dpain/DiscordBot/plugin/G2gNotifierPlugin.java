@@ -10,9 +10,11 @@ import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.G2gServer;
 import com.dpain.DiscordBot.enums.Group;
+import com.dpain.DiscordBot.enums.Property;
 import com.dpain.DiscordBot.helper.MessageHelper;
 import com.dpain.DiscordBot.plugin.g2g.G2gAlerter;
 import com.dpain.DiscordBot.plugin.g2g.SubscriptionInfo;
+import com.dpain.DiscordBot.system.PropertiesManager;
 import com.dpain.DiscordBot.plugin.g2g.SellerInfo;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -24,7 +26,18 @@ public class G2gNotifierPlugin extends Plugin {
 
   public G2gNotifierPlugin(EventWaiter waiter, DiscordBot bot) {
     super("G2gNotifierPlugin", Group.TRUSTED_USER, waiter, bot);
-    G2gAlerter.load();
+    String g2gInterval = PropertiesManager.load().getValue(Property.G2G_ALERT_INTERVAL);
+
+    try {
+      int i = Integer.parseInt(g2gInterval);
+      G2gAlerter.load(i);
+    } catch (NumberFormatException e) {
+      // Could not parse property!
+      G2gAlerter.load();
+      logger.warn(String.format("Could not parse the property value of key: %s",
+          Property.G2G_ALERT_INTERVAL.getKey()));
+      logger.warn("Using Default value instead!");
+    }
   }
 
   @Override

@@ -9,7 +9,7 @@ public enum Property {
   WEATHER_API_KEY("weather-api-key"),
   USE_GAME_ROLE("use-game-role"),
   USE_TWITCH_ALERTER("use-twitch-alerter"),
-  USE_G2G_ALERTER("use-g2g-alerter"),
+  G2G_ALERT_INTERVAL("g2g-alert-interval"),
   TORRENT_ENTRY_LIMIT("torrent-entry-limit");
   /* @formatter:on */
 

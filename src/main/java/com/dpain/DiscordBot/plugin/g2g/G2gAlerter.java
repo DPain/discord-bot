@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,14 +31,16 @@ import org.yaml.snakeyaml.representer.Representer;
 import com.dpain.DiscordBot.enums.G2gServer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
 
 public class G2gAlerter {
   private final static Logger logger = LoggerFactory.getLogger(G2gAlerter.class);
 
   private final String SUBSCRIPTION_FILENAME = "subscription.yml";
   private Map<String, SubscriptionInfo> userMap = new HashMap<String, SubscriptionInfo>();
-  
-  public final static G2gServer DEFAULT_SERVER = G2gServer.KADUM;
+
+  public final static int DEFAULT_INTERVAL = 1;
+  public final static G2gServer DEFAULT_SERVER = G2gServer.ARIA;
 
   private JDA jda;
 
@@ -47,12 +50,20 @@ public class G2gAlerter {
    * Constructor
    */
   private G2gAlerter() {
+    // Default 1 hour interval.
+    this(DEFAULT_INTERVAL);
+  }
+
+  /**
+   * Constructor
+   */
+  private G2gAlerter(int hour) {
     try {
       readSubscriptionFile();
 
       // Calculating initial delay
       LocalDateTime now = LocalDateTime.now();
-      LocalDateTime nextRun = now.withMinute(0).withSecond(0).plusHours(1);
+      LocalDateTime nextRun = now.withMinute(0).withSecond(0).plusHours(hour);
 
       Duration duration = Duration.between(now, nextRun);
       long initalDelay = duration.getSeconds();
@@ -62,11 +73,12 @@ public class G2gAlerter {
       scheduler.scheduleAtFixedRate(new Runnable() {
         @Override
         public void run() {
+          logger.info("G2gAlerter broadcasting alert!");
           for (G2gServer server : G2gServer.values()) {
             broadcastPrice(server);
           }
         }
-      }, initalDelay, TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
+      }, initalDelay, TimeUnit.HOURS.toSeconds(1) * hour, TimeUnit.SECONDS);
 
     } catch (IOException e) {
       logger.error("Did not have permission to create the " + SUBSCRIPTION_FILENAME + " file!");
@@ -74,12 +86,20 @@ public class G2gAlerter {
   }
 
   public static G2gAlerter load() {
-    return loadG2gAlerter();
+    return load(DEFAULT_INTERVAL);
+  }
+
+  public static G2gAlerter load(int hour) {
+    return loadG2gAlerter(hour);
   }
 
   public static G2gAlerter loadG2gAlerter() {
+    return loadG2gAlerter(DEFAULT_INTERVAL);
+  }
+
+  public static G2gAlerter loadG2gAlerter(int hour) {
     if (ref == null) {
-      ref = new G2gAlerter();
+      ref = new G2gAlerter(hour);
     }
     return ref;
   }
@@ -110,10 +130,10 @@ public class G2gAlerter {
   private void readSubscriptionFile() throws IOException {
     CustomClassLoaderConstructor constructor =
         new CustomClassLoaderConstructor(YamlSubscriptionFormat.class.getClassLoader());
-    constructor.addTypeDescription(new TypeDescription(YamlSubscriptionFormat.class, "!subscriptions"));
-    constructor.addTypeDescription(new TypeDescription(SubscriptionInfo.class, "!info"));
     constructor
-        .addTypeDescription(new TypeDescription(G2gServer.class, "!server"));
+        .addTypeDescription(new TypeDescription(YamlSubscriptionFormat.class, "!subscriptions"));
+    constructor.addTypeDescription(new TypeDescription(SubscriptionInfo.class, "!info"));
+    constructor.addTypeDescription(new TypeDescription(G2gServer.class, "!server"));
     Yaml yaml = new Yaml(constructor);
 
     try {
@@ -139,24 +159,26 @@ public class G2gAlerter {
     try {
       YamlSubscriptionFormat container = new YamlSubscriptionFormat();
       container.subscriptions = userMap;
-      
+
       yaml.dump(container, new FileWriter(SUBSCRIPTION_FILENAME));
     } catch (IOException e) {
       logger.error("Failed to read the config file!");
     }
   }
-  
+
   /**
    * Returns whether the user is subscripted or not.
+   * 
    * @param user
    * @return boolean
    */
   public boolean userExists(User user) {
     return userMap.containsKey(user.getId());
   }
-  
+
   /**
    * Gets the subscription information of a user.
+   * 
    * @param user
    * @return SubscriptionInfo
    */
@@ -232,17 +254,31 @@ public class G2gAlerter {
           .orElseThrow(NoSuchElementException::new);
 
       logger.info(String.format("Broadcasting G2G Seller Info:\n", min));
-      
+
       for (String id : userMap.keySet()) {
         if (server == userMap.get(id).server && min.getPrice() <= userMap.get(id).limit) {
-          jda.getUserById(id).openPrivateChannel().queue((channel) -> {
-            channel.sendMessage(min.toString()).queue();
-          });
+          // Retrieve the user by their id
+          jda.retrieveUserById(id).submit()
+              .thenCompose((user) -> user.openPrivateChannel().submit())
+              .thenCompose((channel) -> channel.sendMessage(min.toString()).submit())
+              .whenComplete((s, error) -> {
+                // Handling Error!
+                if (error != null) {
+                  // There is an error! Deleting problematic user ID.
+                  // User probably blocked the bot or user does not exist.
+                  G2gAlerter.load().removeUser(jda.retrieveUserById(id).complete());
+                }
+              });
         }
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+      logger.error("Unknown error!");
+    } catch (NoSuchElementException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      logger.error("G2G Site format changed. Please adjust parser!");
     }
   }
 
@@ -256,7 +292,7 @@ public class G2gAlerter {
     ArrayList<SellerInfo> result = new ArrayList<SellerInfo>();
     String parseLink = "https://www.g2g.com/archeage-us/Gold-20354-20357?&server=" + server.getID();
     Document doc = Jsoup.connect(parseLink).get();
-    
+
     Element container = doc.select("ul.products__list").first();
     Elements listing = container.select("li.products__list-item");
     for (Element entry : listing) {
