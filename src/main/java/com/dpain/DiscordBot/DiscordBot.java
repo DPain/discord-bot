@@ -2,6 +2,7 @@ package com.dpain.DiscordBot;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumSet;
 import javax.security.auth.login.LoginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,8 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class DiscordBot {
   private final static Logger logger = LoggerFactory.getLogger(DiscordBot.class);
@@ -32,22 +35,25 @@ public class DiscordBot {
     try {
       // Defines an EventWaiter used for paginators.
       EventWaiter waiter = new EventWaiter();
-      
+
       // Initialized before PluginListener since a plugin might rely on some
       // properties.
       PropertiesManager.load();
 
       pluginListener = new PluginListener(waiter, this);
 
-      JDABuilder builder = new JDABuilder(AccountType.BOT)
-          .setToken(PropertiesManager.load().getValue(Property.BOT_TOKEN));
+      String token = PropertiesManager.load().getValue(Property.BOT_TOKEN);
 
+      JDABuilder builder = JDABuilder.createDefault(token).enableIntents(EnumSet.allOf(GatewayIntent.class));
+      builder.setMemberCachePolicy(MemberCachePolicy.ALL);
+
+      // Registering event listeners.
       builder.addEventListeners(pluginListener);
       builder.addEventListeners(new UserEventListener());
       builder.addEventListeners(waiter);
-
+      
+      // Finalize building the bot.
       jda = builder.build().awaitReady();
-      jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("Bot Activated!"));
 
       MemberManager
           .setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
@@ -68,7 +74,7 @@ public class DiscordBot {
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      jda.shutdown();
+      jda.shutdownNow();
       System.exit(0);
     }
     // changeAvatar();
@@ -99,7 +105,7 @@ public class DiscordBot {
   private void leaveGuild() {
     try {
       jda.getGuildById("244728414165139457").leave().complete();
-    } catch(NullPointerException e) {
+    } catch (NullPointerException e) {
       System.out.println("Already left the server!");
     }
   }

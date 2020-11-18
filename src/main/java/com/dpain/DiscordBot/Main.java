@@ -14,7 +14,7 @@ public class Main {
   public static void main(String[] args) {
     logger.info("Main Initialized!");
 
-    // Initial folder setup    
+    // Initial folder setup
     Path rscDir = Paths.get("rsc");
     if (!Files.isDirectory(rscDir)) {
       try {

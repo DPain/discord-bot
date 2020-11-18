@@ -26,7 +26,7 @@ public class ConsoleInputReader implements Runnable {
   private boolean processConsoleCommand(String commandLine) {
     if (!commandLine.isEmpty()) {
       if (commandLine.equals("-exit")) {
-        jda.shutdown();
+        jda.shutdownNow();
         System.exit(0);
         return false;
       } else if (commandLine.startsWith("-changeguild ")) {
