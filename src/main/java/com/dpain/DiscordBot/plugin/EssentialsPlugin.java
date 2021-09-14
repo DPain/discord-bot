@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -17,8 +17,9 @@ import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.helper.MessageHelper;
 import com.dpain.DiscordBot.plugin.mcsplash.MinecraftSplashReader;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 
 public class EssentialsPlugin extends Plugin {
@@ -62,61 +63,27 @@ public class EssentialsPlugin extends Plugin {
       }
     }
   }
-
+  
   @Override
-  public void handleEvent(GenericEvent event) {
-    if (event instanceof GuildMessageReceivedEvent) {
-      try {
-        GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-        String message = castedEvent.getMessage().getContentRaw();
+  public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+    try {
+      String message = event.getMessage().getContentRaw();
 
-        if ((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId()))
-            || canAccessPlugin(castedEvent.getMember())) {
-          if (message.startsWith("-")) {
-            if (message.equals("-splash")) {
-              // Easter Egg
-              castedEvent.getChannel().sendMessage(mcSplash.getRandomSplash()).queue();
-              logger.info(LogHelper.elog(castedEvent, "User triggered the easter egg."));
-            } else if (message.equals("-emotes")) {
-              Set<String> set = emoteMap.keySet();
-              String[] keys = set.toArray(new String[set.size()]);
-
-              MessageHelper.sendPage("**Twitch Emotes: **", keys, 3, 50, waiter,
-                  castedEvent.getChannel(), 1, TimeUnit.HOURS);
-              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-            } else if (message.equals("-help")) {
-              ArrayList<String> helpStrings = new ArrayList<String>();
-              for (Plugin plugin : super.bot.pluginListener.plugins) {
-                String pluginPage = String.format("**%s Plugin Usage**", plugin.getName());
-                for (String cmd : plugin.getCommands().keySet()) {
-                  pluginPage += String.format("\n%s : %s", cmd, plugin.getCommands().get(cmd));
-                }
-                helpStrings.add(pluginPage);
-              }
-              String[] commands = helpStrings.toArray(new String[helpStrings.size()]);
-
-              MessageHelper.sendPage("**Help: **", commands, 3, 3, waiter, castedEvent.getChannel(),
-                  1, TimeUnit.HOURS);
-              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-            }
+      // Also works for users who have lower permissions than this plugin's requirement.
+      if (!event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
+        // Checks if there are any emotes to display.
+        for (String key : emoteMap.keySet()) {
+          String effectiveMessage = message.toLowerCase();
+          if (shouldDisplayEmote(key, effectiveMessage)) {
+            // No attachment options set. (Attachment Options are things like spoiler alerts)
+            AttachmentOption[] options = new AttachmentOption[0];
+            event.getChannel().sendFile(emoteMap.get(key), options).queue();
+            logger.info(LogHelper.elog(event, String.format("Triggered emote: %s", key)));
           }
         }
-        // Also works for users who have lower permissions than this plugin's requirement.
-        if (!castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
-          // Checks if there are any emotes to display.
-          for (String key : emoteMap.keySet()) {
-            String effectiveMessage = message.toLowerCase();
-            if (shouldDisplayEmote(key, effectiveMessage)) {
-              // No attachment options set. (Attachment Options are things like spoiler alerts)
-              AttachmentOption[] options = new AttachmentOption[0];
-              castedEvent.getChannel().sendFile(emoteMap.get(key), options).queue();
-              logger.info(LogHelper.elog(castedEvent, String.format("Triggered emote: %s", key)));
-            }
-          }
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
       }
+    } catch (Exception e) {
+      logger.error("Error happened while hanlding EssentialsPlugin Emotes.");
     }
   }
 
@@ -135,9 +102,42 @@ public class EssentialsPlugin extends Plugin {
   }
 
   @Override
+  public void onSlashCommand(SlashCommandEvent event) {
+    if (canAccessPlugin(event.getMember())
+        && !event.getMember().getUser().getId().equals(event.getJDA().getSelfUser().getId())) {
+      String message = String.format("CMD: %s - %s", event.getName(), Arrays.toString(event.getOptions().toArray()));
+
+      // Only accept commands from guilds.
+      if (event.getGuild() == null) {
+        return;
+      }
+      switch (event.getName()) {
+        case "splash":
+          // Easter Egg
+          event.reply(mcSplash.getRandomSplash()).queue();
+
+          logger.info(LogHelper.elog(event, "User triggered the easter egg."));
+          break;
+        case "emotes":
+          event.deferReply().queue();
+          
+          Set<String> set = emoteMap.keySet();
+          String[] keys = set.toArray(new String[set.size()]);
+
+          MessageHelper.sendPage("**Twitch Emotes: **", keys, 3, 50, waiter, event.getTextChannel(),
+              1, TimeUnit.HOURS);
+          
+          event.getHook().sendMessage("Command Processed!").queue();
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+      }
+    }
+  }
+
+  @Override
   public void setCommandDescriptions() {
-    super.commands.put("-splash", "Gets a random string.");
-    super.commands.put("-emotes", "Deletes a custom command.");
-    super.commands.put("-help", "Displays the available commands.");
+    super.commands.add(new CommandData("splash", "Gets a random splash text from Minecraft."));
+    super.commands.add(new CommandData("emotes", "Gets a list of emotes the bot will react to."));
   }
 }

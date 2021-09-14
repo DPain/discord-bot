@@ -13,8 +13,10 @@ import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public class SchedulerPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(SchedulerPlugin.class);
@@ -25,106 +27,7 @@ public class SchedulerPlugin extends Plugin {
     super("SchedulerPlugin", Group.USER, waiter, bot);
   }
 
-  @Override
-  public void handleEvent(GenericEvent event) {
-    if (event instanceof GuildMessageReceivedEvent) {
-      try {
-        GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-        String message = castedEvent.getMessage().getContentRaw();
-
-        if (canAccessPlugin(castedEvent.getMember()) && !castedEvent.getAuthor().getId()
-            .equals(castedEvent.getJDA().getSelfUser().getId())) {
-          if (message.startsWith("-")) {
-            if (message.startsWith("-remind ")) {
-              String param = message.substring(8);
-              try {
-                int indexOfFirstSpace = param.indexOf(" ");
-                double hours = Double.parseDouble(param.substring(0, indexOfFirstSpace));
-                String description = param.substring(indexOfFirstSpace + 1);
-
-                castedEvent.getAuthor().openPrivateChannel()
-                    .queue((channel) -> channel.sendMessage(description)
-                        .queueAfter(SchedulerPlugin.hoursToSeconds(hours), TimeUnit.SECONDS));
-
-                castedEvent.getChannel()
-                    .sendMessage(
-                        String.format("Reminder set %.4f hours later for: %s", hours, description))
-                    .queue();
-
-                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-              } catch (NumberFormatException e) {
-                castedEvent.getChannel().sendMessage("Please input a correct time in hours!")
-                    .queue();
-
-                logger.warn(
-                    LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
-              }
-            } else if (message.equals("-time")) {
-              ZonedDateTime time = ZonedDateTime.now();
-              String result = "";
-
-              Timezone[] timezones = Timezone.class.getEnumConstants();
-
-              // Sorting preset timezones because it looks better.
-              Arrays.sort(timezones, (a, b) -> {
-                LocalDateTime instant = LocalDateTime.now();
-                ZoneOffset aOffset = a.getZoneId().getRules().getOffset(instant);
-                ZoneOffset bOffset = b.getZoneId().getRules().getOffset(instant);
-                return bOffset.compareTo(aOffset);
-              });
-
-              for (Timezone zone : timezones) {
-                result += String.format("\n%s %s",
-                    time.withZoneSameInstant(zone.getZoneId()).format(formatter),
-                    zone.getZoneId().toString());
-              }
-
-              castedEvent.getChannel().sendMessage("The current Time: " + result).queue();
-              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-            } else if (message.startsWith("-time ")) {
-              String param = message.substring(6);
-              try {
-                long hours = Long.parseLong(param.substring(0));
-
-                String result = "";
-
-                ZonedDateTime time = ZonedDateTime.now();
-                time = time.plusHours(hours);
-
-                Timezone[] timezones = Timezone.class.getEnumConstants();
-
-                // Sorting preset timezones because it looks better.
-                Arrays.sort(timezones, (a, b) -> {
-                  LocalDateTime instant = LocalDateTime.now();
-                  ZoneOffset aOffset = a.getZoneId().getRules().getOffset(instant);
-                  ZoneOffset bOffset = b.getZoneId().getRules().getOffset(instant);
-                  return bOffset.compareTo(aOffset);
-                });
-
-                for (Timezone zone : timezones) {
-                  result += String.format("\n%s %s",
-                      time.withZoneSameInstant(zone.getZoneId()).format(formatter),
-                      zone.getZoneId().toString());
-                }
-
-                castedEvent.getChannel().sendMessage("Time for some timezones: " + result).queue();
-                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-              } catch (NumberFormatException e) {
-                castedEvent.getChannel().sendMessage("Please input a correct time in hours!")
-                    .queue();
-                logger.warn(
-                    LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
-              }
-            }
-          }
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-  }
-
-  public static int hoursToSeconds(double time) {
+  public static int hoursToSeconds(long time) {
     int hours = (int) time;
     int minutes = (int) (time * 60) % 60;
     int seconds = (int) (time * (60 * 60)) % 60;
@@ -135,11 +38,85 @@ public class SchedulerPlugin extends Plugin {
   }
 
   @Override
+  public void onSlashCommand(SlashCommandEvent event) {
+    if (canAccessPlugin(event.getMember())
+        && !event.getMember().getUser().getId().equals(event.getJDA().getSelfUser().getId())) {
+      String message = String.format("CMD: %s - %s", event.getName(), Arrays.toString(event.getOptions().toArray()));
+
+      // Only accept commands from guilds.
+      if (event.getGuild() == null) {
+        return;
+      }
+      switch (event.getName()) {
+        case "remind": {
+          event.deferReply().queue();
+
+          try {
+            long hours = event.getOption("hours-later").getAsLong();
+            String description = event.getOption("description").getAsString();
+
+            event.getUser().openPrivateChannel().queue((channel) -> channel.sendMessage(description)
+                .queueAfter(SchedulerPlugin.hoursToSeconds(hours), TimeUnit.SECONDS));
+
+            event.getHook().sendMessage(String.format("Reminder set %.4f hours later for: %s", hours, description))
+                .queue();
+
+            logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          } catch (NumberFormatException e) {
+            event.getHook().sendMessage("Please input a correct time in hours!").queue();
+
+            logger.warn(LogHelper.elog(event, String.format("Incorrect command: %s", message)));
+          }
+
+          break;
+        }
+        case "time": {
+          OptionMapping option = event.getOption("hours-later");
+          try {
+            String result = "";
+
+            ZonedDateTime time = ZonedDateTime.now();
+
+            if (option != null) {
+              long hours = option.getAsLong();
+              time = time.plusHours(hours);
+            }
+
+            Timezone[] timezones = Timezone.class.getEnumConstants();
+
+            // Sorting preset timezones because it looks better.
+            Arrays.sort(timezones, (a, b) -> {
+              LocalDateTime instant = LocalDateTime.now();
+              ZoneOffset aOffset = a.getZoneId().getRules().getOffset(instant);
+              ZoneOffset bOffset = b.getZoneId().getRules().getOffset(instant);
+              return bOffset.compareTo(aOffset);
+            });
+
+            for (Timezone zone : timezones) {
+              result += String.format("\n%s %s",
+                  time.withZoneSameInstant(zone.getZoneId()).format(formatter),
+                  zone.getZoneId().toString());
+            }
+
+            event.reply("Time for some timezones: " + result).queue();
+            logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          } catch (NumberFormatException e) {
+            event.reply("Please input a correct time in hours!").queue();
+            logger.warn(LogHelper.elog(event, String.format("Incorrect command: %s", message)));
+          }
+
+          break;
+        }
+      }
+    }
+  }
+
+  @Override
   public void setCommandDescriptions() {
-    super.commands.put("-remind *\\\"hours later\\\"* *\\\"description\\\"*",
-        "Sets a reminder for x hours later.");
-    super.commands.put("-time", "Gets the current time for a set of Timezones.");
-    super.commands.put("-time*\\\"hours later\\\"*",
-        "Gets the time x hours later for a set of Timezones.");
+    super.commands.add(new CommandData("remind", "Sets a reminder.")
+        .addOption(OptionType.INTEGER, "hours-later", "Number of hours later to be reminded", true)
+        .addOption(OptionType.STRING, "description", "Description of the Reminder", true));
+    super.commands.add(new CommandData("time", "Gets the current time for a set of Timezones.")
+        .addOption(OptionType.INTEGER, "hours-later", "Number of hours to add.", false));
   }
 }

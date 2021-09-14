@@ -1,17 +1,16 @@
 package com.dpain.DiscordBot.plugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
-import com.dpain.DiscordBot.exception.ChannelNotFoundException;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.helper.MessageHelper;
 import com.dpain.DiscordBot.plugin.audioplayer.GuildMusicManager;
@@ -23,16 +22,16 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.MessageBuilder.Formatting;
-import net.dv8tion.jda.api.MessageBuilder.SplitPolicy;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 
 public class AudioPlayerPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(AudioPlayerPlugin.class);
@@ -45,172 +44,6 @@ public class AudioPlayerPlugin extends Plugin {
 
     AudioSourceManagers.registerRemoteSources(playerManager);
     AudioSourceManagers.registerLocalSource(playerManager);
-  }
-
-  @Override
-  public void handleEvent(GenericEvent event) {
-    if (event instanceof GuildMessageReceivedEvent) {
-      try {
-        GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-        String message = castedEvent.getMessage().getContentRaw();
-
-        if (canAccessPlugin(castedEvent.getMember()) && !castedEvent.getAuthor().getId()
-            .equals(castedEvent.getJDA().getSelfUser().getId())) {
-          if (message.startsWith("-")) {
-            // Start an audio connection with a VoiceChannel
-            if (message.startsWith("-join ")) {
-              // Separates the name of the channel so that we can
-              // search for it
-              String chanName = message.substring(6);
-
-              // Scans through the VoiceChannels in this Guild,
-              // looking for one with a case-insensitive matching
-              // name.
-              VoiceChannel channel = castedEvent.getGuild().getVoiceChannels().stream()
-                  .filter(vChan -> vChan.getName().equalsIgnoreCase(chanName)).findFirst()
-                  .orElse(null); // If there isn't a matching
-                                 // name, return null.
-              if (channel == null) {
-                String temp = LogHelper.elog(castedEvent,
-                    String.format("Channel does not exist Command: %s", message));
-                logger.warn(temp);
-                throw new ChannelNotFoundException();
-              } else {
-                castedEvent.getGuild().getAudioManager().openAudioConnection(channel);
-                String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-                logger.info(temp);
-              }
-            } else if (message.equals("-leave")) {
-              // Disconnect the audio connection with the
-              // VoiceChannel.
-              castedEvent.getGuild().getAudioManager().closeAudioConnection();
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            } else if (message.equals("-play")) {
-              // Incorrect usage of play
-              castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*").queue();
-              String temp =
-                  LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
-              logger.warn(temp);
-            } else if (message.startsWith("-play ")) {
-              // Plays audio with the URLPlayer
-
-              String urlString = message.substring("-play ".length());
-              loadAndPlay(castedEvent.getChannel(), urlString);
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            } else if (message.equals("-volume")) {
-              castedEvent.getChannel().sendMessage(
-                  String.format("**Current volume:** *%d*", getVolume(castedEvent.getChannel())))
-                  .queue();
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            } else if (message.startsWith("-volume ")) {
-              String input = message.substring(8);
-              try {
-                int temp = Integer.parseInt(input);
-
-                // Sanitize user input.
-                if (temp < 0) {
-                  temp = 0;
-                } else if (temp > 100) {
-                  temp = 100;
-                }
-
-                setVolume(castedEvent.getChannel(), temp);
-
-                castedEvent.getChannel().sendMessage(
-                    String.format("Setting the volume to %d", getVolume(castedEvent.getChannel())))
-                    .queue();
-
-                String temp0 = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-                logger.info(temp0);
-              } catch (NumberFormatException e) {
-                castedEvent.getChannel()
-                    .sendMessage("You must input an int value between 0-100. (inclusive)").queue();
-
-                String temp1 =
-                    LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
-                logger.warn(temp1);
-              }
-            } else if (message.equals("-resume")) {
-              getGuildAudioPlayer(castedEvent.getGuild()).getPlayer().setPaused(false);
-
-              castedEvent.getChannel().sendMessage("Resumed Song!").queue();
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            } else if (message.equals("-pause")) {
-              getGuildAudioPlayer(castedEvent.getGuild()).getPlayer().setPaused(true);
-
-              castedEvent.getChannel().sendMessage("Paused Song!").queue();
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            } else if (message.equals("-list")) {
-              GuildMusicManager musicMgr = getGuildAudioPlayer(castedEvent.getGuild());
-
-              if (!musicMgr.isEmpty()) {
-                logger.info("Playlist is not empty!");
-                MessageHelper.sendPage("**Playlist: **", getTrackInfos(musicMgr.getQueue()), 1, 15,
-                    waiter, castedEvent.getChannel(), 1, TimeUnit.HOURS);
-
-              } else {
-                logger.info("Playlist is empty!");
-                castedEvent.getChannel().sendMessage("The Queue is empty!").queue();
-              }
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            } else if (message.equals("-current")) {
-
-              AudioTrack track =
-                  getGuildAudioPlayer(castedEvent.getGuild()).getPlayer().getPlayingTrack();
-              if (track != null) {
-                castedEvent.getChannel().sendMessage(String.format("Current song: \"%s\" by %s",
-                    track.getInfo().title, track.getInfo().author)).queue();
-              } else {
-                castedEvent.getChannel().sendMessage("No song playing!").queue();
-              }
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            } else if (message.equals("-skip")) {
-              skipTrack(castedEvent.getChannel(), 1);
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            } else if (message.startsWith("-skip ")) {
-              try {
-                int num = Integer.parseInt(message.substring(6));
-                
-                skipTrack(castedEvent.getChannel(), num);
-
-                String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-                logger.info(temp);
-              } catch(NumberFormatException e) {
-                String temp = LogHelper.elog(castedEvent, String.format("Command: %s, incorrect parameter!", message));
-                logger.warn(temp);
-              }
-            } else if (message.equals("-skipall")) {
-              skipAllTrack(castedEvent.getChannel());
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            } else if (message.equals("-shuffle")) {
-              shufflePlaylist(castedEvent.getChannel());
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
-            }
-          }
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
   }
 
   private synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
@@ -237,16 +70,15 @@ public class AudioPlayerPlugin extends Plugin {
     return musicManager.getPlayer().getVolume();
   }
 
-  private void loadAndPlay(final TextChannel channel, final String trackUrl) {
-    GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+  private void loadAndPlay(final SlashCommandEvent event, final String trackUrl) {
+    GuildMusicManager musicManager = getGuildAudioPlayer(event.getGuild());
 
     playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
       @Override
       public void trackLoaded(AudioTrack track) {
         play(musicManager, track);
 
-        channel.sendMessage(String.format("Added \"%s\" to the queue!", track.getInfo().title))
-            .queue();
+        event.reply(String.format("Added \"%s\" to the queue!", track.getInfo().title)).queue();
       }
 
       @Override
@@ -255,18 +87,18 @@ public class AudioPlayerPlugin extends Plugin {
           play(musicManager, track);
         }
 
-        channel.sendMessage(String.format("Added playlist \"%s\" with %d songs to the queue!",
+        event.reply(String.format("Added playlist \"%s\" with %d songs to the queue!",
             playlist.getName(), playlist.getTracks().size())).queue();
       }
 
       @Override
       public void noMatches() {
-        channel.sendMessage("Nothing found by " + trackUrl).queue();
+        event.reply("Nothing found by " + trackUrl).queue();
       }
 
       @Override
       public void loadFailed(FriendlyException exception) {
-        channel.sendMessage("Could not play: " + exception.getMessage()).queue();
+        event.reply("Could not play: " + exception.getMessage()).queue();
       }
     });
   }
@@ -288,47 +120,216 @@ public class AudioPlayerPlugin extends Plugin {
     musicManager.queue(track);
   }
 
-  private void skipTrack(TextChannel channel, int num) {
+  private void skipTrack(SlashCommandEvent event, int num) {
     if (num > 0) {
-      GuildMusicManager musicMgr = getGuildAudioPlayer(channel.getGuild());
+      GuildMusicManager musicMgr = getGuildAudioPlayer(event.getGuild());
       musicMgr.nextTrack(num);
 
-      channel.sendMessage("Skipped tracks.").queue();
+      event.reply("Skipped tracks.").queue();
     } else {
       // Skipping 0 or negative numbers of tracks.
-      channel.sendMessage("You can't skip tracks like that!").queue();
+      event.reply("You can't skip tracks like that!").queue();
     }
   }
 
-  private void skipAllTrack(TextChannel channel) {
-    GuildMusicManager musicMgr = getGuildAudioPlayer(channel.getGuild());
+  private void skipAllTrack(SlashCommandEvent event) {
+    GuildMusicManager musicMgr = getGuildAudioPlayer(event.getGuild());
     musicMgr.clear();
     musicMgr.nextTrack(1);
 
-    channel.sendMessage("Cleared the Playlist.").queue();
+    event.reply("Cleared the Playlist.").queue();
   }
-  
-  private void shufflePlaylist(TextChannel channel) {
-    GuildMusicManager musicMgr = getGuildAudioPlayer(channel.getGuild());
+
+  private void shufflePlaylist(SlashCommandEvent event) {
+    GuildMusicManager musicMgr = getGuildAudioPlayer(event.getGuild());
     musicMgr.shuffle();
 
-    channel.sendMessage("Shuffled the Playlist.").queue();
+    event.reply("Shuffled the Playlist.").queue();
+  }
+
+  @Override
+  public void onSlashCommand(SlashCommandEvent event) {
+    if (canAccessPlugin(event.getMember())
+        && !event.getMember().getUser().getId().equals(event.getJDA().getSelfUser().getId())) {
+      String message = String.format("CMD: %s - %s", event.getName(), Arrays.toString(event.getOptions().toArray()));
+
+      // Only accept commands from guilds.
+      if (event.getGuild() == null) {
+        return;
+      }
+      switch (event.getName()) {
+        case "join": {
+          // Joins the voice channel the user was in.
+
+          VoiceChannel channelToJoin = null;
+          SortedSnowflakeCacheView<VoiceChannel> vChannels =
+              event.getGuild().getVoiceChannelCache();
+          Member requestedMember = event.getMember();
+          for (VoiceChannel channel : vChannels) {
+            if (channel.getMembers().contains(requestedMember)) {
+              channelToJoin = channel;
+              break;
+            }
+          }
+
+          if (channelToJoin == null) {
+            // User isn't in any voice channel.
+            event.reply("You are not in any Voice Channel!").queue();
+          } else {
+            // Found the voice channel with the user in.
+            event.getGuild().getAudioManager().openAudioConnection(channelToJoin);
+            logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          }
+          break;
+        }
+        case "leave": {
+          // Disconnect the audio connection with the VoiceChannel.
+          event.getGuild().getAudioManager().closeAudioConnection();
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
+        case "play": {
+          // Plays audio with the URLPlayer
+          String urlString = event.getOption("url").getAsString();
+          loadAndPlay(event, urlString);
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
+        case "list": {
+          event.deferReply().queue();
+
+          GuildMusicManager musicMgr = getGuildAudioPlayer(event.getGuild());
+
+          if (!musicMgr.isEmpty()) {
+            logger.info("Playlist is not empty!");
+            MessageHelper.sendPage("**Playlist: **", getTrackInfos(musicMgr.getQueue()), 1, 15,
+                waiter, event.getChannel(), 1, TimeUnit.HOURS);
+
+            event.getHook().sendMessage("Processed Command!").queue();
+          } else {
+            logger.info("Playlist is empty!");
+            event.getHook().sendMessage("The Queue is empty!").queue();
+          }
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
+        case "volume": {
+          OptionMapping option = event.getOption("integer");
+          if (option == null) {
+            event.reply(
+                String.format("**Current volume:** *%d* / 100", getVolume(event.getTextChannel())))
+                .queue();
+          } else {
+            try {
+
+              int temp = Math.toIntExact(option.getAsLong());
+
+              // Sanitize user input.
+              if (temp < 0) {
+                temp = 0;
+              } else if (temp > 100) {
+                temp = 100;
+              }
+
+              setVolume(event.getTextChannel(), temp);
+
+              event
+                  .reply(
+                      String.format("Setting the volume to %d", getVolume(event.getTextChannel())))
+                  .queue();
+
+              logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+            } catch (NumberFormatException e) {
+              event.reply("You must input an int value between 0-100. (inclusive)").queue();
+
+              logger.warn(LogHelper.elog(event, String.format("Incorrect Command: %s", message)));
+            }
+          }
+          break;
+        }
+        case "resume": {
+          getGuildAudioPlayer(event.getGuild()).getPlayer().setPaused(false);
+
+          event.reply("Resumed Song!").queue();
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
+        case "pause": {
+          getGuildAudioPlayer(event.getGuild()).getPlayer().setPaused(true);
+
+          event.reply("Paused Song!").queue();
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
+        case "current": {
+          AudioTrack track = getGuildAudioPlayer(event.getGuild()).getPlayer().getPlayingTrack();
+          if (track != null) {
+            event.reply(String.format("Current song: \"%s\" by %s", track.getInfo().title,
+                track.getInfo().author)).queue();
+          } else {
+            event.reply("No songs playing!").queue();
+          }
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
+        case "skip": {
+          OptionMapping option = event.getOption("number");
+          if (option == null) {
+            // No number given. Defaulting to skipping 1 track.
+            skipTrack(event, 1);
+          } else {
+            try {
+              int num = Math.toIntExact(option.getAsLong());
+
+              if (num > 0) {
+                skipTrack(event, num);
+                logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+              }
+            } catch (ArithmeticException e) {
+              logger.warn(LogHelper.elog(event, String.format("Incorrect Command: %s", message)));
+            }
+          }
+
+          break;
+        }
+        case "skipall": {
+          skipAllTrack(event);
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
+        case "shuffle": {
+          shufflePlaylist(event);
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
+      }
+    }
   }
 
   @Override
   public void setCommandDescriptions() {
-    super.commands.put("-join *\\\"channelName\\\"*", "Joins a voice channel.");
-    super.commands.put("-leave", "Leaves a voice channel.");
-    super.commands.put("-play *\\\"url\\\"*", "Plays an audio from a url.");
-    super.commands.put("-list", "Displays the Playlist.");
-    super.commands.put("-volume", "Displays the current volume.");
-    super.commands.put("-volume *\\\"integer\\\"*", "Sets the volume of the audio player (0-100).");
-    super.commands.put("-resume", "Resumes the audio.");
-    super.commands.put("-pause", "Pauses the audio.");
-    super.commands.put("-current", "Displays the current song.");
-    super.commands.put("-skip", "Skips the current Track.");
-    super.commands.put("-skip *\\\"number\\\"*", "Skips x amount of Tracks.");
-    super.commands.put("-skipall", "Clears the Playlist.");
-    super.commands.put("-shuffle", "Shuffles the Playlist.");
+    super.commands.add(new CommandData("join", "Bot joins the voice channel you are in."));
+    super.commands.add(new CommandData("leave", "Leaves a voice channel."));
+    super.commands.add(new CommandData("play", "Plays an audio from a url.")
+        .addOption(OptionType.STRING, "url", "The URL to play.", true));
+    super.commands.add(new CommandData("list", "Displays the Playlist."));
+    super.commands.add(new CommandData("volume", "Sets or displays the current volume.").addOption(
+        OptionType.INTEGER, "integer",
+        "A volume to be set with the numbers between (0-100) inclusive.", false));
+    super.commands.add(new CommandData("resume", "Resumes the audio."));
+    super.commands.add(new CommandData("pause", "Pauses the audio."));
+    super.commands.add(new CommandData("current", "Displays the current song."));
+    super.commands.add(new CommandData("skip", "Skips the current or set amount of tracks.")
+        .addOption(OptionType.INTEGER, "number", "Number of tracks to skip.", false));
+    super.commands.add(new CommandData("skipall", "Clears the Playlist."));
+    super.commands.add(new CommandData("shuffle", "Shuffles the Playlist."));
   }
 }

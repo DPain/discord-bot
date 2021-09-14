@@ -1,7 +1,7 @@
 package com.dpain.DiscordBot.plugin;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.DiscordBot;
@@ -10,8 +10,10 @@ import com.dpain.DiscordBot.system.MemberManager;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-public abstract class Plugin {
+public abstract class Plugin extends ListenerAdapter {
   private final static Logger logger = LoggerFactory.getLogger(Plugin.class);
 
   public final DiscordBot bot;
@@ -19,7 +21,7 @@ public abstract class Plugin {
   private final String name;
   private Group group;
   protected final EventWaiter waiter;
-  protected HashMap<String, String> commands;
+  protected List<CommandData> commands;
 
   /**
    * Constructor
@@ -32,32 +34,22 @@ public abstract class Plugin {
     this.group = group;
     this.waiter = waiter;
     
-    this.commands = new HashMap<String, String>();
+    this.commands = new ArrayList<CommandData>();
     this.bot = bot;
     
     setCommandDescriptions();
 
     logger.info(String.format("%s Plugin Initialized!", name));
   }
-
-  public abstract void handleEvent(GenericEvent event);
   
   public abstract void setCommandDescriptions();
 
-  /**
-   * Puts a Command description into a HashMap.
-   * @param command: syntax of the command.
-   * @param desc: Description of the command.
-   */
-  public void putCommandDescription(String command, String desc) {
-    commands.put(command, desc);
-  }
   
   /**
-   * Returns the Map of commands of that Plugin.
+   * Returns the List of commands of the Plugin.
    * @return
    */
-  public Map<String, String> getCommands() {
+  public List<CommandData> getCommands() {
     return commands;
   }
 

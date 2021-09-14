@@ -1,6 +1,7 @@
 package com.dpain.DiscordBot.plugin;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +10,9 @@ import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.anime.AnimeTorrentFinder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public class AnimePlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(AnimePlugin.class);
@@ -23,59 +25,61 @@ public class AnimePlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(GenericEvent event) {
-    if (event instanceof GuildMessageReceivedEvent) {
-      try {
-        GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-        String message = castedEvent.getMessage().getContentRaw();
-        if ((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId()))
-            || canAccessPlugin(castedEvent.getMember())) {
+  public void onSlashCommand(SlashCommandEvent event) {
+    if (canAccessPlugin(event.getMember())
+        && !event.getMember().getUser().getId().equals(event.getJDA().getSelfUser().getId())) {
+      String message = String.format("CMD: %s - %s", event.getName(), Arrays.toString(event.getOptions().toArray()));
 
-          if (message.startsWith("-")) {
-            if (message.equals("-anime")) {
-              // Incorrect usage of anime plugin.
-              castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*").queue();
-
-              String temp =
-                  LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message));
-              logger.warn(temp);
-            } else if (message.startsWith("-anime ")) {
-              String param = message.substring(7);
-              if (param.toLowerCase().startsWith("search ")) {
-                String searchParam = param.substring(7);
-                try {
-                  LinkedList<String> torrentInfo = animeTorrentFinder.searchTorrent(searchParam);
-                  for (String msg : torrentInfo) {
-                    castedEvent.getChannel().sendMessage(msg).queue();
-                  }
-                } catch (IOException e) {
-                  castedEvent.getChannel()
-                      .sendMessage("There were no torrent results for: " + searchParam).queue();
-                }
-              } else if (param.equals("today")) {
-                animeTorrentFinder.getCurrentSchedule();
-                castedEvent.getChannel().sendMessage("WIP").queue();
-              } else if (param.equals("week")) {
-                animeTorrentFinder.getFullSchedule();
-                castedEvent.getChannel().sendMessage("WIP").queue();
-              }
-
-              String temp = LogHelper.elog(castedEvent, String.format("Command: %s", message));
-              logger.info(temp);
+      // Only accept commands from guilds.
+      if (event.getGuild() == null) {
+        return;
+      }
+      switch (event.getName()) {
+        case "anime-search": {
+          event.deferReply().queue(); // Let the user know we received the command before doing anything else
+          
+          String searchParam = event.getOption("name").getAsString();
+          try {
+            LinkedList<String> torrentInfo = animeTorrentFinder.searchTorrent(searchParam);
+            for (String msg : torrentInfo) {
+              event.getHook().sendMessage(msg).queue();
             }
+          } catch (IOException e) {
+            event.getHook().sendMessage(String.format("There were no torrent results for: %s", searchParam)).queue();
           }
+          
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          
+          break;
         }
-      } catch (Exception e) {
-        e.printStackTrace();
+        case "anime-today":
+          event.deferReply().queue(); // Let the user know we received the command before doing anything else
+          
+          animeTorrentFinder.getCurrentSchedule();
+          event.getHook().sendMessage("WIP").queue();
+          
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        case "anime-week":
+          event.deferReply().queue(); // Let the user know we received the command before doing anything else
+          
+          animeTorrentFinder.getFullSchedule();
+          event.getHook().sendMessage("WIP").queue();
+          
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
       }
     }
   }
 
   @Override
   public void setCommandDescriptions() {
-    super.commands.put("-anime search *\\\"name\\\"*",
-        "Gets a list of torrrent from Tokyo toshokan.");
-    super.commands.put("-anime today/week", "Gets the anime schedule");
+    super.commands
+        .add(new CommandData("anime-search", "Gets a list of torrrent from Tokyo toshokan.")
+            .addOption(OptionType.STRING, "name", "Name of anime to search.", true));
+    super.commands
+        .add(new CommandData("anime-today", "Gets a list of animes airing today. Still WIP."));
+    super.commands
+        .add(new CommandData("anime-week", "Gets a list of animes airing this week. Still WIP."));
   }
-
 }

@@ -1,13 +1,15 @@
 package com.dpain.DiscordBot.plugin;
 
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public class ProfanityGuardPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(ProfanityGuardPlugin.class);
@@ -21,62 +23,70 @@ public class ProfanityGuardPlugin extends Plugin {
   public ProfanityGuardPlugin(EventWaiter waiter, DiscordBot bot) {
     super("ProfanityGuardPlugin", Group.MODERATOR, waiter, bot);
   }
+  
+  @Override
+  public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+    String message = event.getMessage().getContentRaw();
+
+    if ((event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId()))
+        || canAccessPlugin(event.getMember())) {
+      /*
+       * # TODO Implement if() {
+       * 
+       * }
+       */
+    }
+  }
 
   @Override
-  public void handleEvent(GenericEvent event) {
-    if (event instanceof GuildMessageReceivedEvent) {
-      try {
-        GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-        String message = castedEvent.getMessage().getContentRaw();
+  public void onSlashCommand(SlashCommandEvent event) {
+    if (canAccessPlugin(event.getMember())
+        && !event.getMember().getUser().getId().equals(event.getJDA().getSelfUser().getId())) {
+      String message = String.format("CMD: %s - %s", event.getName(), Arrays.toString(event.getOptions().toArray()));
 
-        if ((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId()))
-            || canAccessPlugin(castedEvent.getMember())) {
-          if (message.startsWith("-")) {
-            if (message.equals("-profguard")) {
-              // Incorrect usage of profguard
-              castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*").queue();
-              logger.warn(
-                  LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
-            } else if (message.startsWith("-profguard ")) {
-              String param = message.substring(11);
-              if (param.toLowerCase().equals("enable")) {
-                activated = true;
-                castedEvent.getChannel().sendMessage("*Profanity Guard is ENABLED!*");
-                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-              } else if (param.equals("disable")) {
-                activated = false;
-                castedEvent.getChannel().sendMessage("*Profanity Guard is DISABLED!*");
-                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-              } else if (param.equals("offenders")) {
-                castedEvent.getAuthor().openPrivateChannel().complete().sendMessage("WIP");
-                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-              } else {
-                // Incorrect usage of profguard
-                castedEvent.getChannel().sendMessage("*Try -help for correct syntax!*");
-                logger.warn(
-                    LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
-              }
-            }
-          }
-          /*
-           * # TODO Implement if() {
-           * 
-           * }
-           */
+      // Only accept commands from guilds.
+      if (event.getGuild() == null) {
+        return;
+      }
+      switch (event.getName()) {
+        case "profguard enable": {
+          event.deferReply(true).queue();
+          
+          activated = true;
+          event.getHook().sendMessage("*Profanity Guard is ENABLED!*").queue();
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
         }
+        case "profguard disable": {
+          event.deferReply(true).queue();
+          
+          activated = false;
+          event.getHook().sendMessage("*Profanity Guard is DISABLED!*").queue();
 
-      } catch (Exception e) {
-        e.printStackTrace();
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
+        case "profguard offenders": {
+          event.deferReply(true).queue();
+          
+          event.getHook().sendMessage("Acknowledged Command! Sending a private message.").queue();
+          
+          event.getUser().openPrivateChannel().complete().sendMessage("WIP").queue();
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          break;
+        }
       }
     }
   }
 
   @Override
   public void setCommandDescriptions() {
-    super.commands.put("-profguard *\\\"enable/disable\\\"*",
-        "Enables or disables Profanity Guard.");
-    super.commands.put("-profguard *\\\"offenders\\\"*",
-        "PMs the list of offenders to the one who issued the command.");
+    super.commands.add(new CommandData("profguard enable", "Enables Profanity Guard."));
+    super.commands.add(new CommandData("profguard disable", "Disables Profanity Guard."));
+    super.commands.add(new CommandData("profguard offenders",
+        "PMs the list of offenders to the one who issued the command. WIP."));
   }
 
 }

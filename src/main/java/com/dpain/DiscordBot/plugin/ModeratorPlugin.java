@@ -1,6 +1,7 @@
 package com.dpain.DiscordBot.plugin;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
@@ -12,9 +13,10 @@ import com.dpain.DiscordBot.enums.Timezone;
 import com.dpain.DiscordBot.helper.LogHelper;
 import com.dpain.DiscordBot.plugin.moderator.Cleaner;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public class ModeratorPlugin extends Plugin {
   private final static Logger logger = LoggerFactory.getLogger(ModeratorPlugin.class);
@@ -24,105 +26,110 @@ public class ModeratorPlugin extends Plugin {
   }
 
   @Override
-  public void handleEvent(GenericEvent event) {
-    if (event instanceof GuildMessageReceivedEvent) {
-      try {
-        GuildMessageReceivedEvent castedEvent = (GuildMessageReceivedEvent) event;
-        String message = castedEvent.getMessage().getContentRaw();
+  public void onSlashCommand(SlashCommandEvent event) {
+    if (canAccessPlugin(event.getMember())
+        && !event.getMember().getUser().getId().equals(event.getJDA().getSelfUser().getId())) {
+      String message = String.format("CMD: %s - %s", event.getName(), Arrays.toString(event.getOptions().toArray()));
 
-        if ((castedEvent.getAuthor().getId().equals(event.getJDA().getSelfUser().getId()))
-            || canAccessPlugin(castedEvent.getMember())) {
+      // Only accept commands from guilds.
+      if (event.getGuild() == null) {
+        return;
+      }
+      switch (event.getName()) {
+        case "nick":
+          String param = event.getOption("name").getAsString();
 
-          if (message.startsWith("-")) {
-            if (message.startsWith("-nick ")) {
-              String param = message.substring(6);
+          event.getGuild().getSelfMember().modifyNickname(param).queue();;
+          event.reply("**Nickname changed to:** " + param).queue();
 
-              castedEvent.getGuild().getSelfMember().modifyNickname(param).queue();;
-              castedEvent.getChannel().sendMessage("**Nickname changed to:** " + param).queue();
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
 
-              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-            } else if (message.equals("-channel")) {
-              Map<String, String> channelInfo = new LinkedHashMap<String, String>();
-              channelInfo.put("ID", castedEvent.getChannel().getId());
-              channelInfo.put("Name", castedEvent.getChannel().getName());
-              channelInfo.put("Topic", castedEvent.getChannel().getTopic());
-              channelInfo.put("Channel Type", castedEvent.getChannel().getType().toString());
-              DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
-              String formattedDateTime =
-                  castedEvent.getChannel().getTimeCreated().format(formatter);
-              channelInfo.put("Created Date", formattedDateTime + " " + Timezone.EST.getZoneId());
-              channelInfo.put("NSFW", Boolean.toString(castedEvent.getChannel().isNSFW()));
-              if (castedEvent.getChannel().getParent() != null) {
-                channelInfo.put("Category", castedEvent.getChannel().getParent().getName());
-                channelInfo.put("Category ID", castedEvent.getChannel().getParent().getId());
-              }
-              channelInfo.put("# of Pinned Messages", Integer
-                  .toString(castedEvent.getChannel().retrievePinnedMessages().complete().size()));
+          break;
+        case "channel":
+          Map<String, String> channelInfo = new LinkedHashMap<String, String>();
+          channelInfo.put("ID", event.getTextChannel().getId());
+          channelInfo.put("Name", event.getTextChannel().getName());
+          channelInfo.put("Topic", event.getTextChannel().getTopic());
+          channelInfo.put("Channel Type", event.getTextChannel().getType().toString());
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
+          String formattedDateTime = event.getTextChannel().getTimeCreated().format(formatter);
+          channelInfo.put("Created Date", formattedDateTime + " " + Timezone.EST.getZoneId());
+          channelInfo.put("NSFW", Boolean.toString(event.getTextChannel().isNSFW()));
+          if (event.getTextChannel().getParent() != null) {
+            channelInfo.put("Category", event.getTextChannel().getParent().getName());
+            channelInfo.put("Category ID", event.getTextChannel().getParent().getId());
+          }
+          channelInfo.put("# of Pinned Messages",
+              Integer.toString(event.getTextChannel().retrievePinnedMessages().complete().size()));
 
-              String formattedString = "";
-              for (String category : channelInfo.keySet()) {
-                formattedString += String.format("%s: %s\n", category, channelInfo.get(category));
-              }
-              formattedString = formattedString.trim();
+          String formattedString = "";
+          for (String category : channelInfo.keySet()) {
+            formattedString += String.format("%s: %s\n", category, channelInfo.get(category));
+          }
+          formattedString = formattedString.trim();
 
-              castedEvent.getChannel().sendMessage("**Channel Info:**\n" + formattedString).queue();
-            } else if (message.equals("-randomnick")) {
-              String[] names = {"Malfurion", "OpenAI", "Jaina", "Uther", "Anduin", "Valeera",
-                  "Thrall", "Gul'dan", "Garrosh", "Medivh", "Dildo", "2B", "Toba", "Kizuna Ai"};
+          event.reply("**Channel Info:**\n" + formattedString).queue();
 
-              Random ran = new Random();
-              String tempName;
-              while (true) {
-                tempName = names[ran.nextInt(names.length)] + " Bot";
-                if (castedEvent.getGuild().getSelfMember().getNickname() == null
-                    || !castedEvent.getGuild().getSelfMember().getNickname().equals(tempName)) {
-                  break;
-                }
-              }
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
 
-              castedEvent.getGuild().getSelfMember().modifyNickname(tempName).queue();
-              castedEvent.getChannel().sendMessage("**Nickname changed to:** " + tempName).queue();
+          break;
+        case "randomnick":
+          String[] names = {"Malfurion", "OpenAI", "Jaina", "Uther", "Anduin", "Valeera", "Thrall",
+              "Gul'dan", "Garrosh", "Medivh", "Dildo", "2B", "Toba", "Kizuna Ai"};
 
-              logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-            } else if (message.startsWith("-clear ")) {
-              String param = message.substring("-clear ".length());
-              try {
-                int i = Integer.parseInt(param);
-
-                try {
-                  Thread clearProcess = new Thread(new Cleaner(castedEvent.getChannel(), i));
-                  clearProcess.start();
-                } catch (RateLimitedException e) {
-                  String temp = "The bot is being rate limited!";
-                  castedEvent.getChannel().sendMessage(temp).queue();
-                  logger.warn(LogHelper.elog(castedEvent, temp));
-                }
-
-                logger.info(LogHelper.elog(castedEvent, String.format("Command: %s", message)));
-                // No point on sending a message that the cleaner is already running since it will
-                // get instantly deleted.
-              } catch (NumberFormatException e) {
-                castedEvent.getChannel().sendMessage("**Please enter a correct number!**").queue();
-
-                logger.warn(
-                    LogHelper.elog(castedEvent, String.format("Incorrect command: %s", message)));
-              }
+          Random ran = new Random();
+          String tempName;
+          while (true) {
+            tempName = names[ran.nextInt(names.length)] + " Bot";
+            if (event.getGuild().getSelfMember().getNickname() == null
+                || !event.getGuild().getSelfMember().getNickname().equals(tempName)) {
+              break;
             }
           }
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
+
+          event.getGuild().getSelfMember().modifyNickname(tempName).queue();
+          event.reply("**Nickname changed to:** " + tempName).queue();
+
+          logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+
+          break;
+        case "clear":
+          event.deferReply(true).queue();
+          Long number = event.getOption("number").getAsLong();
+          try {
+            int i = Math.toIntExact(number);
+
+            try {
+              Thread clearProcess = new Thread(new Cleaner(event, i));
+              clearProcess.start();
+            } catch (RateLimitedException e) {
+              String temp = "The bot is being rate limited!";
+              event.getTextChannel().sendMessage(temp).queue();
+              logger.warn(LogHelper.elog(event, temp));
+            }
+            
+            event.getHook().sendMessage("Executed Async Command!").queue();
+
+            logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
+          } catch (NumberFormatException e) {
+            event.getHook().sendMessage("**Please enter a correct number!**").queue();
+
+            logger.warn(LogHelper.elog(event, String.format("Incorrect command: %s", message)));
+          }
+          
+          break;
       }
     }
   }
 
   @Override
   public void setCommandDescriptions() {
-    super.commands.put("-nick *\\\"name\\\"*", "Changes the nickname of the bot.");
-    super.commands.put("-channel", "Returns some info of the current Channel.");
-    super.commands.put("-randomnick", "Randomly changes the nickname of the bot.");
-    super.commands.put("-clear *\\\"x\\\"*",
-        "Clears x amount of messages in the current text channel.");
+    super.commands.add(new CommandData("nick", "Changes the nickname of the bot.")
+        .addOption(OptionType.STRING, "name", "Name to set for the bot", true));
+    super.commands.add(new CommandData("channel", "Returns some info of the current Channel."));
+    super.commands.add(new CommandData("randomnick", "Randomly changes the nickname of the bot."));
+    super.commands.add(new CommandData("clear", "Removes messages in the text channel.")
+        .addOption(OptionType.INTEGER, "number", "Number of messages to process.", true));
   }
 
 }

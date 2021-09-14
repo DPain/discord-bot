@@ -1,6 +1,8 @@
 package com.dpain.DiscordBot.listener;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.dpain.DiscordBot.DiscordBot;
@@ -18,23 +20,23 @@ import com.dpain.DiscordBot.plugin.WeatherPlugin;
 import com.dpain.DiscordBot.plugin.WikipediaPlugin;
 import com.dpain.DiscordBot.system.PropertiesManager;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
-public class PluginListener implements EventListener {
+public class PluginListener {
   private final static Logger logger = LoggerFactory.getLogger(PluginListener.class);
 
-  public LinkedList<Plugin> plugins;
+  private List<Plugin> plugins;
 
-  public DiscordBot bot;
+  private DiscordBot bot;
 
   public PluginListener(EventWaiter waiter, DiscordBot bot) {
-    // Maybe use one hashmap and have each plugins to add into the hashmap.
-    plugins = new LinkedList<Plugin>();
+    this.bot = bot;
 
-    // Add EssentialsPlugin as the first plugin to use the -help command.
+    plugins = new ArrayList<Plugin>();
+
     plugins.add(new EssentialsPlugin(waiter, bot));
-
     plugins.add(new AnimePlugin(waiter, bot));
     plugins.add(new AudioPlayerPlugin(waiter, bot));
     // plugins.add(new CustomCommandPlugin(waiter, bot));
@@ -56,10 +58,20 @@ public class PluginListener implements EventListener {
     logger.info("Added all the plugins!");
   }
 
-  @Override
-  public void onEvent(GenericEvent event) {
-    for (Plugin plugin : plugins) {
-      plugin.handleEvent(event);
+  public List<Plugin> getPlugins() {
+    return plugins;
+  }
+
+  public void registerCommands() {
+    for (Guild guild : bot.getJDA().getGuilds()) {
+      // These commands take up to an hour to be activated after creation/update/delete
+      CommandListUpdateAction commands = guild.updateCommands();
+
+      for (Plugin plugin : plugins) {
+        commands.addCommands(plugin.getCommands());
+      }
+
+      commands.queue();
     }
   }
 }

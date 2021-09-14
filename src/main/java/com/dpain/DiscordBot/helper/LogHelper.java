@@ -3,11 +3,25 @@ package com.dpain.DiscordBot.helper;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 
 public class LogHelper {
 
+  /**
+   * Returns a string in a formatted fashion for SlashCommandEvent.
+   * 
+   * @param event
+   * @param line
+   * @return
+   */
+  public static String elog(SlashCommandEvent event, String line) {
+    return String.format("User: %s (nickname: %s - %s) in guild: %s\nDescription: %s",
+        event.getMember().getUser().getName(), event.getMember().getNickname(), event.getMember().getUser().getId(),
+        event.getGuild().getName(), line);
+  }
+  
   /**
    * Returns a string in a formatted fashion for GuildMessageReceivedEvent.
    * 
@@ -17,7 +31,7 @@ public class LogHelper {
    */
   public static String elog(GuildMessageReceivedEvent event, String line) {
     return String.format("User: %s (nickname: %s - %s) in guild: %s\nDescription: %s",
-        event.getAuthor().getName(), event.getMember().getNickname(), event.getAuthor().getId(),
+        event.getMember().getUser().getName(), event.getMember().getNickname(), event.getMember().getUser().getId(),
         event.getGuild().getName(), line);
   }
 

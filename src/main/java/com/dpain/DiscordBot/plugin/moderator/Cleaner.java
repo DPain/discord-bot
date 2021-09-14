@@ -6,13 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
 public class Cleaner implements Runnable {
   private final static Logger logger = LoggerFactory.getLogger(Cleaner.class);
 
-  private TextChannel targetChannel;
+  private SlashCommandEvent event;
   private List<Message> messages;
   private int count;
   
@@ -20,14 +21,14 @@ public class Cleaner implements Runnable {
 
   /**
    * Constructor
-   * @param targetChannel channel to delete messages.
+   * @param event channel to delete messages.
    * @param i number of messages
    * @throws RateLimitedException
    */
-  public Cleaner(TextChannel targetChannel, int i) throws RateLimitedException {
+  public Cleaner(SlashCommandEvent event, int i) throws RateLimitedException {
     logger.info(String.format("Cleaner Initialized!"));
 
-    this.targetChannel = targetChannel;
+    this.event = event;
 
     // Plugin shouldn't allow this case, but just for safety.
     if (i < 0) {
@@ -35,7 +36,7 @@ public class Cleaner implements Runnable {
     }
 
     // Need one extra message to exclude the clear request message.
-    messages = targetChannel.getHistory().retrievePast(i + 1).complete(true);
+    messages = event.getTextChannel().getHistory().retrievePast(i + 1).complete(true);
     count = i;
     
     successful = true;
@@ -67,7 +68,7 @@ public class Cleaner implements Runnable {
       text += "\nThe bot lacks Permissions so it only deleted the messages it could delete!";
     }
     
-    targetChannel.sendMessage(text).queue();
+    this.event.getHook().editOriginal(text).queue();
 
     logger.info("Message deletion all queued. Thread now terminated!");
     return;

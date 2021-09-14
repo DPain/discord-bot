@@ -2,6 +2,7 @@ package com.dpain.DiscordBot;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import javax.security.auth.login.LoginException;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import com.dpain.DiscordBot.enums.Property;
 import com.dpain.DiscordBot.listener.ConsoleInputReader;
 import com.dpain.DiscordBot.listener.PluginListener;
 import com.dpain.DiscordBot.listener.UserEventListener;
+import com.dpain.DiscordBot.plugin.Plugin;
 import com.dpain.DiscordBot.plugin.g2g.G2gAlerter;
 import com.dpain.DiscordBot.system.PropertiesManager;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -21,7 +23,9 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class DiscordBot {
@@ -40,20 +44,31 @@ public class DiscordBot {
       // properties.
       PropertiesManager.load();
 
-      pluginListener = new PluginListener(waiter, this);
-
       String token = PropertiesManager.load().getValue(Property.BOT_TOKEN);
 
-      JDABuilder builder = JDABuilder.createDefault(token).enableIntents(EnumSet.allOf(GatewayIntent.class));
-      builder.setMemberCachePolicy(MemberCachePolicy.ALL);
+      JDABuilder builder =
+          JDABuilder.createDefault(token).enableIntents(EnumSet.noneOf(GatewayIntent.class));
 
       // Registering event listeners.
-      builder.addEventListeners(pluginListener);
       builder.addEventListeners(new UserEventListener());
       builder.addEventListeners(waiter);
-      
+
+      pluginListener = new PluginListener(waiter, this);
+      /**
+       * Adding plugins to event listener so that it can respond to requests.
+       */
+      for (Plugin plugins : pluginListener.getPlugins()) {
+        builder.addEventListeners(plugins);
+      }
+
       // Finalize building the bot.
       jda = builder.build().awaitReady();
+
+      /**
+       * Register commands for all the plugins added to Discord. Needs to be done after bot.jda is
+       * built.
+       */
+      pluginListener.registerCommands();
 
       MemberManager
           .setDefaultGuild(jda.getGuildById(PropertiesManager.load().getValue(Property.GUILD_ID)));
@@ -98,6 +113,16 @@ public class DiscordBot {
     }
     jda.getSelfUser().getManager().setAvatar(icon).complete();
   }
+  
+  /**
+   * Quick method to clear global commands
+   */
+  public void clearCommands() {
+    // These commands take up to an hour to be activated after creation/update/delete
+    CommandListUpdateAction commands = jda.updateCommands();
+
+    commands.addCommands(new ArrayList<CommandData>()).queue();
+  }
 
   /**
    * Quick method used to leave guild.
@@ -108,5 +133,14 @@ public class DiscordBot {
     } catch (NullPointerException e) {
       System.out.println("Already left the server!");
     }
+  }
+
+  /**
+   * Gets the JDA instance.
+   * 
+   * @return JDA
+   */
+  public JDA getJDA() {
+    return jda;
   }
 }
