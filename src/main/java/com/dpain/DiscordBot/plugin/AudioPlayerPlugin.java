@@ -178,6 +178,8 @@ public class AudioPlayerPlugin extends Plugin {
           } else {
             // Found the voice channel with the user in.
             event.getGuild().getAudioManager().openAudioConnection(channelToJoin);
+            
+            event.reply(String.format("Entering Voice Channel: %s", channelToJoin.getName())).queue();
             logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
           }
           break;
@@ -185,6 +187,8 @@ public class AudioPlayerPlugin extends Plugin {
         case "leave": {
           // Disconnect the audio connection with the VoiceChannel.
           event.getGuild().getAudioManager().closeAudioConnection();
+          
+          event.reply("Leaving Voice Channel.").queue();
 
           logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
           break;

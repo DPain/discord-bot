@@ -2,17 +2,17 @@
 ### Quick summary: ###
 This is a DiscordBot mainly aimed to fulfill the needs for the Video Game Tournament Club at University of Delaware and some of my private Discord Servers. DiscordBot is written in Java using the JDA Discord library. I aim to make a bot that functions as well as other open source bots. :)
 ### Version: ###
-0.7.1
+0.8.1
 
 ## How do I get set up? ##
 ### Summary of set up: ###
 The program requires the JDA Discord library and several other libraries which is included in the contained in the pom.xml file and uses Java 1.8.
 ### Dependencies: ###
 	* Java 1.8
-	* net.dv8tion.JDA 4.2.0_217
-	* org.jsoup.jsoup 1.13.1
+	* net.dv8tion.JDA 4.3.0_277
+	* org.jsoup.jsoup 1.14.2
 	* org.yaml.snakeyaml 1.27
-	* com.sedmelluq.lavaplayer 1.3.63
+	* com.sedmelluq.lavaplayer 1.3.78
 	* org.slf4j.slf4j-api 1.7.30
 	* org.slf4j.slf4j-simple 1.7.30
 	* org.json.json 20201115
