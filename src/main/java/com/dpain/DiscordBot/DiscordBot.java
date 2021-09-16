@@ -50,7 +50,7 @@ public class DiscordBot {
           JDABuilder.createDefault(token).enableIntents(EnumSet.noneOf(GatewayIntent.class));
 
       // Registering event listeners.
-      builder.addEventListeners(new UserEventListener());
+      builder.addEventListeners(new UserEventListener(this));
       builder.addEventListeners(waiter);
 
       pluginListener = new PluginListener(waiter, this);

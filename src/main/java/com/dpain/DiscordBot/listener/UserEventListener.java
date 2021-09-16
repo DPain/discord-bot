@@ -3,6 +3,7 @@ package com.dpain.DiscordBot.listener;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.dpain.DiscordBot.DiscordBot;
 import com.dpain.DiscordBot.enums.Group;
 import com.dpain.DiscordBot.enums.Property;
 import com.dpain.DiscordBot.helper.LogHelper;
@@ -15,9 +16,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateActivityOrderEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 
@@ -26,9 +29,12 @@ public class UserEventListener implements EventListener {
 
   private static TwitchAlerter alerter;
   private static Guild guild;
+  
+  private DiscordBot bot;
 
-  public UserEventListener() {
+  public UserEventListener(DiscordBot bot) {
     logger.info("Listening User Events!");
+    this.bot = bot;
   }
 
   private boolean isTrustedTwitchStreamer(Member member) {
@@ -60,8 +66,8 @@ public class UserEventListener implements EventListener {
           Group.PRISONER);
 
       logger.info(LogHelper.elog(castedEvent, "User is banned!"));
-    } else if (event instanceof GuildMemberLeaveEvent) {
-      GuildMemberLeaveEvent castedEvent = (GuildMemberLeaveEvent) event;
+    } else if (event instanceof GuildMemberRemoveEvent) {
+      GuildMemberRemoveEvent castedEvent = (GuildMemberRemoveEvent) event;
 
       logger.info(LogHelper.elog(castedEvent, "User left!"));
     } else if (event instanceof GuildUnbanEvent) {
@@ -86,6 +92,11 @@ public class UserEventListener implements EventListener {
           }
         }
       }
+    } else if (event instanceof GuildJoinEvent) {
+      GuildJoinEvent castedEvent = (GuildJoinEvent) event;
+      
+      bot.pluginListener.registerCommands(castedEvent.getGuild());
+      logger.info(LogHelper.elog(castedEvent, "Bot joined a server!"));
     }
   }
 }

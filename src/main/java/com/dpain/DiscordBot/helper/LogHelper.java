@@ -1,8 +1,11 @@
 package com.dpain.DiscordBot.helper;
 
+import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
@@ -58,11 +61,33 @@ public class LogHelper {
     return String.format("User: %s (id: %s) in guild: %s\nDescription: %s",
         event.getUser().getName(), event.getUser().getId(), event.getGuild().getName(), line);
   }
+  
+  /**
+   * Returns a string in a formatted fashion for GuildMemberRemoveEvent.
+   * 
+   * @param event
+   * @param line
+   * @return
+   */
+  public static String elog(GuildMemberRemoveEvent event, String line) {
+    return String.format("User: %s (id: %s) in guild: %s\nDescription: %s",
+        event.getUser().getName(), event.getUser().getId(), event.getGuild().getName(), line);
+  }
 
+  /**
+   * Returns a string in a formatted fashion for GuildJoinEvent.
+   * 
+   * @param event Event raised.
+   * @param line Description.
+   */
+  public static String elog(GuildJoinEvent event, String line) {
+    return String.format("Bot joined the guild: %s (id: %s)\nDescription: %s",
+        event.getGuild().getName(), event.getGuild().getId(), line);
+  }
+  
   /**
    * Returns a string in a formatted fashion for GuildUnbanEvent.
    * 
-   * @param level Level enum.
    * @param event Event raised.
    * @param line Description.
    */
@@ -71,10 +96,10 @@ public class LogHelper {
         event.getUser().getName(), event.getUser().getId(), event.getGuild().getName(), line);
   }
 
+
   /**
    * Returns a string in a formatted fashion for GenericUserPresenceEvent.
    * 
-   * @param level Level enum.
    * @param event Event raised.
    * @param line Description.
    */

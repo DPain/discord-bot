@@ -22,6 +22,7 @@ import com.dpain.DiscordBot.system.PropertiesManager;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 public class PluginListener {
@@ -63,15 +64,28 @@ public class PluginListener {
   }
 
   public void registerCommands() {
+    List<CommandData> availableCommands = new ArrayList<CommandData>();
+    for (Plugin plugin : plugins) {
+      availableCommands.addAll(plugin.getCommands());
+    }
+    
     for (Guild guild : bot.getJDA().getGuilds()) {
       // These commands take up to an hour to be activated after creation/update/delete
       CommandListUpdateAction commands = guild.updateCommands();
-
-      for (Plugin plugin : plugins) {
-        commands.addCommands(plugin.getCommands());
-      }
-
+      commands.addCommands(availableCommands);
       commands.queue();
     }
+  }
+  
+  public void registerCommands(Guild guild) {
+    List<CommandData> availableCommands = new ArrayList<CommandData>();
+    for (Plugin plugin : plugins) {
+      availableCommands.addAll(plugin.getCommands());
+    }
+    
+    // These commands take up to an hour to be activated after creation/update/delete
+    CommandListUpdateAction commands = guild.updateCommands();
+    commands.addCommands(availableCommands);
+    commands.queue();
   }
 }
