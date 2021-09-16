@@ -15,3 +15,4 @@ users.yml
 subscription.yml
 log*
 *.html
+.idea/
