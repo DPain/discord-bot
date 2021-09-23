@@ -4,7 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,11 @@ public class MemberManager {
   }
 
   public Group getMemberGroup(Member member) {
+    Entry entry = memberMap.get(member.getUser().getId());
+    if(entry == null) {
+      // Somehow member wasn't added to the memberMap.
+      addMember(member, DEFAULT_GROUP);
+    }
     return memberMap.get(member.getUser().getId()).group.get(0);
   }
 
