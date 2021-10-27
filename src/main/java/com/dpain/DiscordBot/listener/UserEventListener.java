@@ -62,8 +62,7 @@ public class UserEventListener implements EventListener {
     } else if (event instanceof GuildBanEvent) {
       GuildBanEvent castedEvent = (GuildBanEvent) event;
 
-      MemberManager.load().changeMemberGroup(guild.getMember(castedEvent.getUser()),
-          Group.PRISONER);
+      MemberManager.load().changeUserGroup(castedEvent.getUser(), Group.PRISONER);
 
       logger.info(LogHelper.elog(castedEvent, "User is banned!"));
     } else if (event instanceof GuildMemberRemoveEvent) {

@@ -1,10 +1,13 @@
 package com.dpain.DiscordBot.plugin;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,18 +55,21 @@ public class SchedulerPlugin extends Plugin {
           event.deferReply().queue();
 
           try {
-            long hours = event.getOption("hours-later").getAsLong();
-            String description = event.getOption("description").getAsString();
+            String hoursStr = Objects.requireNonNull(event.getOption("hours-later")).getAsString();
+            double hours = Double.parseDouble(hoursStr);
+            Duration duration = Duration.of((long) (hours * 60), ChronoUnit.MINUTES);
+
+            String description = Objects.requireNonNull(event.getOption("description")).getAsString();
 
             event.getUser().openPrivateChannel().queue((channel) -> channel.sendMessage(description)
-                .queueAfter(SchedulerPlugin.hoursToSeconds(hours), TimeUnit.SECONDS));
+                .queueAfter(SchedulerPlugin.hoursToSeconds(duration.toNanos()), TimeUnit.NANOSECONDS));
 
             event.getHook().sendMessage(String.format("Reminder set %.4f hours later for: %s", hours, description))
                 .queue();
 
             logger.info(LogHelper.elog(event, String.format("Command: %s", message)));
-          } catch (NumberFormatException e) {
-            event.getHook().sendMessage("Please input a correct time in hours!").queue();
+          } catch (NumberFormatException | NullPointerException e) {
+            event.getHook().sendMessage("Please input correct parameters!").queue();
 
             logger.warn(LogHelper.elog(event, String.format("Incorrect command: %s", message)));
           }

@@ -5,7 +5,7 @@
 
 	<groupId>com.dpain</groupId>
 	<artifactId>DiscordBot</artifactId>
-	<version>0.8.3</version>
+	<version>0.8.4</version>
 	<packaging>jar</packaging>
 
 	<name>DiscordBot</name>
@@ -14,27 +14,27 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
-			<version>4.3.0_277</version>
+			<version>4.3.0_339</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.14.2</version>
+			<version>1.14.3</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
-			<version>1.27</version>
+			<version>1.29</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.sedmelluq/lavaplayer -->
 		<dependency>

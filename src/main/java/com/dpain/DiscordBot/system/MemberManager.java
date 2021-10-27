@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.dv8tion.jda.api.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.TypeDescription;
@@ -63,13 +65,13 @@ public class MemberManager {
     return memberMap.get(member.getUser().getId()).group.get(0);
   }
 
-  public void changeMemberGroup(Member member, Group group) {
-    if (memberMap.containsKey(member.getUser().getId())) {
-      Entry info = memberMap.get(member.getUser().getId());
+  public void changeUserGroup(User user, Group group) {
+    if (memberMap.containsKey(user.getId())) {
+      Entry info = memberMap.get(user.getId());
       info.group.clear();
       info.group.add(group);
     } else {
-      logger.error("There is no such member with the member id: " + member.getUser().getId());
+      logger.error("There is no such member with the user id: " + user.getId());
     }
   }
 
@@ -173,7 +175,7 @@ public class MemberManager {
           addMember(member, Group.OWNER);
         }
         memberMap.get(member.getUser().getId()).nickname = member.getNickname();
-        changeMemberGroup(member, Group.OWNER);
+        changeUserGroup(member.getUser(), Group.OWNER);
       } else if (!memberMap.containsKey(member.getUser().getId())) {
         // Member is not in the userdata file
         logger.info("User does not exist and will be added into the userdata file!");
