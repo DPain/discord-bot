@@ -62,7 +62,7 @@ public class SchedulerPlugin extends Plugin {
             String description = Objects.requireNonNull(event.getOption("description")).getAsString();
 
             event.getUser().openPrivateChannel().queue((channel) -> channel.sendMessage(description)
-                .queueAfter(SchedulerPlugin.hoursToSeconds(duration.toNanos()), TimeUnit.NANOSECONDS));
+                .queueAfter(SchedulerPlugin.hoursToSeconds(duration.toSeconds()), TimeUnit.SECONDS));
 
             event.getHook().sendMessage(String.format("Reminder set %.4f hours later for: %s", hours, description))
                 .queue();
